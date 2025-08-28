@@ -1,0 +1,63 @@
+/* Container */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  margin: 0;
+}
+
+/* Left Section */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  height: 40px;
+}
+
+.brand {
+  font-size: 1.25rem;
+  /*font-weight: 700;*/
+  color: #0f172a; /* dark slate */
+}
+
+/* Navigation */
+.header-right {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.header-right a {
+  text-decoration: none;
+  color: #374151; /* gray-700 */
+  font-weight: 500;
+  transition: color 0.2s ease-in-out;
+}
+
+.header-right a:hover {
+/* color: #0f766e; /* teal hover */
+}
+
+/* Sign Up button */
+.btn-signup {
+  padding: 6px 14px;
+  /*background-color: #0f766e;
+  color: #fff !important;*/
+  color: #374151;
+  border-radius: 6px;
+  font-weight: 600;
+  /*transition: background 0.2s ease-in-out;*/
+}
+
+.btn-signup:hover {
+  /*background-color: #115e59;*/
+}
