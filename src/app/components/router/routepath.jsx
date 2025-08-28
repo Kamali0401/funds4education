@@ -5,7 +5,9 @@ export const routePath = {
     // --------------------
     main: "/main",
     home: "/home",
-    studentdashboard:"/studentdashboard"
+    studentdashboard:"/studentdashboard",
+    scholarshipdiscovery:"/scholarshipdiscovery",
+    scholarshipmatch:"/scholarshipmatch",
     /*dashboard: "dashboard",
     billing:"billing",
     tableView:"tableView",

@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "../../../pages/home";
 import { routePath as RP } from "./routepath";
 import StudentProfileForm from "../../../pages/headerscholarship/Studentprofile";
+import ScholarshipDiscoveryForm from "../../../pages/discoverscholarship/ScholarshipDiscovery";
+import ScholarshipMatch from "../../../pages/AIScholarshipmatch/ScholarshipMatch";
+
 function App() {
   return (
     <Router>
@@ -10,6 +13,9 @@ function App() {
       <Routes>
      <Route path={RP.home} element={<Home />} />
      <Route path ={RP.studentdashboard} element={<StudentProfileForm/>}/>
+     <Route path ={RP.scholarshipdiscovery } element={<ScholarshipDiscoveryForm/>}/>
+     <Route path ={RP.scholarshipmatch } element={<ScholarshipMatch/>}/>
+
        {/*You can add more pages like below */}
         {/* <Route path="/scholarships" element={<Scholarships />} /> */}
       </Routes>
