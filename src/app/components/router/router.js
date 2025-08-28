@@ -5,6 +5,7 @@ import { routePath as RP } from "./routepath";
 import StudentProfileForm from "../../../pages/headerscholarship/Studentprofile";
 import ScholarshipDiscoveryForm from "../../../pages/discoverscholarship/ScholarshipDiscovery";
 import ScholarshipMatch from "../../../pages/AIScholarshipmatch/ScholarshipMatch";
+import Header from "../../components/header/header";
 
 function App() {
   return (
@@ -13,7 +14,15 @@ function App() {
       <Routes>
      <Route path={RP.home} element={<Home />} />
      <Route path ={RP.studentdashboard} element={<StudentProfileForm/>}/>
-     <Route path ={RP.scholarshipdiscovery } element={<ScholarshipDiscoveryForm/>}/>
+<Route
+  path={RP.scholarshipdiscovery}
+  element={
+    <>
+      <Header variant="discovery" />   {/* 👈 This will show screenshot header */}
+      <ScholarshipDiscoveryForm />
+    </>
+  }
+/>
      <Route path ={RP.scholarshipmatch } element={<ScholarshipMatch/>}/>
 
        {/*You can add more pages like below */}

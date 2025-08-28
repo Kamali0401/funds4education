@@ -1,14 +1,11 @@
+import React from "react";  // ✅ Add this
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import logo from "../../assests/Logo.png";
-import ScholarshipCard from "../../../pages/headerscholarship/ScholarshipCard"; // Import your card component
 import "./header.css";
 import { FiBell } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
 
-const Header = ({ isDashboard = false }) => {
-  const [showCard, setShowCard] = useState(false);
-
+const Header = ({ variant = "public" }) => {
   return (
     <header className="header">
       {/* Left: Logo + Branding */}
@@ -17,28 +14,48 @@ const Header = ({ isDashboard = false }) => {
         <span className="brand">VidyāSetu</span>
       </div>
 
-      {/* Right: Navigation */}
+      {/* Right: Navigation (depends on variant) */}
       <nav className="header-right">
-        {isDashboard ? (
+        {variant === "dashboard" && (
           <div className="header-actions">
             <FiBell size={22} className="cursor-pointer" />
             <div className="icon-circle">
-  <span className="icon-text">?</span>
-</div>
+              <span className="icon-text">?</span>
+            </div>
             <div className="language-selector">
               <span>English</span>
               <IoMdArrowDropdown />
             </div>
           </div>
-        ) : (
-          <nav>
-            <a href="/about">About</a>
-            <a href="/scholarships">Scholarships</a>
-            <a href="/login">Login</a>
-            <a href="/signup" className="btn-signup">
+        )}
+
+        {variant === "student" && (
+          <div className="nav-links">
+            <Link to="/about">About</Link>
+            <Link to="/scholarships">Scholarships</Link>
+            <Link to="/login">Login</Link>
+            <Link to="/signup" className="btn-signup">
               Sign Up
-            </a>
-          </nav>
+            </Link>
+          </div>
+        )}
+
+        {variant === "student" && (
+          <div className="nav-links">
+            <Link to="/my-scholarships">My Scholarships</Link>
+            <Link to="/applications">Applications</Link>
+            <Link to="/profile">Profile</Link>
+            <Link to="/logout">Logout</Link>
+          </div>
+        )}
+
+        {variant === "discovery" && (
+          <div className="nav-links">
+            <Link to="/saved">Saved Scholarships</Link>
+            <Link to="/eligibility">Eligibility</Link>
+            <Link to="/amount">Amount</Link>
+            <Link to="/sponsor">Sponsor Type</Link>
+          </div>
         )}
       </nav>
     </header>

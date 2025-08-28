@@ -20,7 +20,7 @@ export default function ScholarshipDiscovery() {
 
   return (
     <div>
-      <Header isDashboard={true} />
+      
       <div className="scholarship-page">
   {/* Search Bar (moved above layout) */}
 <div class="main-container">
@@ -58,7 +58,7 @@ export default function ScholarshipDiscovery() {
               <p>{s.amount}</p>
               <p className="deadline">Deadline: {s.deadline}</p>
             </div>
-            <button className="btn">Apply</button>
+<button className="apply-btn">Apply</button>
           </div>
         ))}
       </div>

@@ -1,184 +1,204 @@
-body {
-  font-family: Arial, sans-serif;
-  background-color: #fdfdf9;
-  margin: 0;
-  padding: 0;
+.scholarship-container {
+  padding: 24px;
+  margin: 20px auto;
 }
 
-.page-wrapper {
-  width: 100%;
-  min-height: 100vh;
+/* Search Bar */
+.search-group {
   display: flex;
-  flex-direction: column;
+  flex-wrap: nowrap;
+  margin: 24px 0;
 }
 
-/* Full-width header */
-.header {
-  width: 100%;
-  background-color: #215a53;
+.search-input {
+  border: 1px solid #ccc;
+  padding: 10px;
+  outline: none;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* remove double borders only between inputs */
+.search-group {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 24px 0;
+}
+
+.search-input {
+  border: 1px solid #ccc;
+  padding: 12px 10px;
+  outline: none;
+  font-size: 14px;
+  text-align: left;   
+  white-space: nowrap;
+   width: 500px; 
+}
+
+.search-input:not(:last-child) {
+  border-right: none; /* no double borders inside */
+}
+
+.search-input:first-child {
+  border-radius: 6px 0 0 6px; /* round left side */
+}
+
+.search-input:last-child {
+  border-radius: 0 6px 6px 0; /* round right side */
+  border-right: 1px solid #ccc; /* close border properly */
+}
+
+/* separate "Search" button */
+.search-btn {
+  background-color: #205c5c;  /* darker teal like in your screenshot */
   color: #fff;
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  width: 40px;
-  height: auto;
-}
-
-.brand {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.header nav span {
-  margin-left: 20px;
+  padding: 10px 20px;
+  border: none;               /* no border */
+  border-radius: 6px;         /* pill style */
   cursor: pointer;
+  margin-left: 8px;           /* small gap from inputs */
+  font-size: 14px;
   font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
-.dashboard-container {
-  width: 100%;
-  margin: 0;
-  padding: 20px 40px; /* space inside */
-  box-sizing: border-box;
+.search-btn:hover {
+  background-color: #174747;  /* hover effect */
 }
 
-
-/* AI Match section */
-.ai-match {
+.main-container {
   display: flex;
+  justify-content: center;
   align-items: center;
+}
+
+
+
+/* Layout */
+.layout {
+  display: grid;
+grid-template-columns: 250px 1fr; 
+gap:40px;
+}
+
+
+
+.filters label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #374151;
+}
+
+.filters select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+}
+
+/* Main Content */
+.content h2 {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 25px;
+    margin-top: 5px;
+
+}
+
+.scholarship-list .card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
   justify-content: space-between;
-  background-color: #f5f8f6;
+  align-items: center;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+  font-weight: 600;
+}
+
+.card .deadline {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Deadlines */
+.deadlines h2 {
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+.deadlines ul {
+  color: #4b5563;
+  font-size: 18px;
+}
+/* Search bar placed on top */
+.search-top {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px auto 30px auto;
+  max-width: 900px;
+}
+
+/* Bigger sidebar text */
+.sidebar h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+
+.sidebar ul {
+  list-style-type: none; /* removes bullet */
+  padding-left: 0;       /* removes extra left space */
+  margin: 0;  
+  font-size: 18px;           /* optional: remove top/bottom gap */
+}
+
+.sidebar li {
+  margin: 6px 0; /* optional: spacing between items */
+}
+
+/* Bigger Scholarships heading */
+.main-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* Wider scholarship cards */
+.wide-card {
+  width: 100%;
+  margin-left: 0; /* start near sidebar */
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
   padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 30px;
-  width: 100%;       /* full width */
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-.ai-image img {
-  width: 120px;
-  border-radius: 8px;
-}
-
-.ai-content h2 {
-  margin: 0 0 10px 0;
-}
-
-.update-btn {
-  background-color: #215a53;
-  color: #fff;
+/* Apply Button */
+.apply-btn {
+  background: #205c5c;   /* teal background */
+  color: #fff;           /* white text */
   border: none;
   padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* Matches + Summary section full page */
-.matches-section {
-  display: flex;
-  gap: 20px;
-  width: 100%;
-}
-
-.matches {
-  flex: 2;
-}
-
-.match-card {
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 8px;
-  gap: 10px;
-  width: 100%;
-}
-
-.match-card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-}
-
-.match-info h4 {
-  margin: 0;
-}
-
-.apply-btn {
-  background-color: #215a53;
-  color: #fff;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: auto;
-}
-
-/* Right side summary */
-.summary-section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: 100%;
-}
-
-.financial-summary {
-  background-color: #215a53;
-  color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.financial-summary .amount {
-  font-size: 28px;
-  margin: 10px 0;
-}
-
-.budget-bar {
-  background-color: #c4c4c4;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 10px;
-}
-
-.budget-bar .progress {
-  width: 60%;
-  height: 100%;
-  background-color: #9ed9d0;
-}
-
-.download-btn {
-  background-color: #215a53;
-  color: #fff;
-  border: none;
-  padding: 10px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
-.applications {
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.application-card {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
-  border-bottom: 1px solid #ddd;
+.apply-btn:hover {
+  background: #174747; /* darker teal on hover */
 }
