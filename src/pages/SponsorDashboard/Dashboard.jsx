@@ -1,7 +1,7 @@
 import { FiBell, FiUpload, FiDownload } from "react-icons/fi";
 import "./SponsorCard.css";
 import logo from "../../app/assests/Logo.png"
-
+import Header from "../../app/components/header/header";
 export default function SponsorDashboard() {
   return (
     <div className="dashboard-container">
@@ -22,7 +22,8 @@ export default function SponsorDashboard() {
         </nav>
       </aside>
       <div className="main-section">
-        <header className="header">
+       
+        {/*<header className="header">
           <div className="header-left">
             <img src={logo} alt="logo" className="logo" />
             <span className="brand">VidyāSetu</span>
@@ -40,7 +41,7 @@ export default function SponsorDashboard() {
               <FiDownload size={16} /> Download
             </button>
           </div>
-        </header>
+        </header>*/}
         <main className="dashboard-main">
           <h2 className="section-title">Scholarships</h2>
           <div className="stats-grid">

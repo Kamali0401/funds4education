@@ -23,7 +23,7 @@ export default function ScholarshipDiscovery() {
       
       <div className="scholarship-page">
   {/* Search Bar (moved above layout) */}
-<div class="main-container">
+<div class="main-container mt-4">
   <div class="search-group">
     <input type="text" placeholder="Search scholarships" class="search-input" />
     <input type="text" placeholder="Location" class="search-input" />

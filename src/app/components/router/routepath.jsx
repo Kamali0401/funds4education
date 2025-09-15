@@ -4,11 +4,14 @@ export const routePath = {
     
     // --------------------
     main: "/main",
-    home: "/home",
-    studentdashboard:"/studentdashboard",
-    scholarshipdiscovery:"/scholarshipdiscovery",
-    scholarshipmatch:"/scholarshipmatch",
-    Dashboard: "/sponsordashboard",
+  
+  home: "/",
+  studentdashboard: "/student-dashboard",   // 👈 is it this?
+  scholarshipdiscovery: "/scholarship-discovery",
+  scholarshipmatch: "/scholarship-match",
+  sponsordashboard: "/sponsor-dashboard",
+
+
     /*dashboard: "dashboard",
     billing:"billing",
     tableView:"tableView",

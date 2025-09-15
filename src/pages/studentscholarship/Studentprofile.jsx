@@ -52,7 +52,7 @@ const deadlines = [
 const Dashboard = () => {
   return (
      <div>
-    <Header isDashboard={true} />
+    <Header variant="student-profile"  />
     <div className="flex h-screen">
       
       {/* Sidebar */}

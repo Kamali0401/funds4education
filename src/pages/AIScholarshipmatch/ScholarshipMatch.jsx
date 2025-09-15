@@ -4,7 +4,7 @@ import user1 from "./images/user1.png"; // Placeholder avatars
 import user2 from "./images/user2.png";
 import user3 from "./images/user3.png";
 import logo from "../../app/assests/Logo.png";
-
+import Header from "../../app/components/header/header";
 const scholarships = [
   {
     id: 1,
@@ -39,7 +39,7 @@ const applications = [
 const ScholarshipDashboard = () => {
   return (
     <div className="page-wrapper">
-      {/* Full-width header */}
+      {/* Full-width header 
       <header className="header">
         <div className="header-left">
           <img src={logo} alt="VidyaSetu Logo" className="logo" />
@@ -50,8 +50,8 @@ const ScholarshipDashboard = () => {
           <span>Saved</span>
           <span>Messages</span>
         </nav>
-      </header>
-
+      </header>*/}
+ <Header variant="student"  />
       {/* Main content area */}
       <div className="dashboard-container">
         <section className="ai-match">

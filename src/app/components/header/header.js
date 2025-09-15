@@ -1,22 +1,24 @@
-import React from "react";  // ✅ Add this
+import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assests/Logo.png";
 import "./header.css";
 import { FiBell } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
-
+ import { routePath as RP } from "../router/routepath";
+ import { FiUpload, FiDownload } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 const Header = ({ variant = "public" }) => {
+  const navigate = useNavigate();
   return (
     <header className="header">
       {/* Left: Logo + Branding */}
-      <div className="header-left">
+       <div className="header-left" onClick={() => navigate(RP.home)} style={{ cursor: "pointer" }}>
         <img src={logo} alt="VidyaSetu Logo" className="logo" />
         <span className="brand">VidyāSetu</span>
       </div>
-
       {/* Right: Navigation (depends on variant) */}
       <nav className="header-right">
-        {variant === "dashboard" && (
+        {variant === "student-profile" && (
           <div className="header-actions">
             <FiBell size={22} className="cursor-pointer" />
             <div className="icon-circle">
@@ -29,23 +31,21 @@ const Header = ({ variant = "public" }) => {
           </div>
         )}
 
-        {variant === "student" && (
+        {variant === "public" && (
           <div className="nav-links">
             <Link to="/about">About</Link>
-            <Link to="/scholarships">Scholarships</Link>
+            <Link to={RP.scholarshipdiscovery}>Scholarships</Link>
             <Link to="/login">Login</Link>
-            <Link to="/signup" className="btn-signup">
-              Sign Up
-            </Link>
+            <Link to="/signup">Sign Up</Link>
           </div>
         )}
 
         {variant === "student" && (
           <div className="nav-links">
-            <Link to="/my-scholarships">My Scholarships</Link>
-            <Link to="/applications">Applications</Link>
-            <Link to="/profile">Profile</Link>
-            <Link to="/logout">Logout</Link>
+            <Link to="/my-scholarships">Dashboard</Link>
+            <Link to="/applications">Saved</Link>
+            <Link to="/profile">Message</Link>
+          
           </div>
         )}
 
@@ -57,6 +57,20 @@ const Header = ({ variant = "public" }) => {
             <Link to="/sponsor">Sponsor Type</Link>
           </div>
         )}
+
+       {variant === "dashboard" && (
+    <div className="header-right">
+      <button className="icon-btn">
+        <FiBell size={20} />
+      </button>
+      <button className="action-btn">
+        <FiUpload size={16} /> Upload
+      </button>
+      <button className="action-btn">
+        <FiDownload size={16} /> Download
+      </button>
+    </div>
+  )}
       </nav>
     </header>
   );

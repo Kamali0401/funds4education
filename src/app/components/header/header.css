@@ -66,3 +66,40 @@
 .btn-signup:hover {
   /*background-color: #115e59;*/
 }
+.icon-circle {
+  width: 32px;       /* adjust size as needed */
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f0f0; /* or whatever background you want */
+  display: flex;      /* flexbox for centering */
+  align-items: center; /* vertical center */
+  justify-content: center; /* horizontal center */
+}
+
+.icon-text {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333; /* adjust color */
+}
+/* Responsive */
+@media (max-width: 768px) {
+  aside { width: 14rem; padding: 1rem; }
+  main { padding: 1rem; }
+  .scholarship-card .btn-view { padding: 0.5rem 1rem; }
+}
+.icon-circle {
+  width: 40px;           /* Circle size */
+  height: 40px;
+  background-color: #395B61;  /* Dark teal circle */
+  border-radius: 50%;    /* Make it circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-text {
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+}
