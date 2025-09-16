@@ -20,17 +20,17 @@
 }
 
 .hero-right h1 span {
-  color: #184D52; /* teal shade */
+  color:  #1D4F56;; /* teal shade */
 }
 
 .hero-right p {
   font-size: 1.1rem;
   margin: 20px 0;
-  color: #555;
+  color: #4A6A6D;;
 }
 
 .btn-primary {
-  background: #4A7B81;
+  background: #4A7A80;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -60,12 +60,19 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   font-size: 1rem;
 }
+.role-card p {
+  font-size: 1rem;
+  color: #000205;
+  margin-top: 8px;
+}
+
 
 .role-card h3 {
-  font-size: 1.4rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #155D5B;
+  margin-top: auto;
+  color: #012F39;
 }
 
 .role-student { background: #D7E3D9; }   /* green */
@@ -83,7 +90,7 @@
   font-size: 1.6rem;
   font-weight: 700;
   margin-bottom: 20px;
-    color: #155D5B;
+    color: #246162;
 }
 
 .testimonials blockquote {
@@ -91,13 +98,13 @@
   max-width: 600px;
   margin: 0 auto;
   font-size: 1.2rem;
-  color: #444;
+  color: #0B3C4A;
 }
 
 .author {
   margin-top: 16px;
   font-weight: 600;
-  color: #333;
+  color: #00242C;
 }
 
 /* Footer */

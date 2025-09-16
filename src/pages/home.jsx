@@ -68,17 +68,17 @@ const Home=() =>{
       {/* Role Cards */}
       <section className="roles">
         <div className="role-card role-student cursor-pointer" onClick={handleClick}>
-             <FaGraduationCap size={35} color='#396D70' />
+             <FaGraduationCap size={70} color='#396D70' />
           <h3>For Students</h3>
           <p>Find scholarships that match your background interests.</p>
         </div>
         <div className="role-card role-sponsor" onClick={handleSponsorClick}>
-          <FaHandHoldingUsd size={35} color='#396D70'  />
+          <FaHandHoldingUsd size={70} color='#396D70'  />
           <h3>For Sponsors</h3>
           <p>Support talented students and track their progress.</p>
         </div>
         <div className="role-card role-institution">
-            <FaUniversity size={35} color='#396D70' />
+            <FaUniversity size={70} color='#396D70' />
           <h3>For Institutions</h3>
           <p>Connect your students to a wide range of scholarships.</p>
         </div>

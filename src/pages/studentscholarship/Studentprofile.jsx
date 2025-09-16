@@ -4,6 +4,8 @@ import { FiBell } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import "../../pages/styles.css";
 import Header from "../../app/components/header/header";
+import { Link, useNavigate } from "react-router-dom";
+
 const scholarships = [
   {
     title: "STEM Excellence Scholarship",
@@ -65,11 +67,11 @@ const Dashboard = () => {
         </div>
 
         <nav>
-          <a href="#" className="active">
+           <a href="#" className="active">
             Dashboard
           </a>
           <a href="#">Applications</a>
-          <a href="#">Matches</a>
+           <Link to="/scholarship-match">Matches</Link>
           <a href="#">Messages</a>
         </nav>
       </aside>
