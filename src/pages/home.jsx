@@ -4,7 +4,8 @@ import Header from '../app/components/header/header';
 import "../pages/styles.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { FaGraduationCap, FaHandHoldingUsd, FaUniversity } from 'react-icons/fa';
-import studentImg from "../app/assests/studentlogo.png";
+//import studentImg from "../app/assests/studentlogo.png";
+import studentImg from "../app/assests/Homepage.png"
 import { routePath as RP } from "../app/components/router/routepath";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
