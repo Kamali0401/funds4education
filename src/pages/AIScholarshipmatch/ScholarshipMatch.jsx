@@ -12,7 +12,7 @@ export default function ScholarshipPage() {
       {/* --- Hero Section --- */}
       <div className="hero">
         <div className="hero-left">
-      <img src={studentImg} alt="Student illustration" />
+          <img src={studentImg} alt="Student illustration" />
         </div>
         <div className="hero-right">
           <h1>AI Scholarship Match</h1>
@@ -32,7 +32,7 @@ export default function ScholarshipPage() {
           <h2>Your Matches</h2>
 
           <div className="match-card">
-            <img src="/avatar1.png" alt="Scholar" />
+            <img src={user1} alt="Scholar" />
             <div className="match-info">
               <h3>STEM Scholars Program</h3>
               <p>$5,000</p>
@@ -43,7 +43,7 @@ export default function ScholarshipPage() {
           </div>
 
           <div className="match-card">
-            <img src="/avatar2.png" alt="Scholar" />
+            <img src={user2} alt="Scholar" />
             <div className="match-info">
               <h3>Academic Achievement</h3>
               <p>$3,000</p>
@@ -54,7 +54,7 @@ export default function ScholarshipPage() {
           </div>
 
           <div className="match-card">
-            <img src="/avatar3.png" alt="Scholar" />
+            <img src={user3} alt="Scholar" />
             <div className="match-info">
               <h3>Women in Technology</h3>
               <p>$4,000</p>
