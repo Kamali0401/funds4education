@@ -208,15 +208,29 @@ gap:40px;
 }
 
 .search-input {
-  padding: 10px;
-  font-size: 16px;
-  width: 200px;
+  padding: 18px 120px;       /* same vertical padding as button */
+  font-size: 14px;          /* match button font size */
   border: 1px solid #ccc;
-  padding: 12px 10px;
+  border-radius: 6px;       /* same rounded corners as button */
   outline: none;
-  font-size: 14px;
+   text-align: left; 
+   vertical-align: top;
+  margin-top: 15px;
 }
 
+.search-btn {
+  background-color: #205c5c;
+  color: #fff;
+  padding: 15px 50px;       /* match input height */
+  border: 1px solid #205c5c;/* align border with input */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+   margin-top: 15px;
+  margin-left: 10px;        /* small gap from inputs */
+}
 
 
 .layout {
@@ -247,12 +261,13 @@ gap:40px;
 
 .card {
   border: 1px solid #ccc;
-  padding: 15px;
+  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+   max-width: 1400px;
 }
 
 .apply-btn {

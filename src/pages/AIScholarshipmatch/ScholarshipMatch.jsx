@@ -1,120 +1,95 @@
 import React from "react";
-import "./ScholarshipDashboard.css";
-import user1 from "./images/user1.png"; // Placeholder avatars
-import user2 from "./images/user2.png";
-import user3 from "./images/user3.png";
-import logo from "../../app/assests/Logo.png";
-import Header from "../../app/components/header/header";
-const scholarships = [
-  {
-    id: 1,
-    title: "STEM Scholars Program",
-    amount: "$5,000",
-    deadline: "June 15, 2024",
-    background: "Women in STEM",
-    img: user1,
-  },
-  {
-    id: 2,
-    title: "Academic Achievement",
-    amount: "$3,000",
-    deadline: "May 20, 2024",
-    background: "Community Service",
-    img: user2,
-  },
-  {
-    id: 3,
-    title: "Women in Technology",
-    amount: "$4,000",
-    deadline: "May 5, 2024",
-    background: "",
-    img: user3,
-  },
-];
+import "../AIScholarshipmatch/ScholarshipMatch.css";
+import user1 from "../../app/assests/user1.png";
+import user2 from "../../app/assests/user2.png";
+import user3 from "../../app/assests/user3.png";
+import studentImg from "../../app/assests/aiimage.png";
 
-const applications = [
-  { name: "Vijay T.", department: "Arts", status: "In Review" },
-];
-
-const ScholarshipDashboard = () => {
+export default function ScholarshipPage() {
   return (
-    <div className="page-wrapper">
-      {/* Full-width header 
-      <header className="header">
-        <div className="header-left">
-          <img src={logo} alt="VidyaSetu Logo" className="logo" />
-          <span className="brand">VidyāSetu</span>
+    <div className="scholarship-page">
+
+      {/* --- Hero Section --- */}
+      <div className="hero">
+        <div className="hero-left">
+      <img src={studentImg} alt="Student illustration" />
         </div>
-        <nav>
-          <span>Dashboard</span>
-          <span>Saved</span>
-          <span>Messages</span>
-        </nav>
-      </header>*/}
- <Header variant="student"  />
-      {/* Main content area */}
-      <div className="dashboard-container">
-        <section className="ai-match">
-          <div className="ai-image">
-            <img src={user1} alt="AI illustration" />
-          </div>
-          <div className="ai-content">
-            <h2>AI Scholarship Match</h2>
-            <p>
-              Based on your profile and background, here are some recommended
-              scholarships for you.
-            </p>
-            <button className="update-btn">Update Profile</button>
-          </div>
-        </section>
+        <div className="hero-right">
+          <h1>AI Scholarship Match</h1>
+          <p>
+            Based on your profile and background, here are some recommended
+            scholarships for you.
+          </p>
+          <button className="btn-primary">Update Profile</button>
+        </div>
+      </div>
 
-        <section className="matches-section">
-          {/* Left side: Matches */}
-          <div className="matches">
-            <h3>Your Matches</h3>
-            {scholarships.map((scholarship) => (
-              <div key={scholarship.id} className="match-card">
-                <img src={scholarship.img} alt={scholarship.title} />
-                <div className="match-info">
-                  <h4>{scholarship.title}</h4>
-                  <p>{scholarship.amount}</p>
-                  <p>Deadline: {scholarship.deadline}</p>
-                  {scholarship.background && (
-                    <p>Background: {scholarship.background}</p>
-                  )}
-                </div>
-                <button className="apply-btn">Apply</button>
-              </div>
-            ))}
-          </div>
+      {/* --- Bottom Section --- */}
+      <div className="content-section">
 
-          {/* Right side: Summary */}
-          <div className="summary-section">
-            <div className="financial-summary">
-              <h4>Financial Summary</h4>
-              <p className="amount">$50,000</p>
-              <div className="budget-bar">
-                <div className="progress"></div>
-              </div>
-              <p>Budget Utilization</p>
+        {/* Left: Your Matches */}
+        <div className="matches">
+          <h2>Your Matches</h2>
+
+          <div className="match-card">
+            <img src="/avatar1.png" alt="Scholar" />
+            <div className="match-info">
+              <h3>STEM Scholars Program</h3>
+              <p>$5,000</p>
+              <p className="deadline">Deadline: June 15, 2024</p>
+              <p>Background: Women in STEM</p>
             </div>
+            <button className="apply-btn">Apply</button>
+          </div>
 
-            <button className="download-btn">Download Reports</button>
+          <div className="match-card">
+            <img src="/avatar2.png" alt="Scholar" />
+            <div className="match-info">
+              <h3>Academic Achievement</h3>
+              <p>$3,000</p>
+              <p className="deadline">Deadline: May 20, 2024</p>
+              <p>Background: Community Service</p>
+            </div>
+            <button className="apply-btn">Apply</button>
+          </div>
 
-            <div className="applications">
-              <h4>Applications</h4>
-              {applications.map((app, index) => (
-                <div key={index} className="application-card">
-                  <p>{app.name}</p>
-                  <p>{app.status}</p>
-                </div>
-              ))}
+          <div className="match-card">
+            <img src="/avatar3.png" alt="Scholar" />
+            <div className="match-info">
+              <h3>Women in Technology</h3>
+              <p>$4,000</p>
+              <p className="deadline">Deadline: May 5, 2024</p>
+              <p>Background: Women in Tech</p>
+            </div>
+            <button className="apply-btn">Apply</button>
+          </div>
+        </div>
+
+        {/* Right: Summary & Applications */}
+        <div className="summary-section">
+
+          <div className="financial-summary">
+            <h3>Financial Summary</h3>
+            <p className="amount">$50,000</p>
+            <div className="budget-bar">
+              <div className="progress"></div>
+            </div>
+            <p>Budget Utilization</p>
+          </div>
+
+          <button className="download-btn">Download Reports</button>
+
+          <div className="applications">
+            <h3>Applications</h3>
+            <div className="application-card">
+              <p><strong>Vijay T.</strong></p>
+              <p>Arts</p>
+              <p className="status">In Review</p>
             </div>
           </div>
-        </section>
+
+        </div>
       </div>
     </div>
   );
-};
-
-export default ScholarshipDashboard;
+}
