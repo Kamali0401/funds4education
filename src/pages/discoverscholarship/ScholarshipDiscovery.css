@@ -22,17 +22,19 @@
 
 
 .search-input:not(:last-child) {
-  border-right: none; /* no double borders inside */
+  border-right: none;
 }
 
+/* Rounded corners for first and last input */
 .search-input:first-child {
-  border-radius: 6px 0 0 6px; /* round left side */
+  border-radius: 6px 0 0 6px;
 }
 
 .search-input:last-child {
-  border-radius: 0 6px 6px 0; /* round right side */
-  border-right: 1px solid #ccc; /* close border properly */
+  border-radius: 0 6px 6px 0;
+  border-right: 1px solid #ccc;
 }
+
 
 /* separate "Search" button */
 .search-btn {
@@ -136,21 +138,24 @@ gap:40px;
 
 /* Bigger sidebar text */
 .sidebar h2 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;     /* smaller than before */
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  color: #111;
 }
 
 
 .sidebar ul {
-  list-style-type: none; /* removes bullet */
-  padding-left: 0;       /* removes extra left space */
-  margin: 0;  
-  font-size: 18px;           /* optional: remove top/bottom gap */
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 20px 0;   /* space after each group */
 }
 
 .sidebar li {
-  margin: 6px 0; /* optional: spacing between items */
+  font-size: 0.95rem;   /* consistent, smaller text */
+  color: #333;
+  margin: 6px 0;
+  line-height: 1.4;
 }
 
 /* Bigger Scholarships heading */
@@ -204,32 +209,35 @@ gap:40px;
 
 .search-group {
   display: flex;
-  /*gap: 10px;*/
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0;
+  flex-wrap: nowrap;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-input {
-  padding: 18px 120px;       /* same vertical padding as button */
-  font-size: 14px;          /* match button font size */
+  flex: 1;                   /* each input shares space */
+  padding: 10px 14px;        /* smaller padding, equal to button */
+  font-size: 14px;
   border: 1px solid #ccc;
-  border-radius: 6px;       /* same rounded corners as button */
+  border-radius: 6px;
   outline: none;
-   text-align: left; 
-   vertical-align: top;
-  margin-top: 15px;
 }
 
 .search-btn {
   background-color: #205c5c;
   color: #fff;
-  padding: 15px 50px;       /* match input height */
-  border: 1px solid #205c5c;/* align border with input */
+  padding: 10px 20px;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
   transition: background-color 0.2s ease;
-   margin-top: 15px;
-  margin-left: 10px;        /* small gap from inputs */
+  white-space: nowrap;       /* keep text on one line */
 }
 
 
@@ -282,7 +290,12 @@ gap:40px;
 .deadlines {
   margin-top: 40px;
 }
-
+.deadlines h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: black;
+}
 .main-heading {
   margin-bottom: 20px;
 }
