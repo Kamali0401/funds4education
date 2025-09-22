@@ -31,16 +31,29 @@ export default function ScholarshipPage() {
         <div className="matches">
           <h2>Your Matches</h2>
 
-          <div className="match-card">
-            <img src={user1} alt="Scholar" />
-            <div className="match-info">
-              <h3>STEM Scholars Program</h3>
-              <p>$5,000</p>
-              <p className="deadline">Deadline: June 15, 2024</p>
-              <p>Background: Women in STEM</p>
-            </div>
-            <button className="apply-btn">Apply</button>
-          </div>
+  <div className="match-card">
+  <img src={user1} alt="Scholar" />
+  <div className="match-info">
+    <h3>STEM Scholars Program</h3>
+    <p>$5,000</p>
+    <p className="deadline">Deadline: June 15, 2024</p>
+    <p>Award on your interest in STEM</p>
+
+    {/* "Why this match?" trigger */}
+    <div className="why-match">
+      <a href="#">Why this match?</a>
+      <div className="tooltip">
+        <h3>STEM Scholars Program</h3>
+        <p>$5,000</p>
+        <p>Based on your interest in STEM and career goal to become an engineer</p>
+        <div className="tooltip-arrow"></div>
+      </div>
+    </div>
+  </div>
+  <button className="apply-btn">Apply</button>
+</div>
+
+
 
           <div className="match-card">
             <img src={user2} alt="Scholar" />
