@@ -17,8 +17,8 @@ export default function ScholarshipPage() {
         <div className="hero-right">
           <h1>AI Scholarship Match</h1>
           <p>
-            Based on your profile and background, here are some recommended
-            scholarships for you.
+            Based on your profile and <br />background, here are <br />some recommended
+            scholarships <br />for you.
           </p>
           <button className="btn-primary">Update Profile</button>
         </div>

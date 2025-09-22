@@ -14,68 +14,93 @@ export default function ScholarshipDiscovery() {
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("");
 
+  // Filter logic (right now only search filters)
   const filtered = scholarships.filter((s) =>
     s.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div>
-      
+      <Header />
+
       <div className="scholarship-page">
-  {/* Search Bar (moved above layout) */}
-<div class="main-container mt-4">
-  <div class="search-group">
-    <div>
-    <input type="text" placeholder="Search scholarships" class="search-input" />
-    <input type="text" placeholder="Location" class="search-input" />
-    <input type="text" placeholder="Category" class="search-input" />
-    </div>
-    <button class="search-btn">Search</button>
-  </div>
-</div>
-
-  <div className="layout">
-    {/* Sidebar */}
-    <aside className="sidebar">
-      <h2>Saved Scholarships</h2>
-      <ul>
-        <li>Merit Scholarship</li>
-      </ul>
-
-      <h2>Recommendations</h2>
-      <ul>
-        <li>Science and Technology Scholarship</li>
-        <li>Academic Excellence Grant</li>
-      </ul>
-    </aside>
-
-    {/* Main Content */}
-    <main className="content">
-      <h2 className="main-heading">Scholarships</h2>
-      <div className="scholarship-list">
-        {filtered.map((s) => (
-          <div key={s.id} className="card wide-card">
-            <div>
-              <h3>{s.title}</h3>
-              <p>{s.amount}</p>
-              <p className="deadline">Deadline: {s.deadline}</p>
-            </div>
-<button className="apply-btn">Apply</button>
+        {/* Search Bar */}
+        <div className="search-container">
+          <div className="search-group">
+            <input
+              type="text"
+              placeholder="Search scholarships"
+              className="search-input"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Location"
+              className="search-input"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Category"
+              className="search-input"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+            <button className="search-btn">Search</button>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* Upcoming Deadlines */}
-      <div className="deadlines">
-        <h2>Upcoming Deadlines</h2>
-        <ul>
-          <li>Service to Society Scholarship — April 28, 2024</li>
-          <li>Women in Science Scholarship — May 10, 2024</li>
-        </ul>
+        {/* Main Layout */}
+        <div className="layout">
+          {/* Sidebar */}
+          <aside className="sidebar">
+            <h2>Saved Scholarships</h2>
+            <ul>
+              <li>Merit Scholarship</li>
+            </ul>
+
+            <h2>Recommendations</h2>
+            <ul>
+              <li>Science and Technology Scholarship</li>
+              <li>Academic Excellence Grant</li>
+            </ul>
+          </aside>
+
+          {/* Main Content */}
+          <main className="content">
+            <h2 className="main-heading">Scholarships</h2>
+            <div className="scholarship-list">
+              {filtered.map((s) => (
+                <div key={s.id} className="card">
+                  <div>
+                    <h3>{s.title}</h3>
+                    <p>{s.amount}</p>
+                    <p className="deadline">Deadline: {s.deadline}</p>
+                  </div>
+                  <button className="apply-btn">Apply</button>
+                </div>
+              ))}
+            </div>
+
+            {/* Upcoming Deadlines */}
+            <div className="deadlines">
+              <h2>Upcoming Deadlines</h2>
+              <ul>
+                <li>
+                  <span>Service to Society Scholarship</span>
+                  <span>April 28, 2024</span>
+                </li>
+                <li>
+                  <span>Women in Science Scholarship</span>
+                  <span>May 10, 2024</span>
+                </li>
+              </ul>
+            </div>
+          </main>
+        </div>
       </div>
-    </main>
-  </div>
-</div>
     </div>
   );
 }
