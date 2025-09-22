@@ -2,6 +2,9 @@ import { FiBell, FiUpload, FiDownload } from "react-icons/fi";
 import "./SponsorCard.css";
 import logo from "../../app/assests/Logo.png"
 import Header from "../../app/components/header/header";
+import student1 from "../../app/assests/Img1.jpg";
+import student2 from "../../app/assests/img2.jpg";
+import student3 from "../../app/assests/img3.jpg";
 export default function SponsorDashboard() {
   return (
     <div className="dashboard-container">
@@ -62,23 +65,26 @@ export default function SponsorDashboard() {
                 field: "Engineering",
                 deadline: "May 1, 2024",
                 background: "Women in STEM",
+                avatar:student1,
               },
               {
                 name: "Community Service Scholarship",
                 field: "$1,500",
                 deadline: "July 10, 2024",
                 background: "Community Service",
+                avatar:student2,
               },
               {
                 name: "Future Leaders Scholarship",
                 field: "$3,000",
                 deadline: "Aug 20, 2024",
                 background: "Leadership",
+                avatar: student3,
               },
             ].map((student, i) => (
               <div key={i} className="student-card">
                 <div className="student-info">
-                  <div className="avatar">👤</div>
+                 <img src={student.avatar} alt={student.name} className="student-avatar" />
                   <div>
                     <h4>{student.name}</h4>
                     <p>{student.field}</p>
@@ -90,24 +96,31 @@ export default function SponsorDashboard() {
               </div>
             ))}
           </div>
-          <h3 className="sub-title">Applications</h3>
-          <div className="applications">
-            <div className="app-header">
-              <p>
-                <strong>Vijay T.</strong> - Arts
-              </p>
-              <span className="status">In Review</span>
-            </div>
+         <div className="applications">
+  <div className="app-header">
+    <h3 className="sub-title">Applications</h3>
+    <button className="download-btn">Download Reports</button>
+  </div>
 
-            <div className="progress-bar">
-              <div className="progress" style={{ width: "60%" }}></div>
-            </div>
+  <div className="app-card">
+    <div className="app-card-header">
+      <p><strong>Vijay T.</strong> - Arts</p>
+      <span className="status">In Review</span>
+    </div>
 
-            <p className="muted">Funds Disbursed</p>
-            <p className="muted">Customize Branding</p>
+    <div className="app-row">
+      <span>Funds Disbursed</span>
+      <div className="progress-bar">
+        <div className="progress" style={{ width: "60%" }}></div>
+      </div>
+    </div>
 
-            <button className="download-btn">Download Reports</button>
-          </div>
+    <div className="app-row">
+      <span>Customize Branding</span>
+    </div>
+  </div>
+</div>
+
         </main>
       </div>
     </div>

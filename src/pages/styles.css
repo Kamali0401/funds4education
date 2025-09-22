@@ -172,12 +172,14 @@ body, html {
 
 /* Sidebar */
 aside {
-  width: 16rem; /* 64 * 0.25 rem */
+  width: 16rem;
+  min-height: 100vh;         /* stretch full height */
   background-color: #e9f0ec;
   border-right: 1px solid #d1d5db;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem; /* 6 * 0.25rem */
+  padding: 1.5rem;
+  box-sizing: border-box;    /* prevent extra width from padding */
 }
 
 aside .user-info {
@@ -215,11 +217,12 @@ aside nav a.active {
 
 /* Main Content */
 main {
-  flex: 1;
+  flex: 1;              /* take remaining space */
   padding: 2rem;
-  /*overflow-y: auto;*/
+  min-width: 0;         /* prevents horizontal overflow */
+  background: #f9faf9;  /* page bg (different from sidebar) */
+  overflow-y: auto;     /* scroll only vertically */
 }
-
 /* Header */
 header {
   display: flex;

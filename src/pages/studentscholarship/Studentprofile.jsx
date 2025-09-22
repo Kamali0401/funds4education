@@ -113,6 +113,7 @@ const Dashboard = () => {
                 <span>{app.title}</span>
                 <span>{app.status}</span>
               </div>
+              <br></br>
               <div className="status-bar">
                 <div
                   className={`progress ${app.status
