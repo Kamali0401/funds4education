@@ -25,32 +25,35 @@ export default function ScholarshipDiscovery() {
 
       <div className="scholarship-page">
         {/* Search Bar */}
-        <div className="search-container">
-          <div className="search-group">
-            <input
-              type="text"
-              placeholder="Search scholarships"
-              className="search-input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              className="search-input"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Category"
-              className="search-input"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
-            <button className="search-btn">Search</button>
-          </div>
-        </div>
+       {/* Search Bar */}
+<div className="search-container">
+  <div className="search-group">
+    <input
+      type="text"
+      placeholder="Search scholarships"
+      className="search-input"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+    <input
+      type="text"
+      placeholder="Location"
+      className="search-input"
+      value={location}
+      onChange={(e) => setLocation(e.target.value)}
+    />
+    <input
+      type="text"
+      placeholder="Category"
+      className="search-input"
+      value={category}
+      onChange={(e) => setCategory(e.target.value)}
+    />
+  </div>
+
+  {/* Button outside the box */}
+  <button className="search-btn">Search</button>
+</div>
 
         {/* Main Layout */}
         <div className="layout">

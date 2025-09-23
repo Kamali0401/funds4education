@@ -3,6 +3,8 @@ import "../AIScholarshipmatch/ScholarshipMatch.css";
 import user1 from "../../app/assests/user1.png";
 import user2 from "../../app/assests/user2.png";
 import user3 from "../../app/assests/user3.png";
+import { MapPin } from "lucide-react";
+
 import studentImg from "../../app/assests/aiimage.png";
 
 export default function ScholarshipPage() {
@@ -17,8 +19,8 @@ export default function ScholarshipPage() {
         <div className="hero-right">
           <h1>AI Scholarship Match</h1>
           <p>
-            Based on your profile and <br />background, here are <br />some recommended
-            scholarships <br />for you.
+            Based on your profile and <br />background, here are some <br />recommended
+            scholarships for <br />you.
           </p>
           <button className="btn-primary">Update Profile</button>
         </div>
@@ -31,27 +33,38 @@ export default function ScholarshipPage() {
         <div className="matches">
           <h2>Your Matches</h2>
 
-  <div className="match-card">
+ <div className="match-card">
   <img src={user1} alt="Scholar" />
   <div className="match-info">
-    <h3>STEM Scholars Program</h3>
-    <p>$5,000</p>
-    <p className="deadline">Deadline: June 15, 2024</p>
-    <p>Award on your interest in STEM</p>
-
-    {/* "Why this match?" trigger */}
-    <div className="why-match">
-      <a href="#">Why this match?</a>
+    <div className="title-with-tooltip">
+      <h3>STEM Scholars Program</h3>
       <div className="tooltip">
         <h3>STEM Scholars Program</h3>
-        <p>$5,000</p>
-        <p>Based on your interest in STEM and career goal to become an engineer</p>
+        <div className="tooltip-header">
+  <p className="amount">$5,000</p>
+  <p className="why">
+    <MapPin className="icon" />
+    <a href="#">Why this match?</a>
+  </p>
+</div>
+
+
+       <p>
+  Based on your interest in STEM <br />
+  and career goal to become an <br />
+  engineer
+</p>
         <div className="tooltip-arrow"></div>
       </div>
     </div>
+
+    <p>$5,000</p>
+    <p className="deadline">Deadline: June 15, 2024</p>
+    <p>Award on your interest in STEM</p>
   </div>
   <button className="apply-btn">Apply</button>
 </div>
+
 
 
 
@@ -84,9 +97,10 @@ export default function ScholarshipPage() {
           <div className="financial-summary">
             <h3>Financial Summary</h3>
             <p className="amount">$50,000</p>
-            <div className="budget-bar">
-              <div className="progress"></div>
-            </div>
+            <div class="budget-bar">
+  <div class="progress-bar"></div>
+</div>
+
             <p>Budget Utilization</p>
           </div>
 

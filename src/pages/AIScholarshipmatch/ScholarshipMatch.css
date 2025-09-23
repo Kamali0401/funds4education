@@ -37,10 +37,10 @@
 .hero-right p {
   font-size: 15px;  /* Body text */
   font-weight: 400;
-  color: #4a4a4a;
+  color: #0F1B1A;
   line-height: 1.6;
   margin-bottom: 20px;
-  max-width: 360px;
+  margin-top: auto;
 }
 
 .btn-primary {
@@ -98,13 +98,13 @@
   font-size: 16px;  /* Card title */
   font-weight: 600;
   margin-bottom: 4px;
-  color: #1a1a1a;
+  color: #072928;
 }
 
 .match-info p {
   font-size: 14px;  /* Body text */
   font-weight: 400;
-  color: #4a4a4a;
+  color: #0F1B1A;
   margin: 2px 0;
 }
 
@@ -141,9 +141,10 @@
 }
 
 .financial-summary h3 {
-  font-size: 18px;
+  font-size: 25px;
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
 .financial-summary .amount {
@@ -152,18 +153,21 @@
 }
 
 .budget-bar {
-  background: #d1d5db;
+  background: #0E2D2F; /* Green background */
   border-radius: 6px;
-  height: 8px;
+  height: 10px;
   margin: 10px 0;
+  overflow: hidden; /* Important: ensures inner bar stays inside rounded corners */
 }
 
-.progress {
-  background: #fff;
-  width: 70%;
+.progress-bar {
   height: 100%;
-  border-radius: 6px;
+  background: #FFFFFF; /* White progress */
+  width: 70%; /* Change this to your progress % */
+  border-radius: 6px 0 0 6px; /* Round only left side */
+  transition: width 0.3s ease;
 }
+
 
 .download-btn {
   font-size: 15px;
@@ -211,6 +215,9 @@
 
   .hero-right p {
     text-align: center;
+    color: #2A5A59;
+
+
   }
 
   .content-section {
@@ -222,7 +229,7 @@
     width: 100%;
   }
 }
-.why-match {
+.title-with-tooltip {
   position: relative;
   display: inline-block;
 }
@@ -230,21 +237,26 @@
 .tooltip {
   display: none;
   position: absolute;
-  top: 30px;
-  left: 0;
+  top: 0;
+  left: 110%;
   background: #fff;
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 12px;
-  width: 260px;
+  padding: 15px;
+  max-width: 240px;   /* control how wide the card can grow */
+  min-width: 220px;   /* prevent too small */
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   font-size: 14px;
-  z-index: 10;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: normal;
+  z-index: 20;
 }
+
 
 .tooltip h3 {
   margin: 0 0 5px 0;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: bold;
 }
 
@@ -252,19 +264,57 @@
   margin: 5px 0;
 }
 
-.tooltip-arrow {
-  position: absolute;
-  top: -8px;
-  left: 20px;
-  width: 0;
-  height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 8px solid #fff;
-  filter: drop-shadow(0 -1px 1px rgba(0,0,0,0.1));
+.tooltip a {
+  color: #0066cc;
+  text-decoration: underline;
 }
 
-/* Show only when hovering "Why this match?" */
-.why-match:hover .tooltip {
+.tooltip-arrow {
+  position: absolute;
+  left: -8px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #fff;
+  filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
+}
+
+/* Show only when hovering the heading */
+.title-with-tooltip:hover .tooltip {
   display: block;
+}
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.tooltip-header .amount {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+}
+
+.tooltip-header .why {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  margin: 0;
+}
+
+.tooltip-header .why a {
+  color: #2A5A59;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-right:25px;
+}
+
+.tooltip-header .icon {
+  width: 16px;
+  height: 16px;
+  color: green; /* same as in your image */
 }

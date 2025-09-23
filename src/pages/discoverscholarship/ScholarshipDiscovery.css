@@ -6,6 +6,7 @@ body {
   margin: 0;
   background-color: #f8f9fa;
   color: #111827;
+  overflow-x: hidden; 
 }
 
 .scholarship-page {
@@ -18,43 +19,38 @@ body {
 -------------------------------- */
 .search-container {
   display: flex;
-  justify-content: center;
-  margin: 20px 0 30px 0;
+justify-content: flex-start;
+  margin: 30px 50px 30px 50px;
 }
 
 .search-group {
   display: flex;
-  flex-wrap: nowrap;
-  margin: 24px 0;
-}*/
-
-
-
-.search-input:not(:last-child) {
-  border-right: none; /* no double borders inside */
+   height: 40px;
+  width: 100%;
+  max-width: 900px;   /* control overall box width */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  overflow: hidden;   /* keep inputs inside one box */
 }
 
-/* Rounded corners for first and last input */
-.search-input:first-child {
-  border-radius: 6px 0 0 6px;
-}
 
-.search-input:last-child {
-  border-radius: 0 6px 6px 0; /* round right side */
-  border-right: 1px solid #ccc; /* close border properly */
-}
+
+
+
+
 
 
 .search-btn {
   background-color: #205c5c;
   color: #fff;
-  padding: 14px 30px;
-  border: none;
+  padding: 0 20px;            /* horizontal padding only */
+  border: 1px solid #205c5c;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  margin-left: 10px;
+  margin-left: 12px;          /* small gap from inputs */
+  height: 40px;               /* same as .search-group */
   transition: background-color 0.2s ease;
 }
 
@@ -62,6 +58,10 @@ body {
   background-color: #174747;
 }
 
+
+.search-btn:hover {
+  background-color: #174747;
+}
 /* ------------------------------
    Main Layout (Sidebar + Content)
 -------------------------------- */
@@ -237,29 +237,20 @@ body {
 }
 
 .search-input {
-  padding: 18px 120px;       /* same vertical padding as button */
-  font-size: 14px;          /* match button font size */
-  border: 1px solid #ccc;
-  border-radius: 6px;       /* same rounded corners as button */
+  flex: 1;                /* equal size */
+padding: 4px 10px;
+  border: none;           /* remove outside border */
   outline: none;
-   text-align: left; 
-   vertical-align: top;
-  margin-top: 15px;
+  font-size: 14px;
+  text-align: left;
+  vertical-align: top;
+  margin-top: 0;          /* remove extra margin */
 }
 
-.search-btn {
-  background-color: #205c5c;
-  color: #fff;
-  padding: 15px 50px;       /* match input height */
-  border: 1px solid #205c5c;/* align border with input */
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-   margin-top: 15px;
-  margin-left: 10px;        /* small gap from inputs */
+.search-input + .search-input {
+  border-left: 1px solid #ccc;
 }
+
 
 
 .layout {
@@ -282,7 +273,8 @@ body {
   align-items: center;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-   max-width: 1400px;
+   max-width: 100% !important;
+   
 }
 
 .apply-btn {
