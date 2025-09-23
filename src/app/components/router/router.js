@@ -6,7 +6,8 @@ import ScholarshipDiscoveryForm from "../../../pages/discoverscholarship/Scholar
 import ScholarshipMatch from "../../../pages/AIScholarshipmatch/ScholarshipMatch";
 import SponsorDashboard from "../../../pages/SponsorDashboard/Dashboard";
 import Header from "../../components/header/header";
-
+import LoginPage from "../../../pages/login/login";
+import SignUpPage from "../../../pages/login/signup";
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -14,6 +15,8 @@ const routeToVariant = {
   [RP.scholarshipdiscovery]: "discovery",
   [RP.scholarshipmatch]: "student",
   [RP.sponsordashboard]: "dashboard",
+  [RP.login]: "login",
+  [RP.signup]: "signup",
 };
 
 // 🔹 Layout wrapper
@@ -38,6 +41,9 @@ function App() {
           <Route path={RP.scholarshipdiscovery} element={<ScholarshipDiscoveryForm />} />
           <Route path={RP.scholarshipmatch} element={<ScholarshipMatch />} />
           <Route path={RP.sponsordashboard} element={<SponsorDashboard />} />
+          <Route path={RP.login} element={<LoginPage />} />
+                    <Route path={RP.signup} element={<SignUpPage />} />
+
         </Routes>
       </Layout>
     </Router>

@@ -1,7 +1,7 @@
 export const routePath = {
   
     login: "/login",
-    
+    signup:"/signup",
     // --------------------
     main: "/main",
   
