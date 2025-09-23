@@ -1,7 +1,8 @@
 .scholarship-page {
-  font-family: Arial, sans-serif;
-  padding: 40px 80px;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
   background: #f9f9f9;
+  padding: 40px 80px;
 }
 
 /* --- Hero Section --- */
@@ -27,25 +28,29 @@
 }
 
 .hero-right h1 {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 28px;  /* Main heading */
+  font-weight: 700;
   color: #1a1a1a;
   margin-bottom: 12px;
 }
 
 .hero-right p {
-  margin-bottom: 20px;
-  color: #4a4a4a;
+  font-size: 15px;  /* Body text */
+  font-weight: 400;
+  color: #0F1B1A;
   line-height: 1.6;
-  max-width: 360px;
+  margin-bottom: 20px;
+  margin-top: auto;
 }
 
 .btn-primary {
   padding: 10px 20px;
-  background: #164e3f;
-  color: white;
+  background: #275F5B;
+  color: #fff;
   border: none;
   border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -63,7 +68,8 @@
 }
 
 .matches h2 {
-  font-size: 1.5rem;
+  font-size: 20px;  /* Section heading */
+  font-weight: 600;
   margin-bottom: 20px;
 }
 
@@ -74,7 +80,7 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  background: white;
+  background: #fff;
 }
 
 .match-card img {
@@ -89,23 +95,31 @@
 }
 
 .match-info h3 {
-  font-size: 1.1rem;
+  font-size: 16px;  /* Card title */
+  font-weight: 600;
   margin-bottom: 4px;
+  color: #072928;
 }
 
 .match-info p {
+  font-size: 14px;  /* Body text */
+  font-weight: 400;
+  color: #0F1B1A;
   margin: 2px 0;
 }
 
 .deadline {
-  font-size: 0.85rem;
+  font-size: 12px; /* Small text */
+  font-weight: 400;
   color: #6b7280;
 }
 
 .apply-btn {
-  background: #164e3f;
-  color: white;
+  background: #275F5B;
+  color: #fff;
   border: none;
+  font-size: 15px;
+  font-weight: 600;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
@@ -119,42 +133,50 @@
 }
 
 .financial-summary {
-  background: #164e3f;
-  color: white;
+  background: #184B49;
+  color: #fff;
   padding: 20px;
   border-radius: 12px;
   margin-bottom: 20px;
 }
 
 .financial-summary h3 {
-  margin-bottom: 10px;
+  font-size: 25px;
+  font-weight: 600;
+  margin-bottom: auto;
+  margin-top: auto;
 }
 
 .financial-summary .amount {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 28px;  /* Big bold amount */
+  font-weight: 700;
 }
 
 .budget-bar {
-  background: #d1d5db;
+  background: #0E2D2F; /* Green background */
   border-radius: 6px;
-  height: 8px;
+  height: 10px;
   margin: 10px 0;
+  overflow: hidden; /* Important: ensures inner bar stays inside rounded corners */
 }
 
-.progress {
-  background: white;
-  width: 70%;
+.progress-bar {
   height: 100%;
-  border-radius: 6px;
+  background: #FFFFFF; /* White progress */
+  width: 70%; /* Change this to your progress % */
+  border-radius: 6px 0 0 6px; /* Round only left side */
+  transition: width 0.3s ease;
 }
+
 
 .download-btn {
+  font-size: 15px;
+  font-weight: 600;
   display: block;
   width: 100%;
   padding: 12px;
   background: #164e3f;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -162,6 +184,8 @@
 }
 
 .applications h3 {
+  font-size: 20px;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 
@@ -169,12 +193,13 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   padding: 12px;
-  background: white;
+  background: #fff;
 }
 
 .status {
+  font-size: 12px;
+  font-weight: 400;
   color: #6b7280;
-  font-size: 0.9rem;
 }
 
 /* --- Responsive --- */
@@ -190,6 +215,9 @@
 
   .hero-right p {
     text-align: center;
+    color: #2A5A59;
+
+
   }
 
   .content-section {
@@ -200,4 +228,93 @@
   .summary-section {
     width: 100%;
   }
+}
+.title-with-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 110%;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  max-width: 240px;   /* control how wide the card can grow */
+  min-width: 220px;   /* prevent too small */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: normal;
+  z-index: 20;
+}
+
+
+.tooltip h3 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.tooltip p {
+  margin: 5px 0;
+}
+
+.tooltip a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  left: -8px;
+  top: 20px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #fff;
+  filter: drop-shadow(-1px 0 1px rgba(0,0,0,0.1));
+}
+
+/* Show only when hovering the heading */
+.title-with-tooltip:hover .tooltip {
+  display: block;
+}
+.tooltip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.tooltip-header .amount {
+  font-weight: 600;
+  font-size: 14px;
+  margin: 0;
+}
+
+.tooltip-header .why {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  margin: 0;
+}
+
+.tooltip-header .why a {
+  color: #2A5A59;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-right:25px;
+}
+
+.tooltip-header .icon {
+  width: 16px;
+  height: 16px;
+  color: green; /* same as in your image */
 }
