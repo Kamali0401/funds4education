@@ -10,7 +10,7 @@ export const routePath = {
   scholarshipdiscovery: "/scholarship-discovery",
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
-
+sponsordashboardreport: "/sponsor-dashboard/report",
 
     /*dashboard: "dashboard",
     billing:"billing",

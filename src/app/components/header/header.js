@@ -71,6 +71,15 @@ const Header = ({ variant = "public" }) => {
       </button>
     </div>
   )}
+
+   {variant === "sponsordashboardreport" && (
+  <ul className="nav-links">
+    <li><a href="#">Dashboard</a></li>
+    <li><a href="#">Campaigns</a></li>
+    <li><a href="#">Reports</a></li>
+  </ul>
+)}
+
       </nav>
     </header>
   );

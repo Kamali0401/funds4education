@@ -8,6 +8,7 @@ import SponsorDashboard from "../../../pages/SponsorDashboard/Dashboard";
 import Header from "../../components/header/header";
 import LoginPage from "../../../pages/login/login";
 import SignUpPage from "../../../pages/login/signup";
+import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -17,6 +18,7 @@ const routeToVariant = {
   [RP.sponsordashboard]: "dashboard",
   [RP.login]: "login",
   [RP.signup]: "signup",
+  [RP.sponsordashboardreport]: "sponsordashboardreport",
 };
 
 // 🔹 Layout wrapper
@@ -43,6 +45,7 @@ function App() {
           <Route path={RP.sponsordashboard} element={<SponsorDashboard />} />
           <Route path={RP.login} element={<LoginPage />} />
                     <Route path={RP.signup} element={<SignUpPage />} />
+          <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
 
         </Routes>
       </Layout>
