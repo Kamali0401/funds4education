@@ -1,5 +1,5 @@
 import { FiBell, FiUpload, FiDownload } from "react-icons/fi";
-import "./SponsorCard.css";
+import "../../pages/styles.css";
 import logo from "../../app/assests/Logo.png"
 import Header from "../../app/components/header/header";
 import student1 from "../../app/assests/Img1.jpg";

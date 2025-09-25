@@ -1,15 +1,16 @@
 export const routePath = {
-  
-    login: "/login",
-    signup:"/signup",
-    // --------------------
-    main: "/main",
-  
+  login: "/login",
+  signup: "/signup",
+  studentwallet: "/student-wallet",
+  studentwalletredemption: "/student-wallet-redemption",
+  studentrewards: "/student-rewards",
+  main: "/main",
   home: "/",
-  studentdashboard: "/student-dashboard",   // 👈 is it this?
+  studentdashboard: "/student-dashboard",
   scholarshipdiscovery: "/scholarship-discovery",
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
+<<<<<<< HEAD
 sponsordashboardreport: "/sponsor-dashboard/report",
   monetizationads: "/monetization-ads",
 
@@ -28,3 +29,8 @@ sponsordashboardreport: "/sponsor-dashboard/report",
        report:"report",*/
   };
   
+=======
+  studentredemptioncalog: "/student-redemption-catalog",
+  sponsordashboardreport: "/sponsor-dashboard/report"
+};
+>>>>>>> e46d98eb9898a2fc45598f248d43fb5850236038

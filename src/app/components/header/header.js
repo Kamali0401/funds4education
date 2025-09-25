@@ -57,6 +57,43 @@ const Header = ({ variant = "public" }) => {
             <Link to="/sponsor">Sponsor Type</Link>
           </div>
         )}
+         {variant === "studentwalletredemption" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+            <Link to="">Ponits</Link>
+            <Link to="">Rewards</Link>
+            
+          </div>
+        )} 
+
+        {variant === "studentredemptioncalog" && (
+          <div className="nav-links">
+             <Link to="">Dashboard</Link>
+           
+            <Link to="">Rewards</Link>
+             <Link to="">Message</Link>
+            
+            
+          </div>
+        )} 
+         {variant === "studentwallet" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+           
+            <Link to="">Rewards</Link>
+             <Link to="">Message</Link>
+            
+          </div>
+        )}
+         {variant === "studentrewards" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+           
+            <Link to="">Wallet</Link>
+             <Link to="">Message</Link>
+            
+          </div>
+        )}
 
        {variant === "dashboard" && (
     <div className="header-right">

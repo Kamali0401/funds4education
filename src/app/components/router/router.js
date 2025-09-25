@@ -8,6 +8,10 @@ import SponsorDashboard from "../../../pages/SponsorDashboard/Dashboard";
 import Header from "../../components/header/header";
 import LoginPage from "../../../pages/login/login";
 import SignUpPage from "../../../pages/login/signup";
+import StudentWalletRedemption from "../../../pages/student/studentwaletredemption";
+import StudentWallet from "../../../pages/student/studentwalet";
+import StudentRedemptionCatalog from "../../../pages/student/studentredemptioncalog";
+import StudentRewards from "../../../pages/student/studentrewards";
 import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
 // 🔹 Map routes to header variants
@@ -19,6 +23,11 @@ const routeToVariant = {
   [RP.sponsordashboard]: "dashboard",
   [RP.login]: "login",
   [RP.signup]: "signup",
+  [RP.studentwalletredemption]: "studentwalletredemption",
+  [RP.studentwallet]: "studentwallet",
+  [RP.studentredemptioncalog]: "studentredemptioncalog",
+  [RP.studentrewards]: "studentrewards",
+
   [RP.sponsordashboardreport]: "sponsordashboardreport",
   [RP.monetizationads]: "monetizationads",
 };
@@ -47,6 +56,10 @@ function App() {
           <Route path={RP.sponsordashboard} element={<SponsorDashboard />} />
           <Route path={RP.login} element={<LoginPage />} />
                     <Route path={RP.signup} element={<SignUpPage />} />
+                    <Route path={RP.studentwallet} element={<StudentWallet />} />
+                       <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
+<Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
+<Route path={RP.studentrewards} element={<StudentRewards />} />
           <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
           <Route path={RP.monetizationads} element={<MonetizationAds />} />
 

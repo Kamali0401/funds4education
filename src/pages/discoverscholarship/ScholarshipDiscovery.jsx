@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ScholarshipDiscovery.css";
+import "../../pages/styles.css";
 import Header from "../../app/components/header/header";
 
 const scholarships = [
