@@ -14,6 +14,9 @@ import StudentRedemptionCatalog from "../../../pages/student/studentredemptionca
 import StudentRewards from "../../../pages/student/studentrewards";
 import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
+import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
+
+
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -30,6 +33,7 @@ const routeToVariant = {
 
   [RP.sponsordashboardreport]: "sponsordashboardreport",
   [RP.monetizationads]: "monetizationads",
+  [RP.sponsoraddashboard]: "sponsoraddashboard",
 };
 
 // 🔹 Layout wrapper
@@ -55,13 +59,14 @@ function App() {
           <Route path={RP.scholarshipmatch} element={<ScholarshipMatch />} />
           <Route path={RP.sponsordashboard} element={<SponsorDashboard />} />
           <Route path={RP.login} element={<LoginPage />} />
-                    <Route path={RP.signup} element={<SignUpPage />} />
-                    <Route path={RP.studentwallet} element={<StudentWallet />} />
-                       <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
-<Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
-<Route path={RP.studentrewards} element={<StudentRewards />} />
+          <Route path={RP.signup} element={<SignUpPage />} />
+          <Route path={RP.studentwallet} element={<StudentWallet />} />
+          <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
+          <Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
+          <Route path={RP.studentrewards} element={<StudentRewards />} />
           <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
           <Route path={RP.monetizationads} element={<MonetizationAds />} />
+          <Route path={RP.sponsoraddashboard} element={<SponsorAdDashboard />} />
 
         </Routes>
       </Layout>

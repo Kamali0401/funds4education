@@ -10,10 +10,9 @@ export const routePath = {
   scholarshipdiscovery: "/scholarship-discovery",
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
-<<<<<<< HEAD
 sponsordashboardreport: "/sponsor-dashboard/report",
   monetizationads: "/monetization-ads",
-
+sponsoraddashboard: "/sponsor-ad-dashboard",
     /*dashboard: "dashboard",
     billing:"billing",
     tableView:"tableView",
@@ -29,8 +28,3 @@ sponsordashboardreport: "/sponsor-dashboard/report",
        report:"report",*/
   };
   
-=======
-  studentredemptioncalog: "/student-redemption-catalog",
-  sponsordashboardreport: "/sponsor-dashboard/report"
-};
->>>>>>> e46d98eb9898a2fc45598f248d43fb5850236038
