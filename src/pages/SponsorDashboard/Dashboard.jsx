@@ -5,6 +5,8 @@ import Header from "../../app/components/header/header";
 import student1 from "../../app/assests/Img1.jpg";
 import student2 from "../../app/assests/img2.jpg";
 import student3 from "../../app/assests/img3.jpg";
+import { Link } from "react-router-dom"; 
+
 export default function SponsorDashboard() {
   return (
     <div className="dashboard-container">
@@ -17,12 +19,17 @@ export default function SponsorDashboard() {
         </div>
 
         <nav className="sidebar-nav">
-          <button className="active">Dashboard</button>
-          <button>Sponsored Students</button>
-          <button>Applications</button>
-          <button>Reports</button>
-          <button>Settings</button>
-        </nav>
+  <button className="active">Dashboard</button>
+  <button>Sponsored Students</button>
+  <button>Applications</button>
+
+  <Link to="/sponsor-dashboard/report" className="nav-link">
+    Reports
+  </Link>
+
+  <button>Settings</button>
+</nav>
+
       </aside>
       <div className="main-section">
        

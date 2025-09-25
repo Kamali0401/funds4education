@@ -12,6 +12,7 @@ import StudentWalletRedemption from "../../../pages/student/studentwaletredempti
 import StudentWallet from "../../../pages/student/studentwalet";
 import StudentRedemptionCatalog from "../../../pages/student/studentredemptioncalog";
 import StudentRewards from "../../../pages/student/studentrewards";
+import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -26,6 +27,7 @@ const routeToVariant = {
   [RP.studentredemptioncalog]: "studentredemptioncalog",
   [RP.studentrewards]: "studentrewards",
 
+  [RP.sponsordashboardreport]: "sponsordashboardreport",
 };
 
 // 🔹 Layout wrapper
@@ -56,6 +58,8 @@ function App() {
                        <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
 <Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
 <Route path={RP.studentrewards} element={<StudentRewards />} />
+          <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
+
         </Routes>
       </Layout>
     </Router>

@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 import login from "../../app/assests/login.jpg";
+import "../../pages/styles.css";
+import { FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+
 export default function LoginPage() {
-     const [showPassword, setShowPassword] = useState(false);
-      const [email, setEmail] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = { email: "", password: "" };
@@ -28,7 +31,7 @@ export default function LoginPage() {
     }
   };
 
-return (
+  return (
     <div
       style={{
         minHeight: "100vh",
@@ -157,7 +160,7 @@ return (
               onClick={() => setShowPassword(!showPassword)}
               style={{
                 position: "absolute",
-                top: "70%",
+                top: "65%",
                 right: "10px",
                 transform: "translateY(-50%)",
                 background: "transparent",
@@ -207,9 +210,7 @@ return (
               margin: "1rem 0",
             }}
           >
-            <div
-              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
-            ></div>
+            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
             <span
               style={{
                 padding: "0 0.5rem",
@@ -219,9 +220,7 @@ return (
             >
               or login with
             </span>
-            <div
-              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
-            ></div>
+            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
           </div>
 
           {/* Social Buttons */}
@@ -239,10 +238,7 @@ return (
                 cursor: "pointer",
               }}
             >
-              <FcGoogle
-                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
-              />{" "}
-              Google
+              <FcGoogle style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Google
             </button>
             <button
               type="button"
@@ -258,34 +254,19 @@ return (
                 color: "#1D4F56",
               }}
             >
-              <FaFacebook
-                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
-              />{" "}
-              Facebook
+              <FaFacebook style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Facebook
             </button>
           </div>
         </form>
 
-        {/* Right: Illustration */}
+        {/* Right: Optional image or illustration */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "#e6f0f1", // soft background
+            backgroundImage: `url(${login})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
           }}
-        >
-          <img
-            src={login}
-            alt="Login Illustration"
-            style={{
-              width: "100%",
-              maxWidth: "400px",
-              height: "auto",
-              objectFit: "contain",
-            }}
-          />
-        </div>
+        ></div>
       </div>
     </div>
   );
