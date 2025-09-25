@@ -11,6 +11,7 @@ export const routePath = {
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
 sponsordashboardreport: "/sponsor-dashboard/report",
+  monetizationads: "/monetization-ads",
 
     /*dashboard: "dashboard",
     billing:"billing",

@@ -159,13 +159,17 @@
   border-radius: 10px;
   border: 1px solid #e2e8e4;
   padding: 10px 18px;
+
+  /* Add these */
+  width: 500px;   /* set your required width */
+  height: 80px;  /* set your required height */
 }
 
 .preview-card h3 {
   font-size: 1rem;
   font-weight: 700;
   color: #1a2e22;
-  margin: 0 0 2px 0;
+  margin: 0 0 5px 0;
 }
 
 .preview-card p {
