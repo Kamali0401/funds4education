@@ -1,5 +1,5 @@
 import React from "react";
-import "../AIScholarshipmatch/ScholarshipMatch.css";
+import "../../pages/styles.css";
 import user1 from "../../app/assests/user1.png";
 import user2 from "../../app/assests/user2.png";
 import user3 from "../../app/assests/user3.png";

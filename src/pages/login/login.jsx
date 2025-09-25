@@ -7,7 +7,28 @@ import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 export default function LoginPage() {
      const [showPassword, setShowPassword] = useState(false);
-  return (
+      const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({ email: "", password: "" });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let newErrors = { email: "", password: "" };
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    }
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+
+    if (!newErrors.email && !newErrors.password) {
+      alert("Login Successful ✅");
+    }
+  };
+
+return (
     <div
       style={{
         minHeight: "100vh",
@@ -30,7 +51,8 @@ export default function LoginPage() {
         }}
       >
         {/* Left: Login Form */}
-        <div
+        <form
+          onSubmit={handleSubmit}
           style={{
             padding: "2rem",
             display: "flex",
@@ -56,95 +78,112 @@ export default function LoginPage() {
             }}
           >
             Doesn’t have an account yet?{" "}
-            
-             <Link to={RP.signup} style={{ color: "#1D4F56", textDecoration: "underline" }}>
-               Sign Up
+            <Link
+              to={RP.signup}
+              style={{ color: "#1D4F56", textDecoration: "underline" }}
+            >
+              Sign Up
             </Link>
           </p>
 
           {/* Email */}
           <div style={{ marginBottom: "1rem" }}>
-        <label
-          style={{
-            display: "block",
-            fontSize: "0.875rem",
-            fontWeight: 500,
-            color: "#1D4F56",
-            marginBottom: "0.25rem",
-          }}
-        >
-          Email Address
-        </label>
-        <input
-          type="email"
-          placeholder="you@example.com"
-          style={{
-            width: "100%",
-            padding: "0.5rem 1rem",
-            fontSize: "14px",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.5rem",
-            outline: "none",
-            height: "36px",
-            boxSizing: "border-box",
-          }}
-        />
-      </div>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: "#1D4F56",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Email Address
+            </label>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.5rem 1rem",
+                fontSize: "14px",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.5rem",
+                outline: "none",
+                height: "36px",
+                boxSizing: "border-box",
+              }}
+            />
+            {errors.email && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {errors.email}
+              </p>
+            )}
+          </div>
 
-      {/* Password */}
-      <div style={{ marginBottom: "1rem", position: "relative" }}>
-        <label
-          style={{
-            display: "block",
-            fontSize: "0.875rem",
-            fontWeight: 500,
-            color: "#1D4F56",
-            marginBottom: "0.25rem",
-          }}
-        >
-          Password
-        </label>
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder="Enter password"
-           style={{
-            width: "100%",
-            padding: "0.5rem 1rem",
-            fontSize: "14px",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.5rem",
-            outline: "none",
-            height: "36px",
-            boxSizing: "border-box",
-          }}
-        />
+          {/* Password */}
+          <div style={{ marginBottom: "1rem", position: "relative" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                color: "#1D4F56",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.5rem 1rem",
+                fontSize: "14px",
+                border: "1px solid #d1d5db",
+                borderRadius: "0.5rem",
+                outline: "none",
+                height: "36px",
+                boxSizing: "border-box",
+              }}
+            />
 
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          style={{
-            position: "absolute",
-            top: "70%",
-            right: "10px",
-            transform: "translateY(-50%)",
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            padding: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#1D4F56",
-            fontSize: "20px",
-          }}
-          aria-label={showPassword ? "Hide password" : "Show password"}
-        >
-          {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-        </button>
-      </div>
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: "absolute",
+                top: "70%",
+                right: "10px",
+                transform: "translateY(-50%)",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#1D4F56",
+                fontSize: "20px",
+              }}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </button>
+            {errors.password && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {errors.password}
+              </p>
+            )}
+          </div>
 
           {/* Login Button */}
           <button
+            type="submit"
             style={{
               width: "100%",
               backgroundColor: "#1D4F56",
@@ -168,16 +207,27 @@ export default function LoginPage() {
               margin: "1rem 0",
             }}
           >
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
-            <span style={{ padding: "0 0.5rem", fontSize: "0.875rem", color: "#1D4F56" }}>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
+            <span
+              style={{
+                padding: "0 0.5rem",
+                fontSize: "0.875rem",
+                color: "#1D4F56",
+              }}
+            >
               or login with
             </span>
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
           </div>
 
           {/* Social Buttons */}
           <div style={{ display: "flex", gap: "1rem" }}>
             <button
+              type="button"
               style={{
                 flex: 1,
                 display: "flex",
@@ -189,9 +239,13 @@ export default function LoginPage() {
                 cursor: "pointer",
               }}
             >
-              <FcGoogle style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Google
+              <FcGoogle
+                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
+              />{" "}
+              Google
             </button>
             <button
+              type="button"
               style={{
                 flex: 1,
                 display: "flex",
@@ -204,10 +258,13 @@ export default function LoginPage() {
                 color: "#1D4F56",
               }}
             >
-              <FaFacebook style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Facebook
+              <FaFacebook
+                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
+              />{" "}
+              Facebook
             </button>
           </div>
-        </div>
+        </form>
 
         {/* Right: Illustration */}
         <div

@@ -2,6 +2,9 @@ export const routePath = {
   
     login: "/login",
     signup:"/signup",
+    studentwallet:"/student-wallet",
+    studentwalletredemption:"/student-wallet-redemption",
+    studentrewards:"/student-rewards",
     // --------------------
     main: "/main",
   
@@ -10,7 +13,7 @@ export const routePath = {
   scholarshipdiscovery: "/scholarship-discovery",
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
-
+  studentredemptioncalog:"/student-redemption-catalog",
 
     /*dashboard: "dashboard",
     billing:"billing",

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
+import "../../pages/styles.css"; // your CSS file
+
 export default function SignUpPage() {
   const [step, setStep] = useState(0);
 
-  // Basic Details state
   const [basicDetails, setBasicDetails] = useState({
     firstName: "",
     lastName: "",
@@ -14,325 +15,347 @@ export default function SignUpPage() {
     gender: "",
   });
 
-  // Education states
   const [educationList, setEducationList] = useState([]);
+  const [eduErrors, setEduErrors] = useState({});
+
   const [education, setEducation] = useState({ degree: "", college: "", year: "" });
   const [showEducationFields, setShowEducationFields] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
-  // Verification state
   const [verification, setVerification] = useState({ username: "", password: "" });
 
-  // --- Handlers for education ---
-  const addEducation = () => {
-    if (education.degree && education.college && education.year) {
-      setEducationList([...educationList, education]);
-      setEducation({ degree: "", college: "", year: "" });
-      setShowEducationFields(false);
-    }
+  const [errors, setErrors] = useState({});
+
+  // --- Validation regex ---
+  const nameRegex = /^[A-Za-z]{0,150}$/;
+  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com|com\.au|edu)$/;
+  const usernameRegex = /^[A-Za-z]{0,150}$/;
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+  const phoneRegex = /^[0-9]{0,10}$/;
+  const courseRegex = /^[A-Za-z\s]{1,150}$/; // course: letters + spaces only
+  const collegeRegex = /^[A-Za-z\s]{1,250}$/; // college/university max 250 chars
+  const yearRegex = /^[0-9]{4}$/; // year: 4 digits
+             // only digits up to 4
+
+  // --- Email validation to prevent repeated TLDs ---
+  const isValidEmail = (email) => {
+    if (!emailRegex.test(email)) return false;
+    const domainPart = email.split("@")[1];
+    const tldMatches = domainPart.match(/\.[a-z]+/gi);
+    if (!tldMatches) return false;
+    const tldSet = new Set(tldMatches);
+    return tldSet.size === tldMatches.length; // prevent duplicates like .com.com
   };
 
-  const updateEducation = (index) => {
-    if (education.degree && education.college && education.year) {
-      const updated = [...educationList];
-      updated[index] = education;
-      setEducationList(updated);
-      setEditIndex(null);
-      setEducation({ degree: "", college: "", year: "" });
+  // --- Step validation ---
+  const validateStep = () => {
+    let stepErrors = {};
+
+    if (step === 0) {
+      if (!basicDetails.firstName || !nameRegex.test(basicDetails.firstName))
+        stepErrors.firstName = "First name required (alphabets only, max 150).";
+      if (!basicDetails.lastName || !nameRegex.test(basicDetails.lastName))
+        stepErrors.lastName = "Last name required (alphabets only, max 150).";
+      if (!basicDetails.email || !isValidEmail(basicDetails.email))
+        stepErrors.email = "Invalid email (e.g., .com, .com.au, .edu, no repeated TLD).";
+      if (!basicDetails.phone || !phoneRegex.test(basicDetails.phone))
+        stepErrors.phone = "Phone number max 10 digits.";
+      if (!basicDetails.dob) stepErrors.dob = "Date of birth is required.";
+      if (!basicDetails.gender) stepErrors.gender = "Gender is required.";
     }
+
+    if (step === 1) {
+      if (educationList.length === 0) stepErrors.education = "Add at least one education record.";
+    }
+
+    if (step === 2) {
+      if (!verification.username || !usernameRegex.test(verification.username))
+        stepErrors.username = "Username required (alphabets only, max 150).";
+      if (!verification.password || !passwordRegex.test(verification.password))
+        stepErrors.password =
+          "Password min 6 chars, must include letters, numbers & 1 special char.";
+    }
+
+    setErrors(stepErrors);
+    return Object.keys(stepErrors).length === 0;
   };
+
+  // --- Navigation handlers ---
+  const nextStep = () => {
+    if (validateStep()) setStep(step + 1);
+  };
+  const prevStep = () => setStep(step - 1);
+
+  const handleSave = () => {
+    if (!validateStep()) return;
+    const data = { basicDetails, educationList, verification };
+    console.log("Saved data:", data);
+    alert("Data saved! Check console.");
+  };
+
+  // --- Education handlers ---
+  const addEducation = () => {
+  let errorsObj = {};
+  if (!courseRegex.test(education.degree)) errorsObj.degree = "Course required (alphabets only, max 150).";
+  if (!collegeRegex.test(education.college)) errorsObj.college = "College/University required (max 250 chars).";
+  if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits number.";
+
+  if (Object.keys(errorsObj).length > 0) {
+    setEduErrors(errorsObj);
+    return;
+  }
+
+  setEducationList([...educationList, education]);
+  setEducation({ degree: "", college: "", year: "" });
+  setShowEducationFields(false);
+  setEduErrors({});
+};
+
+const updateEducation = (index) => {
+  let errorsObj = {};
+  if (!courseRegex.test(education.degree)) errorsObj.degree = "Course required (alphabets only, max 150).";
+  if (!collegeRegex.test(education.college)) errorsObj.college = "College/University required (max 250 chars).";
+  if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits number.";
+
+  if (Object.keys(errorsObj).length > 0) {
+    setEduErrors(errorsObj);
+    return;
+  }
+
+  const updated = [...educationList];
+  updated[index] = education;
+  setEducationList(updated);
+  setEditIndex(null);
+  setEducation({ degree: "", college: "", year: "" });
+  setEduErrors({});
+};
+
 
   const deleteEducation = (index) => {
     const updated = educationList.filter((_, i) => i !== index);
     setEducationList(updated);
   };
 
-  // --- Navigation Handlers ---
-  const nextStep = () => {
-    if (step < 2) setStep(step + 1);
-  };
+  // --- DOB restrictions ---
+  const today = new Date().toISOString().split("T")[0];
+  const minDob = new Date();
+  minDob.setFullYear(minDob.getFullYear() - 79);
+  const minDobStr = minDob.toISOString().split("T")[0];
 
-  const prevStep = () => {
-    if (step > 0) setStep(step - 1);
-  };
-
-  // --- Save handler ---
-  const handleSave = () => {
-    // Collect all data and log/save
-    const data = {
-      basicDetails,
-      educationList,
-      verification,
-    };
-    console.log("Saved data:", data);
-    alert("Data saved! Check console.");
+  // --- Step completed check for top navigation ---
+  const isStepCompleted = (stepIndex) => {
+    if (stepIndex === 0) {
+      return (
+        basicDetails.firstName &&
+        nameRegex.test(basicDetails.firstName) &&
+        basicDetails.lastName &&
+        nameRegex.test(basicDetails.lastName) &&
+        basicDetails.email &&
+        isValidEmail(basicDetails.email) &&
+        basicDetails.phone &&
+        phoneRegex.test(basicDetails.phone) &&
+        basicDetails.dob &&
+        basicDetails.gender
+      );
+    }
+    if (stepIndex === 1) return educationList.length > 0;
+    return true;
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        padding: "40px 20px",
-        fontFamily: "Segoe UI, sans-serif",
-        minHeight: "80vh",
-        background: "#f1f5f9",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          width: "100%",
-          maxWidth: "900px",
-          padding: "30px",
-          borderRadius: "15px",
-          boxShadow: "0 0 20px rgba(0, 0, 0, 0.1)",
-        }}
-      >
+    <div className="signup-container">
+      <div className="signup-card">
         {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-          }}
-        >
-          <h2 style={{ color: "#1D4F56", margin: 0 }}>Sign up</h2>
-          <p style={{ margin: 0, fontSize: "14px" }}>
+        <div className="signup-header">
+          <h2>Sign up</h2>
+          <p>
             Already a member?{" "}
-            <Link to={RP.login} style={{ color: "#1D4F56", textDecoration: "underline" }}>
-  Sign in
-</Link>
-
+            <Link to={RP.login} className="signup-link">
+              Sign in
+            </Link>
           </p>
         </div>
 
-        {/* Steps */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "20px",
-            marginBottom: "20px",
-            alignItems: "center",
-          }}
-        >
-          {[{ label: "Basic Details" }, { label: "Education" }, { label: "Verification" }].map(
-            (stepItem, i) => (
+        {/* Step navigation */}
+        <div className="signup-steps">
+          {["Basic Details", "Education", "Verification"].map((label, i) => (
+            <div key={i} className="step-item">
               <div
-                key={i}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                className={`step-circle ${i === step ? "active" : ""} ${
+                  i > 0 && !isStepCompleted(i - 1) ? "disabled" : ""
+                }`}
+                onClick={() => {
+                  if (i === 0 || isStepCompleted(i - 1)) setStep(i);
                 }}
+                title={label}
               >
-                <div
-                  style={{
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "50%",
-                    backgroundColor: i === step ? "#1D4F56" : "transparent",
-                    border: "2px solid #1D4F56",
-                    color: i === step ? "#fff" : "#1D4F56",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontWeight: "bold",
-                    marginBottom: "5px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setStep(i)}
-                  title={stepItem.label}
-                >
-                  {i + 1}
-                </div>
-                <span style={{ fontSize: "12px", color: "#1D4F56" }}>{stepItem.label}</span>
+                {i + 1}
               </div>
-            )
-          )}
+              <span className="step-label">{label}</span>
+            </div>
+          ))}
         </div>
 
         {/* Step content */}
         {step === 0 && (
-          <>
-            <h3 style={sectionTitle}>Basic Details</h3>
-
-            {/* Row 1: First Name & Last Name */}
-            <div style={rowStyle}>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>First Name</label>
+          <div>
+            <h3 className="section-title">Basic Details</h3>
+            <div className="row">
+              <div className="form-group">
+                <label>First Name *</label>
                 <input
                   type="text"
-                  placeholder="First Name"
-                  style={inputStyle}
                   value={basicDetails.firstName}
                   onChange={(e) =>
+                    nameRegex.test(e.target.value) &&
                     setBasicDetails({ ...basicDetails, firstName: e.target.value })
                   }
+                  className={errors.firstName ? "input-error" : ""}
+                  placeholder="First Name"
                 />
+                {errors.firstName && <p className="error-text">{errors.firstName}</p>}
               </div>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Last Name</label>
+              <div className="form-group">
+                <label>Last Name *</label>
                 <input
                   type="text"
-                  placeholder="Last Name"
-                  style={inputStyle}
                   value={basicDetails.lastName}
                   onChange={(e) =>
+                    nameRegex.test(e.target.value) &&
                     setBasicDetails({ ...basicDetails, lastName: e.target.value })
                   }
+                  className={errors.lastName ? "input-error" : ""}
+                  placeholder="Last Name"
                 />
+                {errors.lastName && <p className="error-text">{errors.lastName}</p>}
               </div>
             </div>
 
-            {/* Row 2: Email & Phone Number */}
-            <div style={rowStyle}>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Email</label>
+            <div className="row">
+              <div className="form-group">
+                <label>Email *</label>
                 <input
                   type="email"
-                  placeholder="Email"
-                  style={inputStyle}
                   value={basicDetails.email}
                   onChange={(e) => setBasicDetails({ ...basicDetails, email: e.target.value })}
+                  className={errors.email ? "input-error" : ""}
+                  placeholder="Email"
                 />
+                {errors.email && <p className="error-text">{errors.email}</p>}
               </div>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Phone Number</label>
+              <div className="form-group">
+                <label>Phone Number *</label>
                 <input
                   type="text"
-                  placeholder="Phone Number"
-                  style={inputStyle}
+                  maxLength={10}
                   value={basicDetails.phone}
-                  onChange={(e) => setBasicDetails({ ...basicDetails, phone: e.target.value })}
+                  onChange={(e) =>
+                    phoneRegex.test(e.target.value) &&
+                    setBasicDetails({ ...basicDetails, phone: e.target.value })
+                  }
+                  className={errors.phone ? "input-error" : ""}
+                  placeholder="Phone Number"
                 />
+                {errors.phone && <p className="error-text">{errors.phone}</p>}
               </div>
             </div>
 
-            {/* Row 3: Date of Birth & Gender */}
-            <div style={rowStyle}>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Date of Birth</label>
+            <div className="row">
+              <div className="form-group">
+                <label>Date of Birth *</label>
                 <input
                   type="date"
-                  style={inputStyle}
                   value={basicDetails.dob}
+                  max={today}
+                  min={minDobStr}
                   onChange={(e) => setBasicDetails({ ...basicDetails, dob: e.target.value })}
+                  className={errors.dob ? "input-error" : ""}
                 />
+                {errors.dob && <p className="error-text">{errors.dob}</p>}
               </div>
-              <div style={formGroupStyle}>
-                <label style={labelStyle}>Gender</label>
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "20px",
-                    alignItems: "center",
-                    fontWeight: 500,
-                    color: "#1D4F56",
-                    height: "38px", // match input height
-                    paddingLeft: "5px",
-                  }}
-                >
-                  <label>
-                    <input
-                      type="radio"
-                      name="gender"
-                      checked={basicDetails.gender === "Male"}
-                      onChange={() => setBasicDetails({ ...basicDetails, gender: "Male" })}
-                    />{" "}
-                    Male
-                  </label>
-                  <label>
-                    <input
-                      type="radio"
-                      name="gender"
-                      checked={basicDetails.gender === "Female"}
-                      onChange={() => setBasicDetails({ ...basicDetails, gender: "Female" })}
-                    />{" "}
-                    Female
-                  </label>
+
+              <div className="form-group">
+                <label>Gender *</label>
+                <div className="gender-group">
+                  <label className="gender-option">
+      Male
+      <input
+        type="radio"
+        name="gender"
+        checked={basicDetails.gender === "Male"}
+        onChange={() => setBasicDetails({ ...basicDetails, gender: "Male" })}
+      />
+    </label>
+                  <label className="gender-option">
+      Female
+      <input
+        type="radio"
+        name="gender"
+        checked={basicDetails.gender === "Female"}
+        onChange={() => setBasicDetails({ ...basicDetails, gender: "Female" })}
+      />
+    </label>
                 </div>
+                {errors.gender && <p className="error-text">{errors.gender}</p>}
               </div>
             </div>
-          </>
+          </div>
         )}
 
+        {/* Education Step */}
         {step === 1 && (
-          <>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 10,
-              }}
-            >
-              <h3 style={{ ...sectionTitle, margin: 0 }}>Education</h3>
-
+          <div>
+            <div className="education-header">
+              <h3>Education</h3>
               {!showEducationFields && editIndex === null && (
-                <button onClick={() => setShowEducationFields(true)} style={addBtnStyle}>
-                  + Add Education Details
+                <button onClick={() => setShowEducationFields(true)} className="add-btn">
+                  + Add Education
                 </button>
               )}
             </div>
 
-            {educationList.length > 0 && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr 100px",
-                  fontWeight: "bold",
-                  color: "#1D4F56",
-                  padding: "10px 0",
-                  borderBottom: "1px solid #ccc",
-                }}
-              >
+            {errors.education && <p className="error-text">{errors.education}</p>}
+
+           {/*{educationList.length > 0 && (
+              <div className="education-grid header">
                 <div>Course</div>
                 <div>College / University</div>
                 <div>Year</div>
                 <div>Actions</div>
               </div>
             )}
-
+*/}
             {educationList.map((edu, index) =>
               editIndex === index ? (
-                <div
-                  key={index}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr 100px",
-                    gap: "10px",
-                    marginTop: "10px",
-                  }}
-                >
+                <div className="education-grid" key={index}>
                   <input
-                    type="text"
-                    value={education.degree}
-                    onChange={(e) => setEducation({ ...education, degree: e.target.value })}
-                    style={inputStyle}
-                    placeholder="Course"
-                  />
-                  <input
-                    type="text"
-                    value={education.college}
-                    onChange={(e) => setEducation({ ...education, college: e.target.value })}
-                    style={inputStyle}
-                    placeholder="College / University"
-                  />
-                  <input
-                    type="text"
-                    value={education.year}
-                    onChange={(e) => setEducation({ ...education, year: e.target.value })}
-                    style={inputStyle}
-                    placeholder="Year"
-                  />
-                  <div style={{ display: "flex", gap: "5px" }}>
-                    <button
-                      onClick={() => updateEducation(index)}
-                      style={actionBtnStyle}
-                    >
+  type="text"
+  placeholder="Course"
+  value={education.degree}
+  onChange={(e) => setEducation({ ...education, degree: e.target.value })}
+/>
+{eduErrors.degree && <p className="error-text">{eduErrors.degree}</p>}
+
+<input
+  type="text"
+  placeholder="College / University"
+  value={education.college}
+  onChange={(e) => setEducation({ ...education, college: e.target.value })}
+/>
+{eduErrors.college && <p className="error-text">{eduErrors.college}</p>}
+
+<input
+  type="text"
+  placeholder="Year"
+  value={education.year}
+  onChange={(e) => setEducation({ ...education, year: e.target.value })}
+  maxLength={4}
+/>
+{eduErrors.year && <p className="error-text">{eduErrors.year}</p>}
+
+
+                  <div className="sign-action-btns">
+                    <button onClick={() => updateEducation(index)} className="sign-action-btn">
                       Save
                     </button>
                     <button
@@ -340,41 +363,29 @@ export default function SignUpPage() {
                         setEditIndex(null);
                         setEducation({ degree: "", college: "", year: "" });
                       }}
-                      style={actionBtnStyle}
+                      className="sign-action-btn"
                     >
                       Cancel
                     </button>
                   </div>
                 </div>
               ) : (
-                <div
-                  key={index}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr 1fr 100px",
-                    alignItems: "center",
-                    padding: "10px 0",
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
+                <div className="education-grid" key={index}>
                   <div>{edu.degree}</div>
                   <div>{edu.college}</div>
                   <div>{edu.year}</div>
-                  <div style={{ display: "flex", gap: "10px" }}>
+                  <div className="sign-action-btns">
                     <button
                       onClick={() => {
                         setEditIndex(index);
                         setEducation(edu);
                         setShowEducationFields(false);
                       }}
-                      style={actionBtnStyle}
+                      className="sign-action-btn"
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => deleteEducation(index)}
-                      style={actionBtnStyle}
-                    >
+                    <button onClick={() => deleteEducation(index)} className="sign-action-btn">
                       Delete
                     </button>
                   </div>
@@ -383,96 +394,124 @@ export default function SignUpPage() {
             )}
 
             {showEducationFields && editIndex === null && (
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr 100px",
-                  gap: "10px",
-                  marginTop: "10px",
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Course"
-                  value={education.degree}
-                  onChange={(e) => setEducation({ ...education, degree: e.target.value })}
-                  style={inputStyle}
-                />
-                <input
-                  type="text"
-                  placeholder="College / University"
-                  value={education.college}
-                  onChange={(e) => setEducation({ ...education, college: e.target.value })}
-                  style={inputStyle}
-                />
-                <input
-                  type="text"
-                  placeholder="Year"
-                  value={education.year}
-                  onChange={(e) => setEducation({ ...education, year: e.target.value })}
-                  style={inputStyle}
-                />
-                <div style={{ display: "flex", gap: "5px" }}>
-                  <button onClick={addEducation} style={actionBtnStyle}>
+              <div className="education-grid">
+               <input
+                    type="text"
+                    placeholder="Course"
+                    value={education.degree}
+                    maxLength={150}
+                    onChange={(e) => {
+                      if (courseRegex.test(e.target.value)) {
+                        setEducation({ ...education, degree: e.target.value });
+                      }
+                    }}
+                  />
+                 
+
+                  <input
+                    type="text"
+                    placeholder="College / University"
+                    value={education.college}
+                    maxLength={250}
+                    onChange={(e) => {
+                      if (collegeRegex.test(e.target.value)) {
+                        setEducation({ ...education, college: e.target.value });
+                      }
+                    }}
+                  />
+                
+
+                  <input
+                    type="text"
+                    placeholder="Year"
+                    value={education.year}
+                    maxLength={4}
+                    onChange={(e) => {
+    const value = e.target.value;
+    // Allow only numbers while typing
+    if (/^\d*$/.test(value)) {
+      setEducation({ ...education, year: value });
+    }
+  }}
+                  />
+                 
+
+                <div className="sign-action-btns">
+                  <button onClick={addEducation} className="sign-action-btn">
                     Save
                   </button>
                   <button
                     onClick={() => {
                       setShowEducationFields(false);
                       setEducation({ degree: "", college: "", year: "" });
+                        setEduErrors({}); // 🔹 clear errors on Cancel
                     }}
-                    style={actionBtnStyle}
+                    className="sign-action-btn"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             )}
-          </>
+             {/* Show errors only after clicking Save */}
+    {Object.keys(eduErrors).length > 0 && (
+      <div className="error-block">
+        {eduErrors.degree && <p className="error-text">{eduErrors.degree}</p>}
+        {eduErrors.college && <p className="error-text">{eduErrors.college}</p>}
+        {eduErrors.year && <p className="error-text">{eduErrors.year}</p>}
+      </div>
+    )}
+          </div>
         )}
 
+        {/* Verification Step */}
         {step === 2 && (
-          <>
-            <h3 style={sectionTitle}>Verification</h3>
-            <div style={rowStyle}>
-              <input
-                type="text"
-                placeholder="Username"
-                style={inputStyle}
-                value={verification.username}
-                onChange={(e) => setVerification({ ...verification, username: e.target.value })}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                style={inputStyle}
-                value={verification.password}
-                onChange={(e) => setVerification({ ...verification, password: e.target.value })}
-              />
+          <div>
+            <h3 className="section-title">Verification</h3>
+            <div className="row">
+              <div className="form-group">
+                <label>Username *</label>
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={verification.username}
+                  onChange={(e) =>
+                    usernameRegex.test(e.target.value) &&
+                    setVerification({ ...verification, username: e.target.value })
+                  }
+                  className={errors.username ? "input-error" : ""}
+                />
+                {errors.username && <p className="error-text">{errors.username}</p>}
+              </div>
+              <div className="form-group">
+                <label>Password *</label>
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={verification.password}
+                  onChange={(e) => setVerification({ ...verification, password: e.target.value })}
+                  className={errors.password ? "input-error" : ""}
+                />
+                {errors.password && <p className="error-text">{errors.password}</p>}
+              </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* Navigation buttons */}
-        <div
-          style={{
-            marginTop: 30,
-            display: "flex",
-            justifyContent: "space-between",
-          }}
-        >
+        <div className="nav-buttons">
           {step > 0 && (
-            <button onClick={prevStep} style={navBtnStyle}>
+            <button onClick={prevStep} className="nav-btn">
               Previous
             </button>
           )}
           {step < 2 && (
-            <button onClick={nextStep} style={navBtnStyle}>
+            <button onClick={nextStep} className="nav-btn">
               Next
             </button>
           )}
           {step === 2 && (
-            <button onClick={handleSave} style={saveBtnStyle}>
+            <button onClick={handleSave} className="save-btn">
               Save
             </button>
           )}
@@ -481,79 +520,3 @@ export default function SignUpPage() {
     </div>
   );
 }
-
-// Reusable Styles
-const sectionTitle = {
-  marginTop: "25px",
-  marginBottom: "10px",
-  color: "#1D4F56",
-};
-
-const inputStyle = {
-  padding: "10px",
-  fontSize: "16px",
-  flex: 1,
-  minWidth: "200px",
-  border: "1px solid #ccc",
-  borderRadius: "8px",
-  outline: "none",
-};
-
-const rowStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "15px",
-  marginBottom: "15px",
-};
-
-const addBtnStyle = {
-  background: "#1D4F56",
-  color: "white",
-  border: "none",
-  padding: "10px 15px",
-  borderRadius: "6px",
-  cursor: "pointer",
-};
-
-const navBtnStyle = {
-  backgroundColor: "#1D4F56",
-  color: "white",
-  border: "none",
-  padding: "10px 20px",
-  borderRadius: "6px",
-  cursor: "pointer",
-};
-
-const saveBtnStyle = {
-  backgroundColor: "green",
-  color: "white",
-  border: "none",
-  padding: "10px 20px",
-  borderRadius: "6px",
-  cursor: "pointer",
-};
-
-const labelStyle = {
-  fontSize: "14px",
-  color: "#1D4F56",
-  marginBottom: "5px",
-  display: "block",
-  fontWeight: "500",
-};
-
-const formGroupStyle = {
-  flex: 1,
-  minWidth: "200px",
-  display: "flex",
-  flexDirection: "column",
-};
-
-const actionBtnStyle = {
-  background: "#1D4F56",
-  color: "#fff",
-  border: "none",
-  padding: "6px 10px",
-  borderRadius: "4px",
-  cursor: "pointer",
-  fontSize: "14px",
-};
