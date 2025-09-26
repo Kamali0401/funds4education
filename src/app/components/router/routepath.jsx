@@ -18,4 +18,26 @@ export const routePath = {
   sponsorprofile:"/sponsor-profile",
   ViewSponsorProfile:"/view-sponsor-profile",
   studentmessages:"/student-messages",
+  sponsordashboardreport: "/sponsor-dashboard/report",
+  monetizationads: "/monetization-ads",
+sponsoraddashboard: "/sponsor-ad-dashboard",
+  applications: "/applications",
+  addapplication: "/add-application",
 };
+
+
+    /*dashboard: "dashboard",
+    billing:"billing",
+    tableView:"tableView",
+    user:"user",
+    role:"role",
+    table:"table",
+    tableDetail:"tableDetail",
+    discount:"discount",
+    inventory:"inventory",
+    inventorycost:"inventorycost",
+    profile:"myprofile",
+      resetpassword:"resetpassword",
+       report:"report",*/
+ 
+  

@@ -348,6 +348,183 @@ main::-webkit-scrollbar-thumb {
 main::-webkit-scrollbar-thumb:hover {
   background-color: rgba(57, 109, 112, 0.8);
 }
+.monetization-page {
+  width: 900px;                     
+  margin: 40px auto;               
+  padding: 20px 40px 36px 40px;   
+  display: flex;                    
+  flex-direction: column;          
+  align-items: stretch;             
+  font-family: Arial, Helvetica, sans-serif; 
+  background: #f9fafb;              
+  min-height: 100vh;                
+  color: #1a2e22;                   
+}
+
+.monetization-page h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+text-align: center;
+  font-weight: 700;
+}
+
+.monetization-page p {
+  font-size: 1rem;
+  margin-bottom: 30px;
+  color: #555;
+  text-align: center;
+}
+
+/* --- Cards Section --- */
+.cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+  justify-content: center; /* centers all cards in the row */
+}
+
+.card {
+  flex: 1;
+  min-width: 250px;
+  max-width: 300px; /* optional, to avoid very wide cards */
+  background: #ffffff;
+  border: 1px solid #e2e8e4;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center; /* center text and inline elements */
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card span {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%); /* perfectly center horizontally */
+  background: #0a3c2f;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 50%;
+  padding: 6px 10px;
+}
+
+.card .icon {
+  font-size: 80px;
+  color: #0a3c2f;
+  margin: 50px auto 20px auto; /* top 50px, bottom 20px, centered horizontally */
+  display: block; /* ensures margin auto works */
+}
+
+.card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.card button {
+  padding: 10px 20px;
+  background: #0a3c2f;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  display: block;
+ margin: 20px auto 40px auto;}
+
+.card button:hover {
+  background: #09513a;
+}
+
+
+/* --- Earnings Section --- */
+
+
+.earnings {
+  margin-left: 100px; /* all content inside starts from same left position */
+}
+
+.earnings h2 {
+  font-size: 1.4rem;
+  margin-bottom: 25px;
+}
+
+.earnings p {
+  margin: 8px 0;
+  margin-right: 815px; /* top & bottom spacing */
+  white-space: nowrap;
+}
+
+.balance-row {
+  display: flex;                  /* put items in a row */
+  justify-content: space-between; /* balance left, button right */
+  align-items: center;            /* vertically align them */
+  margin-top: 5px;                /* space from previous line */
+}
+
+.earnings .balance {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #0a3c2f;
+  margin: 0;
+}
+.earnings button, 
+.balance button {
+  padding: 18px 16px;
+  border: none;
+  border-radius: 6px;
+  background: #0a3c2f;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease-in-out;
+  margin-left: 300px; /* moves button to the right */
+  
+}
+
+.earnings button:hover,
+.balance button:hover {
+  background: #09513a;
+}
+
+
+
+
+.footer-links-page {
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 30px;
+  font-size: 1rem;
+  color: #7a8b7f;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 540px;
+  margin-left: 100px;
+  
+}
+
+.footer-links-page a {
+  color: #7a8b7f;
+  text-decoration: none;
+  
+}
+
+
 
 
 /*sponsor.ss*/
@@ -2031,6 +2208,180 @@ input {
 }
 
 .detail-row {
+/* Dashboard container */
+.dashboard {
+  padding: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: "Inter", sans-serif;
+  color: #1a1a1a;
+  background: #f7fbfc;
+}
+
+/* Titles */
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 1rem;
+  color: #6c757d;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* New small button style */
+.btn-small-new {
+  background: #0a3c2f;     /* same theme color */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 10px;       /* small padding for compact width */
+  font-size: 0.8rem;       /* smaller text */
+display: block;           /* make button block-level */
+  margin: 1px auto 16px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;     /* prevent text wrap */
+  transition: all 0.2s ease;
+  width: 150px;     
+  height: 40px;          /* fixed width */
+}
+
+.btn-small-new:hover {
+  background: #096b51;     /* hover effect */
+}
+
+
+/* Stats Cards */
+/* Stats Cards (all in one container) */
+/* Stats Cards (single container with 4 equal parts) */
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-bottom: 32px;
+  padding: 20px 0; /* spacing inside */
+}
+
+/* Each stat item */
+.stats-card {
+  text-align: center;
+}
+
+.stats-card p {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.stats-card h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* Performance Section */
+.performance {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.performance h2 {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.graph-container {
+  margin-bottom: 20px;
+}
+
+.performance .stats {
+  display: flex;
+  gap: 30px;
+}
+
+.performance .stats div p {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.performance .stats div h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0a3c2f;
+}
+
+/* Campaigns Section */
+.campaigns {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.campaigns h2 {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.campaign-card {
+  border: 1px solid #e0e6e3;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  background: #fafdfc;
+  transition: all 0.2s ease;
+}
+
+.campaign-card:hover {
+  background: #f0f7f4;
+}
+
+.campaign-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.campaign-card p {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Ad Preview Section */
+.ad-preview {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.ad-title {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.ad-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.preview-card {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -2209,3 +2560,274 @@ padding: 8px;
 }
 
 
+.preview-card h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.preview-card p {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+.dashboard-sections {
+  display: flex;
+  gap: 24px; /* space between the two sections */
+  flex-wrap: wrap; /* optional, allows wrapping on smaller screens */
+}
+
+.dashboard-sections > section {
+  flex: 1; /* makes both sections take equal width */
+  min-width: 300px; /* optional, prevents them from getting too small */
+}
+/* Layout */
+.applications-dashboard {
+  padding: 24px;
+}
+
+.applications-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-align: center;
+  color: #022D2B;
+}
+
+.applications-subtitle {
+  color: #022D2B;
+  font-size: 1rem;
+    text-align: center;
+    margin-bottom: auto;
+
+}
+
+/* Actions */
+.applications-actions {
+  display: flex;
+  justify-content: space-between; /* filter left, button right */
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.applications-btn-new {
+  background-color: #082A28;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.applications-btn-new:hover {
+  background-color: #1d4ed8;
+}
+
+.applications-filter {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Cards */
+.applications-cards {
+  margin-top: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.applications-card {
+  display: flex;
+  justify-content: space-between; /* info left, status right */
+  align-items: center;           /* vertically center */
+  padding: 12px 16px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.application-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.application-info p {
+  margin: 2px 0 0 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.applications-status {
+  padding: 8px 10px;
+  border-radius: 20px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Status types */
+.applications-status.submitted {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.applications-status.in-review {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+
+.applications-status.rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.applications-status.approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* Empty results */
+.applications-no-results {
+  margin-top: 20px;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+/* Footer */
+.applications-footer {
+  display: flex;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 30px;
+  font-size: 1rem;
+  color: #7a8b7f;
+  margin-top: 24px;
+  max-width: 540px;
+}
+
+.applications-footer a {
+  color: #7a8b7f;
+  text-decoration: none;
+}
+/* Main container */
+.add-applications-dashboard {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: "Arial", sans-serif;
+  background: #f7f9fa;
+  min-height: 100vh;
+}
+
+/* Title & subtitle */
+.add-applications-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 6px;
+  color: #1f2937;
+  text-align: center;
+}
+
+.add-applications-subtitle {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+
+/* Form styling */
+.add-application-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Section headings */
+.add-application-form h3 {
+  margin-bottom: 8px;
+  color: #111827;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 4px;
+}
+
+/* Inputs, selects, textarea */
+.add-application-form input,
+.add-application-form select,
+.add-application-form textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  width: 100%;
+  box-sizing: border-box;
+  color: #111827;
+}
+
+.add-application-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Placeholder color */
+.add-application-form input::placeholder,
+.add-application-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Form actions (buttons) */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancel-btn {
+  padding: 10px 18px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.submit-btn {
+  padding: 10px 18px;
+  border: none;
+  background: #15803d;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.submit-btn:hover {
+  background: #13632a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .add-applications-dashboard {
+    padding: 16px;
+  }
+
+  .add-application-form {
+    padding: 16px;
+  }
+}

@@ -2,7 +2,7 @@ import React from "react";
 import "./SponsorDashboardReport.css";
 import Header from "../../app/components/header/header";
 import { FaGraduationCap } from "react-icons/fa"; // graduation cap icon
-import tickImage from "../../app/assests/tickImage.png";
+import tickImage from "../../app/assests/tickimage.png";
 import {
   LineChart,
   Line,
@@ -91,11 +91,11 @@ const SponsorDashboardReport = () => {
           <div className="ad-row">
             <div className="preview-card">
               <div className="icon">
-                <FaGraduationCap size={30} color="#0a3c2f" />
+                <FaGraduationCap size={60} color="#0a3c2f" />
               </div>
               <div>
                 <h3>Unlock Your Potential</h3>
-                <p>Apply for top scholarships today!</p>
+                <p>Apply for top <br />scholarships today!</p>
               </div>
             </div>
             <button className="btn btn-report">View Reports</button>

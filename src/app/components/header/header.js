@@ -95,7 +95,15 @@ const Header = ({ variant = "public" }) => {
             
           </div>
         )}
-
+{variant === "studentmonetization" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+           
+            <Link to="">sweel</Link>
+             <Link to="">Message</Link>
+            
+          </div>
+        )}
        {variant === "dashboard" && (
     <div className="header-right">
       <button className="icon-btn">
@@ -110,13 +118,26 @@ const Header = ({ variant = "public" }) => {
     </div>
   )}
 
-   {variant === "sponsordashboardreport" && (
-  <ul className="nav-links">
-    <li><a href="#">Dashboard</a></li>
-    <li><a href="#">Campaigns</a></li>
-    <li><a href="#">Reports</a></li>
-  </ul>
-)}
+{variant === "sponsordashboardreport" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+           
+            <Link to="">Campaigns</Link>
+             <Link to="">Reports</Link>
+            
+          </div>
+        )}
+  {variant === "sponsoraddashboard" && (
+          <div className="nav-links">
+            <Link to="">Dashboard</Link>
+           
+            <Link to="">AdCampaigns</Link>
+             <Link to="">Settings</Link>
+            
+          </div>
+            )}
+           
+
 
       </nav>
     </header>

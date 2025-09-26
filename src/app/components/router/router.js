@@ -19,6 +19,11 @@ import ViewStudentProfile from "../../../pages/student/Profile/viewprofile";
 import ViewSponsorProfile from "../../../pages/sponser/profile/viewProfile.jsx";
 import SponsorProfileForm from "../../../pages/sponser/profile/sponsorProfile.jsx";
 import MessagesPage from "../../../pages/student/message.jsx";
+import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
+import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
+import ApplicationsPage from "../../../pages/student/studentApplication";
+import AddApplicationPage from "../../../pages/student/addApplication";
+
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -35,6 +40,10 @@ const routeToVariant = {
 [RP.studentrewardsredemption]: "studentrewardsredemption",
   [RP.sponsordashboardreport]: "sponsordashboardreport",
 
+  [RP.monetizationads]: "monetizationads",
+  [RP.sponsoraddashboard]: "sponsoraddashboard",
+  [RP.applications]: "student-profile",
+  [RP.addapplication]: "application",
 };
 
 // 🔹 Layout wrapper
@@ -60,11 +69,11 @@ function App() {
           <Route path={RP.scholarshipmatch} element={<ScholarshipMatch />} />
           <Route path={RP.sponsordashboard} element={<SponsorDashboard />} />
           <Route path={RP.login} element={<LoginPage />} />
-                    <Route path={RP.signup} element={<SignUpPage />} />
-                    <Route path={RP.studentwallet} element={<StudentWallet />} />
-                       <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
-<Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
-<Route path={RP.studentrewards} element={<StudentRewards />} />
+          <Route path={RP.signup} element={<SignUpPage />} />
+          <Route path={RP.studentwallet} element={<StudentWallet />} />
+          <Route path={RP.studentwalletredemption} element={<StudentWalletRedemption />} />
+          <Route path={RP.studentredemptioncalog} element={<StudentRedemptionCatalog />} />
+          <Route path={RP.studentrewards} element={<StudentRewards />} />
           <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
 <Route path={RP.studentrewardsredemption} element={<StudentRewardsRedemption />} />
 <Route path={RP.studentprofile} element={<StudentProfile />} />
@@ -72,6 +81,11 @@ function App() {
 <Route path={RP.ViewSponsorProfile} element={<ViewSponsorProfile />} />
 <Route path={RP.sponsorprofile} element={<SponsorProfileForm />} />
 <Route path={RP.studentmessages} element={<MessagesPage />} />
+          <Route path={RP.monetizationads} element={<MonetizationAds />} />
+          <Route path={RP.sponsoraddashboard} element={<SponsorAdDashboard />} />
+          <Route path={RP.applications} element={<ApplicationsPage />} />
+          <Route path={RP.addapplication} element={<AddApplicationPage />} />
+
         </Routes>
       </Layout>
     </Router>
