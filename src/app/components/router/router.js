@@ -15,6 +15,8 @@ import StudentRewards from "../../../pages/student/studentrewards";
 import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
 import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
+import SponsorApplications from "../../../pages/SponsorDashboard/SponsorApplications";
+import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
 
 
 // 🔹 Map routes to header variants
@@ -67,6 +69,8 @@ function App() {
           <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
           <Route path={RP.monetizationads} element={<MonetizationAds />} />
           <Route path={RP.sponsoraddashboard} element={<SponsorAdDashboard />} />
+          <Route path={RP.sponsorapplication} element={<SponsorApplications/>} />
+          <Route path={RP.scholarshipPage} element={<ScholarshipPage/>} />
 
         </Routes>
       </Layout>
