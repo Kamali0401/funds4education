@@ -70,7 +70,8 @@ const Dashboard = () => {
            <a href="#" className="active">
             Dashboard
           </a>
-          <a href="#">Applications</a>
+          <Link to="/applications">Applications</Link>
+
            <Link to="/scholarship-match">Matches</Link>
           <a href="#">Messages</a>
         </nav>

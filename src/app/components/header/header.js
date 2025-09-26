@@ -134,7 +134,9 @@ const Header = ({ variant = "public" }) => {
              <Link to="">Settings</Link>
             
           </div>
-        )}
+            )}
+           
+
 
       </nav>
     </header>

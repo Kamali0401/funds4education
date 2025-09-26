@@ -15,7 +15,8 @@ import StudentRewards from "../../../pages/student/studentrewards";
 import SponsorDashboardReport from "../../../pages/SponsorDashboardReport/SponsorDashboardReport";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
 import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
-
+import ApplicationsPage from "../../../pages/student/studentApplication";
+import AddApplicationPage from "../../../pages/student/addApplication";
 
 // 🔹 Map routes to header variants
 const routeToVariant = {
@@ -34,6 +35,8 @@ const routeToVariant = {
   [RP.sponsordashboardreport]: "sponsordashboardreport",
   [RP.monetizationads]: "monetizationads",
   [RP.sponsoraddashboard]: "sponsoraddashboard",
+  [RP.applications]: "student-profile",
+  [RP.addapplication]: "application",
 };
 
 // 🔹 Layout wrapper
@@ -67,6 +70,8 @@ function App() {
           <Route path={RP.sponsordashboardreport} element={<SponsorDashboardReport />} />
           <Route path={RP.monetizationads} element={<MonetizationAds />} />
           <Route path={RP.sponsoraddashboard} element={<SponsorAdDashboard />} />
+          <Route path={RP.applications} element={<ApplicationsPage />} />
+          <Route path={RP.addapplication} element={<AddApplicationPage />} />
 
         </Routes>
       </Layout>
