@@ -3,6 +3,7 @@ import walletimage from "../../app/assests/walletimage.png";
 import giftcard from "../../app/assests/giftcard.jpg";
 import elearning from "../../app/assests/e-learing.jpg";
 import laptoptropy from "../../app/assests/laptoptropy.jpg";
+
 import Header from "../../app/components/header/header";
 import "../../pages/styles.css"; // import your CSS
 

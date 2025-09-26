@@ -1310,6 +1310,7 @@ padding: 4px 10px;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  color: #2A5A59;
 }
 
 .signup-link {
@@ -1630,7 +1631,13 @@ input {
   cursor: pointer;
   font-size: 16px;
 }
-
+.icon-and-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
 .points-card {
   background-color: #0f3d32;
   color: #fff;
@@ -1717,6 +1724,12 @@ input {
   justify-content: space-between;
   align-items: center;
 }
+.reward-point-top-row {
+  display: flex;
+ 
+  align-items: center;
+}
+
 .reward-point-item {
   background-color: #f9f9f9;
   padding: 15px 20px;
@@ -1912,3 +1925,287 @@ input {
   color: #1D4F56;
   background-color: #fff;
 }
+
+    .reward-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  gap: 20px; /* space between items */
+  margin-top: 20px;}
+  /*profiel*/
+  .form-group select
+{
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+  background-color: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+  border-color: #2563eb; /* blue highlight */
+  box-shadow: 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+.form-group select.input-error,
+.form-group input.input-error {
+  border-color: #e11d48; /* red for error */
+  background-color: #fff5f5;
+}
+.signup-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 14px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Header */
+.signup-table thead {
+  background-color: #f3f4f6; /* light gray */
+}
+
+.signup-table th {
+  text-align: left;
+  padding: 10px;
+  font-weight: 600;
+  color: #374151; /* dark gray */
+  border-bottom: 1px solid #ddd;
+}
+
+/* Body */
+.signup-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  color: #111827;
+}
+
+/* Zebra striping */
+.signup-table tbody tr:nth-child(even) {
+  background-color: #fafafa;
+}
+.sign-action-btn1 {
+  padding: 6px 12px;
+  border-radius: 4px;
+  background-color: #1D4F56;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px; /* 🔹 Add spacing between buttons */
+}
+
+.sign-action-btn1.danger {
+  background-color: #dc3545;
+}
+
+.sign-action-btn1:last-child {
+  margin-right: 0; /* Prevents extra space after the last button */
+}
+  .profile-header {
+  display: flex;
+  justify-content: space-between; /* Title left, button right */
+  align-items: center;            /* Vertically center */
+  margin-bottom: 16px;            /* Space below header */
+}
+
+.profile-header .headers {
+  margin: 0;
+  font-size: 25px;
+  font-weight: bold;
+
+}
+
+.profile-header .sign-action-btn {
+  margin-left: auto; /* Push button to far right */
+}
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* space between rows */
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.detail-row label {
+  width: 150px;        /* fixed width for alignment */
+  font-weight: bold;
+     /* align label text to the right */
+}
+
+.detail-row input {
+  flex: 1;             /* input takes remaining space */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.profile-details textarea {
+  width: 84%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff; /* same as inputs in readonly */
+  color: #000;
+  font-size: 14px;
+  resize: none; /* disable resize handle */
+  height: 70px; /* adjust for address */
+  box-sizing: border-box;
+}
+
+.profile-details textarea[readonly] {
+ /* background-color: #f3f3f3; /* subtle difference */
+  cursor: not-allowed;
+}
+.form-group textarea {
+
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff; /* same as inputs in readonly */
+  color: #000;
+  font-size: 14px;
+  resize: none; /* disable resize handle */
+  height: 70px; /* adjust for address */
+  box-sizing: border-box;
+}
+
+/*stud message*/
+/* Container */
+.messages-container {
+    margin: 2%;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.messages-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Card/Table Styling */
+.card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.messages-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.messages-table th,
+.messages-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.messages-table th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.message-row:nth-child(even) {
+  background: #fdfdfd;
+}
+
+.message-row:hover {
+  background: #f3f4f6;
+}
+
+.msg-date {
+  text-align: center;
+  color: #555;
+}
+
+
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal {
+  background: white;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 16px;
+}
+
+textarea {
+    width:100%;
+padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff; /* same as inputs in readonly */
+  color: #000;
+  font-size: 14px;
+  resize: none; /* disable resize handle */
+  height: 70px; /* adjust for address */
+  box-sizing: border-box;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #eee;
+}
+
+

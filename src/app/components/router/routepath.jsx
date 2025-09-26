@@ -11,5 +11,11 @@ export const routePath = {
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
   studentredemptioncalog: "/student-redemption-catalog",
-  sponsordashboardreport: "/sponsor-dashboard/report"
+  sponsordashboardreport: "/sponsor-dashboard/report",
+  studentrewardsredemption: "/student-rewards-redemption",
+  studentprofile: "/student-profile",
+  ViewStudentProfile:"/view-profile",
+  sponsorprofile:"/sponsor-profile",
+  ViewSponsorProfile:"/view-sponsor-profile",
+  studentmessages:"/student-messages",
 };

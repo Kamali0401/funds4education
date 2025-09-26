@@ -4,8 +4,15 @@ import card from "../../app/assests/card.jpg";
 import { FaTrophy } from "react-icons/fa";
 import Header from "../../app/components/header/header";
 import "../../pages/styles.css";  // ✅ import CSS
-
+import { useNavigate } from "react-router-dom";
+import { routePath as RP } from "../../app/components/router/routepath";
 export default function StudentWalletRedemption() {
+   const navigate = useNavigate();
+  
+    const handleRedeem = () => {
+      // You can also store the selected item in state or context
+      navigate(RP.studentrewardsredemption);
+    };
   return (
     <>
       <Header variant="studentwalletredemption" />
@@ -20,7 +27,7 @@ export default function StudentWalletRedemption() {
         {/* Wallet + Redeem Button */}
         <div className="redemption-wallet">
           <img src={studentWallet} alt="Student Wallet" style={{ width: "230px", height: "auto" }} />
-          <button className="redeem-btn">Redeem Points</button>
+          <button className="redeem-btn" onClick={() => handleRedeem()}>Redeem Points</button>
         </div>
 
         {/* Points Balance Card */}
