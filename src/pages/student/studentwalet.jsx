@@ -2,8 +2,15 @@ import React from "react";
 import walletimage from "../../app/assests/walletimage.png"; 
 import Header from "../../app/components/header/header";
 import "../../pages/styles.css";
-
+import { routePath as RP } from "../../app/components/router/routepath";
+import { useNavigate } from "react-router-dom";
 export default function StudentWallet() {
+    const navigate = useNavigate();
+
+  const handleRedeem = () => {
+    // You can also store the selected item in state or context
+    navigate(RP.studentwalletredemption);
+  };
   return (
     <> 
       <Header variant="studentwallet" />
@@ -27,7 +34,7 @@ export default function StudentWallet() {
           <div className="wallet-info">
             <p className="wallet-balance">Wallet Balance</p>
             <p className="wallet-balance">3,200 pts</p>
-            <button className="redeem-btn">Redeem</button>
+            <button className="redeem-btn"  onClick={() => handleRedeem()}>Redeem</button>
           </div>
         </div>
 

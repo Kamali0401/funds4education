@@ -5,7 +5,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import "../../pages/styles.css";
 import Header from "../../app/components/header/header";
 import { Link, useNavigate } from "react-router-dom";
-
+import { routePath as RP } from "../../app/components/router/routepath";
 const scholarships = [
   {
     title: "STEM Excellence Scholarship",
@@ -70,9 +70,12 @@ const Dashboard = () => {
            <a href="#" className="active">
             Dashboard
           </a>
-          <a href="#">Applications</a>
+          <Link to="/applications">Applications</Link>
+
            <Link to="/scholarship-match">Matches</Link>
-          <a href="#">Messages</a>
+          <a href={RP.studentmessages}>Messages</a>
+          <a href={RP.ViewStudentProfile}>Profile</a>
+          <a href={RP.studentwallet}>Wallet</a>
         </nav>
       </aside>
 

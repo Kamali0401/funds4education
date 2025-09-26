@@ -6,7 +6,7 @@ import student1 from "../../app/assests/Img1.jpg";
 import student2 from "../../app/assests/img2.jpg";
 import student3 from "../../app/assests/img3.jpg";
 import { Link } from "react-router-dom"; 
-
+import { routePath as RP } from "../../app/components/router/routepath";
 export default function SponsorDashboard() {
   return (
     <div className="dashboard-container">
@@ -29,6 +29,9 @@ export default function SponsorDashboard() {
 
   <Link to="/sponsor-dashboard/report" className="nav-link">
     Reports
+  </Link>
+  <Link to={RP.ViewSponsorProfile} className="nav-link">
+    Profile
   </Link>
 
   <button>Settings</button>

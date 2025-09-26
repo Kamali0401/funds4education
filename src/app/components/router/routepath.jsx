@@ -10,11 +10,23 @@ export const routePath = {
   scholarshipdiscovery: "/scholarship-discovery",
   scholarshipmatch: "/scholarship-match",
   sponsordashboard: "/sponsor-dashboard",
-sponsordashboardreport: "/sponsor-dashboard/report",
+  studentredemptioncalog: "/student-redemption-catalog",
+  sponsordashboardreport: "/sponsor-dashboard/report",
+  studentrewardsredemption: "/student-rewards-redemption",
+  studentprofile: "/student-profile",
+  ViewStudentProfile:"/view-profile",
+  sponsorprofile:"/sponsor-profile",
+  ViewSponsorProfile:"/view-sponsor-profile",
+  studentmessages:"/student-messages",
+  sponsordashboardreport: "/sponsor-dashboard/report",
   monetizationads: "/monetization-ads",
 sponsoraddashboard: "/sponsor-ad-dashboard",
 sponsorapplication: "/sponsor-dashboard/sponsorapplication",
 scholarshipPage: "/sponsor-dashboard/scholarshipPage"
+  applications: "/applications",
+  addapplication: "/add-application",
+};
+
 
     /*dashboard: "dashboard",
     billing:"billing",
@@ -29,5 +41,5 @@ scholarshipPage: "/sponsor-dashboard/scholarshipPage"
     profile:"myprofile",
       resetpassword:"resetpassword",
        report:"report",*/
-  };
+ 
   
