@@ -39,10 +39,10 @@ const SponsorDashboardReport = () => {
           <div className="status-info">
             <div>
               <p className="status-label">Current Status</p>
-<p className="status-active">
-  <img src={tickImage} alt="Status Active" className="status-dot" />
-  Active
-</p>              <p className="status-message">
+              <p className="status-active">
+                <img src={tickImage} alt="Status Active" className="status-dot" />
+                Active
+              </p>              <p className="status-message">
                 Apply for top scholarships today!
               </p>
             </div>
@@ -102,23 +102,23 @@ const SponsorDashboardReport = () => {
           </div>
         </section>
         <div style={{
-                display: "flex",
-                justifyContent: "flex-start",
-                textAlign: "left",
-                gap: "30px",
-                fontSize: "1rem",
-                color: "#7a8b7f",
-                marginTop: "24px",
-                width: "100%",
-                maxWidth: "540px"
-            }}>
-                <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Contact</a>
-                <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Privacy</a>
-                <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Terms</a>
-            </div>
+          display: "flex",
+          justifyContent: "flex-start",
+          textAlign: "left",
+          gap: "30px",
+          fontSize: "1rem",
+          color: "#7a8b7f",
+          marginTop: "24px",
+          width: "100%",
+          maxWidth: "540px"
+        }}>
+          <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Contact</a>
+          <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Privacy</a>
+          <a href="#" style={{ color: "#7a8b7f", textDecoration: "none" }}>Terms</a>
+        </div>
       </main>
 
-      
+
     </>
   );
 };
