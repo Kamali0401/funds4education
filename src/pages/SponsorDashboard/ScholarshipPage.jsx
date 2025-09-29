@@ -38,7 +38,7 @@ export default function ScholarshipPage() {
       <h2 className="page-title">{sponsor.name} – Scholarships</h2>
 
       <div className="scholarship-table">
-        {/* Table Header */}
+        {/* Table Headers */}
         <div className="table-header">
           <span>Title</span>
           <span>Amount</span>

@@ -86,7 +86,7 @@ export default function SponsorApplications() {
           </select>
         </div>
 
-        {/* Applications List */}
+        {/* Applications Lists */}
         <div className="application-list">
           {filteredApplications.map((app) => (
             <div key={app.id} className="application-card">

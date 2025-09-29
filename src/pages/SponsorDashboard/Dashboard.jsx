@@ -40,7 +40,7 @@ export default function SponsorDashboard() {
       </aside>
       <div className="main-section">
        
-        {/*<header className="header">
+        {/*<headerr className="header">
           <div className="header-left">
             <img src={logo} alt="logo" className="logo" />
             <span className="brand">VidyāSetu</span>
