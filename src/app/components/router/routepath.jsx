@@ -21,6 +21,8 @@ export const routePath = {
   sponsordashboardreport: "/sponsor-dashboard/report",
   monetizationads: "/monetization-ads",
 sponsoraddashboard: "/sponsor-ad-dashboard",
+sponsorapplication: "/sponsor-dashboard/sponsorapplication",
+scholarshipPage: "/sponsor-dashboard/scholarshipPage",
   applications: "/applications",
   addapplication: "/add-application",
 };

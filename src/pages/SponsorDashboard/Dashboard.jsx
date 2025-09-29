@@ -20,8 +20,12 @@ export default function SponsorDashboard() {
 
         <nav className="sidebar-nav">
   <button className="active">Dashboard</button>
-  <button>Sponsored Students</button>
-  <button>Applications</button>
+  <Link to= "/sponsor-dashboard/sponsorapplication" className="nav-link">
+  Sponsored Students
+  </Link>
+  <Link to = "/sponsor-dashboard/scholarshipPage" className="nav-link">
+  Applications
+  </Link>
 
   <Link to="/sponsor-dashboard/report" className="nav-link">
     Reports
@@ -36,7 +40,7 @@ export default function SponsorDashboard() {
       </aside>
       <div className="main-section">
        
-        {/*<header className="header">
+        {/*<headerr className="header">
           <div className="header-left">
             <img src={logo} alt="logo" className="logo" />
             <span className="brand">VidyāSetu</span>

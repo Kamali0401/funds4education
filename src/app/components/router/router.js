@@ -21,6 +21,9 @@ import SponsorProfileForm from "../../../pages/sponser/profile/sponsorProfile.js
 import MessagesPage from "../../../pages/student/message.jsx";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
 import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
+import SponsorApplications from "../../../pages/SponsorDashboard/SponsorApplications";
+import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
+
 import ApplicationsPage from "../../../pages/student/studentApplication";
 import AddApplicationPage from "../../../pages/student/addApplication";
 
@@ -83,6 +86,8 @@ function App() {
 <Route path={RP.studentmessages} element={<MessagesPage />} />
           <Route path={RP.monetizationads} element={<MonetizationAds />} />
           <Route path={RP.sponsoraddashboard} element={<SponsorAdDashboard />} />
+          <Route path={RP.sponsorapplication} element={<SponsorApplications/>} />
+          <Route path={RP.scholarshipPage} element={<ScholarshipPage/>} />
           <Route path={RP.applications} element={<ApplicationsPage />} />
           <Route path={RP.addapplication} element={<AddApplicationPage />} />
 

@@ -34,7 +34,7 @@ export default function MessagesPage() {
       </div>
 
       {/* Messages List */}
-      <div className="card table-card">
+      <div className="table-card">
         <table className="messages-table">
           <thead>
             <tr>
