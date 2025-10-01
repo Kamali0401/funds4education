@@ -5,7 +5,7 @@ import "../../pages/styles.css"; // your CSS file
 
 export default function SignUpPage() {
   const [step, setStep] = useState(0);
-
+  const [userType, setUserType] = useState("student"); // default to student
   const [basicDetails, setBasicDetails] = useState({
     firstName: "",
     lastName: "",
@@ -170,9 +170,13 @@ const updateEducation = (index) => {
           <h2>Sign up</h2>
           <p>
             Already a member?{" "}
-            <Link to={RP.login} className="signup-link">
-              Sign in
-            </Link>
+            <Link
+  to={RP.login}
+  state={{ userType }}
+  className="signup-link"
+>
+  Sign in
+</Link>
           </p>
         </div>
 

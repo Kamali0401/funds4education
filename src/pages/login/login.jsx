@@ -6,14 +6,16 @@ import { FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { useLocation } from "react-router-dom";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
-
-  const handleSubmit = (e) => {
+  const location = useLocation(); // ✅ use this instead of global 'location'
+  const [userType, setUserType] = useState(location.state?.userType || "");
+    const handleSubmit = (e) => {
     e.preventDefault();
     let newErrors = { email: "", password: "" };
 
@@ -73,22 +75,67 @@ export default function LoginPage() {
           >
             Login
           </h2>
-          <p
-            style={{
-              fontSize: "0.875rem",
-              color: "#1D4F56",
-              marginBottom: "1.5rem",
-            }}
-          >
-            Doesn’t have an account yet?{" "}
-            <Link
-              to={RP.signup}
-              style={{ color: "#1D4F56", textDecoration: "underline" }}
-            >
-              Sign Up
-            </Link>
-          </p>
+         <p
+  style={{
+    fontSize: "0.875rem",
+    color: "#1D4F56",
+    marginBottom: "1.5rem",
+  }}
+>
+  Doesn’t have an account yet?{" "}
+  <Link
+    to={
+      userType === "student"
+        ? RP.signup
+        : userType === "sponsor"
+        ? RP.signupSponsor
+        : RP.signupInstitution
+    }
+    state={{ userType }}
+    style={{ color: "#1D4F56", textDecoration: "underline" }}
+  >
+    Sign Up
+  </Link>
+</p>
 
+<div className="user-radio-group">
+  <label className="user-radio-label">
+    <input
+      type="radio"
+      name="userType"
+      value="student"
+      checked={userType === "student"}
+      onChange={(e) => setUserType(e.target.value)}
+    />
+    <span>Students</span>
+  </label>
+
+  <label className="user-radio-label">
+    <input
+      type="radio"
+      name="userType"
+      value="sponsor"
+      checked={userType === "sponsor"}
+      onChange={(e) => setUserType(e.target.value)}
+    />
+    <span>Sponsors</span>
+  </label>
+
+  <label className="user-radio-label">
+    <input
+      type="radio"
+      name="userType"
+      value="institution"
+      checked={userType === "institution"}
+      onChange={(e) => setUserType(e.target.value)}
+    />
+    <span>Institutions</span>
+  </label>
+</div>
+
+
+
+          
           {/* Email */}
           <div style={{ marginBottom: "1rem" }}>
             <label

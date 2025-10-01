@@ -1554,7 +1554,7 @@ padding: 4px 10px;
   flex-direction: column;
 }
 
-input {
+input:not([type="radio"]) {
   padding: 10px;
   font-size: 16px;
   flex: 1;
@@ -1563,6 +1563,7 @@ input {
   border-radius: 8px;
   outline: none;
 }
+
 
 .input-error {
   border-color: red;
@@ -2081,6 +2082,45 @@ input {
   justify-content: center;
   background-color: #e6f0f1;
 }
+/* Container for all radio buttons */
+/* Container for all radio buttons */
+.user-radio-group {
+  display: flex;
+  gap: 1rem; /* space between groups */
+  font-size: 0.875rem;
+  color: #1D4F56;
+  align-items: center; /* vertically align radio and text */
+  margin-bottom: 1.5rem;
+  margin-top: auto;
+}
+
+/* Each label */
+.user-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* tiny gap between radio and text */
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+/* Radio input */
+.user-radio-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #1D4F56;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+}
+
+/* Text next to radio */
+.user-radio-label span {
+  margin: 0; /* remove extra margin */
+  line-height: 1; /* match radio button height */
+}
+
+
 
 .login-illustration img {
   width: 100%;
@@ -3186,4 +3226,201 @@ padding: 8px;
   .add-application-form {
     padding: 16px;
   }
-}}
+}
+/* --------------------Sponsor  Settings page --------------------------*/
+.sponsor-settings {
+  width: 900px;
+  margin: 40px auto;
+  font-family: Arial, sans-serif;
+}
+
+.sponsor-settings h1 {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.settings-card {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.settings-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #0a3c2f;
+}
+
+.settings-card label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: 600;
+}
+
+.settings-card input, 
+.settings-card select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.settings-card button {
+  background: #0a3c2f;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.settings-card button:hover {
+  background: #085c46;
+}
+/* Sponsor Sign-up Styles */
+.sponsorsignup-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: "Segoe UI", sans-serif;
+  min-height: 80vh;
+  background: #f1f5f9;
+}
+
+.sponsorsignup-card {
+  background: #fff;
+  width: 100%;
+  max-width: 800px;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.sponsorsignup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #2A5A59;
+}
+
+.sponsorsignup-link {
+  color: #1d4f56;
+  text-decoration: underline;
+}
+
+.sponsorsignup-steps {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #1d4f56;
+  color: #1d4f56;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.step-circle.active {
+  background-color: #1d4f56;
+  color: #fff;
+}
+
+.step-circle.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.step-label {
+  font-size: 12px;
+  color: #1d4f56;
+}
+
+.sponsor-section-title {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #1d4f56;
+}
+
+/* Form layout same as student */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sponsorsignup-card input,
+.sponsorsignup-card select {
+  padding: 10px;
+  font-size: 16px;
+  flex: 1;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+
+.input-error {
+  border-color: red;
+}
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.nav-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.nav-btn {
+  background-color: #1d4f56;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../app/components/header/header";
-
+import "../../pages/styles.css";   
 
 const AddApplicationPage = () => {
   const navigate = useNavigate();

@@ -26,6 +26,8 @@ import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
 
 import ApplicationsPage from "../../../pages/student/studentApplication";
 import AddApplicationPage from "../../../pages/student/addApplication";
+import SponsorSettings from "../../../pages/SponsorDashboard/Settings";
+import SponsorSignUpPage from "../../../pages/login/Sponsorsignup.jsx";
 
 // 🔹 Map routes to header variants
 const routeToVariant = {
@@ -47,6 +49,8 @@ const routeToVariant = {
   [RP.sponsoraddashboard]: "sponsoraddashboard",
   [RP.applications]: "student-profile",
   [RP.addapplication]: "application",
+  [RP.sponsorapplication]:"sponsorapplication",
+  [RP.SponsorSignUpPage]:"sponsorsignup",
 };
 
 // 🔹 Layout wrapper
@@ -90,7 +94,8 @@ function App() {
           <Route path={RP.scholarshipPage} element={<ScholarshipPage/>} />
           <Route path={RP.applications} element={<ApplicationsPage />} />
           <Route path={RP.addapplication} element={<AddApplicationPage />} />
-
+    <Route path={RP.settings} element={<SponsorSettings />} />
+    <Route path={RP.signupSponsor} element={<SponsorSignUpPage />} />
         </Routes>
       </Layout>
     </Router>
