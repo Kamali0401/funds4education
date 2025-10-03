@@ -3,7 +3,8 @@ import { persistReducer, persistStore } from "redux-persist";
 // import { syncHistoryWithStore, routerReducer } from "react-router-redux";
 import storage from "redux-persist/lib/storage";
 import logger from "redux-logger";
-import {thunk} from "redux-thunk";
+//import {thunk} from "redux-thunk";
+import  scholarshipApplicationSlice  from "./redux/slices/scholarshipApplicationSlice";
 
 const persistConfig = {
   key: "root",
@@ -14,7 +15,8 @@ const persistConfig = {
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
-  
+    scholarshipApplicationList: scholarshipApplicationSlice, 
+    
   })
 );
 
@@ -22,7 +24,7 @@ const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      thunk,
+      
       serializableCheck: false, // Ignore check for non-serializable values
     }).concat(logger), // Add logger middleware
 });

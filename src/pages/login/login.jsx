@@ -38,7 +38,7 @@ export default function LoginPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f3f4f6",
+        //backgroundColor: "#f3f4f6",
       }}
     >
       <div

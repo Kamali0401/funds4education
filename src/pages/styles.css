@@ -222,7 +222,8 @@ main {
   padding: 2rem;
   min-width: 0;         /* prevents horizontal overflow */
   background: #f9faf9;  /* page bg (different from sidebar) */
-  overflow-y: auto;     /* scroll only vertically */
+  /*overflow-y: auto; 
+      /* scroll only vertically */
 }
 /* Header */
 header {
@@ -1583,7 +1584,11 @@ input {
   gap: 20px; /* space between Male / Female */
   margin-top: 5px;
 }
-
+.gender-option input[type="radio"] {
+  margin: 0;
+  cursor: pointer;
+  vertical-align: middle; /* Extra alignment help if needed */
+}
 .gender-option {
   display: flex;
   align-items: center;
@@ -3034,7 +3039,30 @@ padding: 8px;
   background: #dbeafe;
   color: #1d4ed8;
 }
-
+.applications-btn-edit {
+  margin-left: 10px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e6ffed;   /* light green bg */
+  color: #15803d;              /* dark green text */
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.applications-btn-delete {
+  margin-left: 10px;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 12px;
+  background-color: #e6ffed;   /* light green bg */
+  color: #f00808a3;              /* dark green text */
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
 .applications-status.in-review {
   background: #fef9c3;
   color: #ca8a04;
@@ -3048,6 +3076,10 @@ padding: 8px;
 .applications-status.approved {
   background: #dcfce7;
   color: #15803d;
+}
+.applications-status.draft {
+  background-color: #f0fdf4;
+  color: #15803d;   /* Dark Green */
 }
 
 /* Empty results */
@@ -3191,3 +3223,9 @@ padding: 8px;
     padding: 16px;
   }
 }
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+

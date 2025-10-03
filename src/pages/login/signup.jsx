@@ -274,30 +274,32 @@ const updateEducation = (index) => {
                 {errors.dob && <p className="error-text">{errors.dob}</p>}
               </div>
 
-              <div className="form-group">
-                <label>Gender *</label>
-                <div className="gender-group">
-                  <label className="gender-option">
-      Male
+            <div className="form-group">
+  <label>Gender *</label>
+  <div className="gender-group">
+    <label className="gender-option">
       <input
         type="radio"
         name="gender"
         checked={basicDetails.gender === "Male"}
         onChange={() => setBasicDetails({ ...basicDetails, gender: "Male" })}
       />
+      <span>Male</span>
     </label>
-                  <label className="gender-option">
-      Female
+    <label className="gender-option">
       <input
         type="radio"
         name="gender"
         checked={basicDetails.gender === "Female"}
         onChange={() => setBasicDetails({ ...basicDetails, gender: "Female" })}
       />
+      <span>Female</span>
     </label>
-                </div>
-                {errors.gender && <p className="error-text">{errors.gender}</p>}
-              </div>
+  </div>
+  {errors.gender && <p className="error-text">{errors.gender}</p>}
+</div>
+
+
             </div>
           </div>
         )}

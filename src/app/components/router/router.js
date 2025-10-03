@@ -24,8 +24,8 @@ import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashb
 import SponsorApplications from "../../../pages/SponsorDashboard/SponsorApplications";
 import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
 
-import ApplicationsPage from "../../../pages/student/studentApplication";
-import AddApplicationPage from "../../../pages/student/addApplication";
+import ApplicationsPage from "../../../pages/student/scholarshipapplication/studentApplication.jsx";
+import AddApplicationPage from "../../../pages/student/scholarshipapplication/addApplication.jsx";
 
 // 🔹 Map routes to header variants
 const routeToVariant = {
