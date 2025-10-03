@@ -27,7 +27,7 @@ import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
 import ApplicationsPage from "../../../pages/student/scholarshipapplication/studentApplication.jsx";
 import AddApplicationPage from "../../../pages/student/scholarshipapplication/addApplication.jsx";
 ////import ApplicationsPage from "../../../pages/student/studentApplication";
-import AddApplicationPage from "../../../pages/student/addApplication";
+//import AddApplicationPage from "../../../pages/student/addApplication";
 import SponsorSettings from "../../../pages/SponsorDashboard/Settings";
 import SponsorSignUpPage from "../../../pages/login/Sponsorsignup.jsx";
 
