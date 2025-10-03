@@ -6,21 +6,24 @@ import { FaLinkedin, FaInstagram, FaTwitter, FaPinterest, FaFacebook } from "rea
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useLocation } from "react-router-dom";
+import { publicAxios } from "../../api/config";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // can be username OR email
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "" });
-  const location = useLocation(); // ✅ use this instead of global 'location'
-  const [userType, setUserType] = useState(location.state?.userType || "");
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let newErrors = { email: "", password: "" };
+  const [errors, setErrors] = useState({ identifier: "", password: "" });
 
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
+  const location = useLocation();
+  const navigate = useNavigate(); // ✅ correct hook for navigation
+  const [userType, setUserType] = useState(location.state?.userType || "");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let newErrors = { identifier: "", password: "" };
+
+    if (!identifier.trim()) {
+      newErrors.identifier = "Username or Email is required";
     }
     if (!password.trim()) {
       newErrors.password = "Password is required";
@@ -28,8 +31,26 @@ export default function LoginPage() {
 
     setErrors(newErrors);
 
-    if (!newErrors.email && !newErrors.password) {
-      alert("Login Successful ✅");
+    if (!newErrors.identifier && !newErrors.password) {
+      try {
+        const response = await publicAxios.post("/auth/login", {
+          username: identifier, // API expects "username"
+          password: password,
+        });
+
+        if (response.status === 200) {
+          console.log("Login success:", response.data);
+          localStorage.setItem("user", response.data.username);
+          localStorage.setItem("role", response.data.role);
+          localStorage.setItem("id", response.data.id);
+
+          // ✅ navigate after success
+          navigate("/student-dashboard");
+        }
+      } catch (err) {
+        console.error("Login failed:", err);
+        setErrors({ ...newErrors, password: "Invalid credentials ❌" });
+      }
     }
   };
 
@@ -40,7 +61,6 @@ export default function LoginPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        //backgroundColor: "#f3f4f6",
       }}
     >
       <div
@@ -75,6 +95,7 @@ export default function LoginPage() {
           >
             Login
           </h2>
+
           <p
             style={{
               fontSize: "0.875rem",
@@ -88,8 +109,8 @@ export default function LoginPage() {
                 userType === "student"
                   ? RP.signup
                   : userType === "sponsor"
-                    ? RP.signupSponsor
-                    : RP.signupInstitution
+                  ? RP.signupSponsor
+                  : RP.signupInstitution
               }
               state={{ userType }}
               style={{ color: "#1D4F56", textDecoration: "underline" }}
@@ -98,6 +119,7 @@ export default function LoginPage() {
             </Link>
           </p>
 
+          {/* User Type */}
           <div className="user-radio-group">
             <label className="user-radio-label">
               <input
@@ -133,6 +155,7 @@ export default function LoginPage() {
             </label>
           </div>
 
+          {/* Username or Email */}
 
 
 
@@ -147,13 +170,13 @@ export default function LoginPage() {
                 marginBottom: "0.25rem",
               }}
             >
-              Email Address
+              Username or Email
             </label>
             <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Enter username or email"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               style={{
                 width: "100%",
                 padding: "0.5rem 1rem",
@@ -165,9 +188,9 @@ export default function LoginPage() {
                 boxSizing: "border-box",
               }}
             />
-            {errors.email && (
+            {errors.identifier && (
               <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
-                {errors.email}
+                {errors.identifier}
               </p>
             )}
           </div>
@@ -257,7 +280,9 @@ export default function LoginPage() {
               margin: "1rem 0",
             }}
           >
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
             <span
               style={{
                 padding: "0 0.5rem",
@@ -267,7 +292,9 @@ export default function LoginPage() {
             >
               or login with
             </span>
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
           </div>
          <div className="social-buttons">
   <button className="social-btn"><FcGoogle /> Google</button>
@@ -281,7 +308,7 @@ export default function LoginPage() {
 
         </form>
 
-        {/* Right: Optional image or illustration */}
+        {/* Right: Optional image */}
         <div
           style={{
             backgroundImage: `url(${login})`,
