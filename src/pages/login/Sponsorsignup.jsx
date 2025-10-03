@@ -128,7 +128,7 @@ export default function SponsorSignUpPage() {
 
     <div className="row">
       <div className="form-group">
-        <label>Organization Name *</label>
+        <label>Organization/Sponsor Name *</label>
         <input
           type="text"
           value={basicDetails.sponsorName}
@@ -142,7 +142,7 @@ export default function SponsorSignUpPage() {
       </div>
 
       <div className="form-group">
-        <label>Organization Type *</label>
+        <label>Organization/Sponsor Type *</label>
         <select
           value={basicDetails.orgType}
           onChange={(e) =>

@@ -107,7 +107,7 @@ export default function LoginPage() {
       checked={userType === "student"}
       onChange={(e) => setUserType(e.target.value)}
     />
-    <span>Students</span>
+    <span>Student</span>
   </label>
 
   <label className="user-radio-label">
@@ -118,7 +118,7 @@ export default function LoginPage() {
       checked={userType === "sponsor"}
       onChange={(e) => setUserType(e.target.value)}
     />
-    <span>Sponsors</span>
+    <span>Sponsor</span>
   </label>
 
   <label className="user-radio-label">
@@ -129,7 +129,7 @@ export default function LoginPage() {
       checked={userType === "institution"}
       onChange={(e) => setUserType(e.target.value)}
     />
-    <span>Institutions</span>
+    <span>Institution</span>
   </label>
 </div>
 
