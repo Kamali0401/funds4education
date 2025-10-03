@@ -2,13 +2,19 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import login from "../../app/assests/login.jpg";
 import "../../pages/styles.css";
-import { FaFacebook } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FaLinkedin, FaInstagram, FaTwitter, FaPinterest, FaFacebook } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+<<<<<<< HEAD
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../app/redux/slices/authSlice";
 
+=======
+import { publicAxios } from "../../api/config";
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+>>>>>>> b697d095a0116051531e3425d6ec08bfbbc05526
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [identifier, setIdentifier] = useState(""); // can be username OR email
@@ -149,6 +155,10 @@ export default function LoginPage() {
           </div>
 
           {/* Username or Email */}
+
+
+
+          {/* Email */}
           <div style={{ marginBottom: "1rem" }}>
             <label
               style={{
@@ -292,47 +302,16 @@ export default function LoginPage() {
               style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
             ></div>
           </div>
+         <div className="social-buttons">
+  <button className="social-btn"><FcGoogle /> Google</button>
+  <button className="social-btn"><FaFacebook /> Facebook</button>
+  <button className="social-btn"><FaLinkedin /> LinkedIn</button>
+  <button className="social-btn"><FaInstagram /> Instagram</button>
+  <button className="social-btn"><FaTwitter /> X</button>
+  <button className="social-btn"><FaPinterest /> Pinterest</button>
+</div>
 
-          {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <button
-              type="button"
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.5rem",
-                padding: "0.5rem",
-                cursor: "pointer",
-              }}
-            >
-              <FcGoogle
-                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
-              />{" "}
-              Google
-            </button>
-            <button
-              type="button"
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.5rem",
-                padding: "0.5rem",
-                cursor: "pointer",
-                color: "#1D4F56",
-              }}
-            >
-              <FaFacebook
-                style={{ marginRight: "0.5rem", fontSize: "1.25rem" }}
-              />{" "}
-              Facebook
-            </button>
-          </div>
+
         </form>
 
         {/* Right: Optional image */}
@@ -343,6 +322,7 @@ export default function LoginPage() {
             backgroundPosition: "center",
           }}
         ></div>
+
       </div>
     </div>
   );
