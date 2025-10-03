@@ -34,7 +34,9 @@ export default function SponsorDashboard() {
     Profile
   </Link>
 
-  <button>Settings</button>
+  <button>
+  <Link to={RP.settings}>Settings</Link>
+</button>
 </nav>
 
       </aside>

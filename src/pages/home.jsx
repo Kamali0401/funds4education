@@ -15,11 +15,16 @@ const Home=() =>{
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(RP.studentdashboard); 
-  };
-  const handleSponsorClick = () => {
-  navigate(RP.sponsordashboard); 
+  const handleClickStudent = () => {
+  navigate(RP.login, { state: { userType: "student" } });
+};
+
+const handleClickSponsor = () => {
+  navigate(RP.login, { state: { userType: "sponsor" } });
+};
+
+const handleClickInstitution = () => {
+  navigate(RP.login, { state: { userType: "institution" } }); 
 };
  const testimonials = [
     {
@@ -68,21 +73,24 @@ const Home=() =>{
 
       {/* Role Cards */}
       <section className="roles">
-        <div className="role-card role-student cursor-pointer" onClick={handleClick}>
-             <FaGraduationCap size={70} color='#396D70' />
-          <h3>For Students</h3>
-          <p>Find scholarships that match your background interests.</p>
-        </div>
-        <div className="role-card role-sponsor" onClick={handleSponsorClick}>
-          <FaHandHoldingUsd size={70} color='#396D70'  />
-          <h3>For Sponsors</h3>
-          <p>Support talented students and track their progress.</p>
-        </div>
-        <div className="role-card role-institution">
-            <FaUniversity size={70} color='#396D70' />
-          <h3>For Institutions</h3>
-          <p>Connect your students to a wide range of scholarships.</p>
-        </div>
+        <div className="role-card role-student cursor-pointer" onClick={handleClickStudent}>
+  <FaGraduationCap size={70} color='#396D70' />
+  <h3>For Students</h3>
+  <p>Find scholarships that match your background interests.</p>
+</div>
+
+<div className="role-card role-sponsor cursor-pointer" onClick={handleClickSponsor}>
+  <FaHandHoldingUsd size={70} color='#396D70' />
+  <h3>For Sponsors</h3>
+  <p>Support talented students and track their progress.</p>
+</div>
+
+<div className="role-card role-institution cursor-pointer" onClick={handleClickInstitution}>
+  <FaUniversity size={70} color='#396D70' />
+  <h3>For Institutions</h3>
+  <p>Connect your students to a wide range of scholarships.</p>
+</div>
+
       </section>
 
       {/* Testimonials */}
