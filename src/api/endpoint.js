@@ -1,9 +1,10 @@
 
 
 export const ApiKey = {
-    Login: "connect/token",
+    Login: "/auth/login",
    ScholarshipApplication:"/scholarshipApplicationForm",
    uploadScholarshipFiles:"/scholarshipApplicationForm/UploadFiles",
-   User:"/userDto"
+   signup:"/userDto"
+
+
   };
-  

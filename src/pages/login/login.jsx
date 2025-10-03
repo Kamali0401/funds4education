@@ -6,7 +6,8 @@ import { FaFacebook } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { publicAxios } from "../../api/config";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../app/redux/slices/authSlice";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,8 +16,11 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({ identifier: "", password: "" });
 
   const location = useLocation();
-  const navigate = useNavigate(); // ✅ correct hook for navigation
+  const navigate = useNavigate();
   const [userType, setUserType] = useState(location.state?.userType || "");
+
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,25 +36,14 @@ export default function LoginPage() {
     setErrors(newErrors);
 
     if (!newErrors.identifier && !newErrors.password) {
-      try {
-        const response = await publicAxios.post("/auth/login", {
-          username: identifier, // API expects "username"
-          password: password,
-        });
-
-        if (response.status === 200) {
-          console.log("Login success:", response.data);
-          localStorage.setItem("user", response.data.username);
-          localStorage.setItem("role", response.data.role);
-          localStorage.setItem("id", response.data.id);
-
-          // ✅ navigate after success
+      dispatch(loginUser({ username: identifier, password }))
+        .unwrap()
+        .then(() => {
           navigate("/student-dashboard");
-        }
-      } catch (err) {
-        console.error("Login failed:", err);
-        setErrors({ ...newErrors, password: "Invalid credentials ❌" });
-      }
+        })
+        .catch(() => {
+          setErrors({ ...newErrors, password: "Invalid credentials ❌" });
+        });
     }
   };
 
@@ -248,11 +241,17 @@ export default function LoginPage() {
                 {errors.password}
               </p>
             )}
+            {error && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {error}
+              </p>
+            )}
           </div>
 
           {/* Login Button */}
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               backgroundColor: "#1D4F56",
@@ -263,9 +262,10 @@ export default function LoginPage() {
               cursor: "pointer",
               border: "none",
               marginBottom: "1rem",
+              opacity: loading ? 0.7 : 1,
             }}
           >
-            LOGIN
+            {loading ? "Logging in..." : "LOGIN"}
           </button>
 
           {/* Divider */}
