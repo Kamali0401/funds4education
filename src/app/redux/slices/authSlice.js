@@ -1,53 +1,45 @@
+// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loginReq } from "../../../api/Users/login"; 
-import { sponsorLoginReq } from "../../../api/Users/Sponsorlogin"; // ✅ sponsor API
 
-// 🔹 Async Thunk for login (student or sponsor)
+
+// ✅ Async thunk for login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password, userType }, { rejectWithValue }) => {
+  async ({ username, password }, { rejectWithValue }) => {
     try {
-      let response;
-
-      // choose API based on userType
-      if (userType === "student") {
-        response = await loginReq({ username, password });
-      } else if (userType === "sponsor") {
-        response = await sponsorLoginReq({ username, password });
-      } else {
-        throw new Error("Unsupported user type");
-      }
-
-      return { ...response.data, userType }; // return with userType
+      const response = await loginReq({ username, password });
+      return response.data; // response = { id, username, role, token? }
     } catch (error) {
       return rejectWithValue(error.errorMsg || "Login failed");
     }
   }
 );
 
+const initialState = {
+  user: null,
+  role: null,
+  id: null,
+  token: null,
+  loading: false,
+  error: null,
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    role: null,
-    id: null,
-    token: null,
-    userType: null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.role = null;
       state.id = null;
       state.token = null;
-      state.userType = null;
       localStorage.clear();
     },
   },
   extraReducers: (builder) => {
     builder
+      // Pending
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;

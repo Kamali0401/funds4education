@@ -1,78 +1,72 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  getStudentProfile,
-  updateStudentProfile,
-} from "../../../api/Student/student";
+import { getStudentProfile, updateStudentProfile } from "../../../api/Student/student";
 
-// ✅ Fetch Student
+const parseJwt = (token) => {
+  try {
+    return JSON.parse(atob(token.split(".")[1]));
+  } catch {
+    return null;
+  }
+};
+
+// --- Thunks ---
+
+// ✅ Fetch logged-in student's profile using token
 export const fetchStudentProfile = createAsyncThunk(
   "student/fetchProfile",
-  async (id, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const data = await getStudentProfile(id);
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No token found");
+      const decoded = parseJwt(token);
+      const userId = decoded?.UserId;
+
+      if (!userId) throw new Error("Invalid token: missing UserId");
+      const data = await getStudentProfile(userId);
       return data;
     } catch (err) {
-      const message =
-        typeof err === "object"
-          ? err.title || err.detail || "Failed to load profile"
-          : err;
-      return rejectWithValue(message);
+      return rejectWithValue(err.message || "Failed to fetch student profile");
     }
   }
 );
 
-// ✅ Update Student
-export const saveStudentProfile = createAsyncThunk(
-  "student/saveProfile",
-  async (data, { rejectWithValue }) => {
+// ✅ Update student profile
+export const updateStudent = createAsyncThunk(
+  "student/update",
+  async (studentData, { rejectWithValue }) => {
     try {
-      const res = await updateStudentProfile(data);
-      return res;
+      const data = await updateStudentProfile(studentData);
+      return data;
     } catch (err) {
-      const message =
-        typeof err === "object"
-          ? err.title || err.detail || "Failed to update profile"
-          : err;
-      return rejectWithValue(message);
+      return rejectWithValue(err);
     }
   }
 );
 
+// --- Slice ---
 const studentSlice = createSlice({
   name: "student",
   initialState: {
     profile: null,
-    loading: false,
+    status: "idle",
     error: null,
-    success: false,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchStudentProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        state.status = "loading";
       })
       .addCase(fetchStudentProfile.fulfilled, (state, action) => {
-        state.loading = false;
+        state.status = "succeeded";
         state.profile = action.payload;
       })
       .addCase(fetchStudentProfile.rejected, (state, action) => {
-        state.loading = false;
+        state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(saveStudentProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(saveStudentProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.success = true;
-        state.profile = action.payload;
-      })
-      .addCase(saveStudentProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
+      .addCase(updateStudent.fulfilled, (state, action) => {
+        state.profile = { ...state.profile, ...action.payload };
       });
   },
 });

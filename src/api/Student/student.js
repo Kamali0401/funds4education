@@ -11,13 +11,15 @@ export const getStudentProfile = async (id) => {
   }
 };
 
-// ✅ Update Student Profile
+/**
+ * ✅ Update Student Profile
+ */
 export const updateStudentProfile = async (data) => {
   try {
     const response = await publicAxios.put(ApiKey.userDto, data);
     return response.data;
   } catch (error) {
     console.error("❌ Error updating student profile:", error);
-    throw error.response?.data || "Failed to update profile";
+    throw error.response?.data || "Failed to update student profile";
   }
 };
