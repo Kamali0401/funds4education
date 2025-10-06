@@ -1,19 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loginReq } from "../../../api/Users/login"; 
-import { sponsorLoginReq } from "../../../api/Users/Sponsorlogin"; // ✅ sponsor API
 
 // 🔹 Async Thunk for login (student or sponsor)
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ username, password, userType }, { rejectWithValue }) => {
     try {
+      debugger;
       let response;
 
       // choose API based on userType
       if (userType === "student") {
         response = await loginReq({ username, password });
       } else if (userType === "sponsor") {
-        response = await sponsorLoginReq({ username, password });
+        response = await loginReq({ username, password });
+    
       } else {
         throw new Error("Unsupported user type");
       }

@@ -60,6 +60,7 @@ export default function SponsorSignUpPage() {
     const prevStep = () => setStep(step - 1);
 
     const handleSave = () => {
+      debugger;
         if (!validateStep()) return;
         const data = { basicDetails, verification };
         console.log("Sponsor Saved:", data);

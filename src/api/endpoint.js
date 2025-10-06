@@ -5,7 +5,6 @@ export const ApiKey = {
    ScholarshipApplication:"/scholarshipApplicationForm",
    uploadScholarshipFiles:"/scholarshipApplicationForm/UploadFiles",
    signup:"/userDto",
-SponsorLogin: "/auth/sponsor"
 
 
   };
