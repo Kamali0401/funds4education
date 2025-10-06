@@ -8,7 +8,8 @@ export const ApiKey = {
    userDto: "/UserDto",
    downloadscholarshipFiles:"/scholarshipApplicationForm/downloadFiles",
    signup:"/userDto",
-SponsorLogin: "/auth/sponsor"
+SponsorLogin: "/auth/sponsor",
+ userDto: "/userDto",
 
 
   };

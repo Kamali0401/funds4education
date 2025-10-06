@@ -1,7 +1,7 @@
 import { authAxios, publicAxios } from "../config";
 import { ApiKey } from "../endpoint";
 
-// ✅ Signup (insert new user)
+// ✅ Signup (insert new user)//
 export const insertUserReq = async (data) => {
   try {
     const res = await publicAxios.post(`${ApiKey.signup}`, data);

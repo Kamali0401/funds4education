@@ -59,7 +59,7 @@ export const insertNewUser = (data) => async (dispatch) => {
 };
 
 
-// ✅ Action to update user profile
+// ✅ Action to update user profile//
 export const updateUserProfile = (data) => async (dispatch) => {
   try {
     dispatch(setLoading());
