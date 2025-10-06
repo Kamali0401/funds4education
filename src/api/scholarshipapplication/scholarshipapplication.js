@@ -16,10 +16,10 @@ export const fetchScholarshipApplicationListReq = async () => {
     throw { error: true, data: "", message: "", errorMsg: error };
   }
 };
-export const fetchTableMappingListReq = async () => {
+export const fetchScholarshipApplicationByIdReq = async (id) => {
     try {
       debugger;
-      const res = await publicAxios.get(`${ApiKey.ScholarshipApplication}`);
+      const res = await publicAxios.get(`${ApiKey.ScholarshipApplication}/${id}`);
   
       const _data = res.data;
       return { error: false, data: _data, message: "", errorMsg: "" };
