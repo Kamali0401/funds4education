@@ -6,15 +6,12 @@ import { FaLinkedin, FaInstagram, FaTwitter, FaPinterest, FaFacebook } from "rea
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-<<<<<<< HEAD
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../app/redux/slices/authSlice";
 
-=======
 import { publicAxios } from "../../api/config";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
->>>>>>> b697d095a0116051531e3425d6ec08bfbbc05526
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [identifier, setIdentifier] = useState(""); // can be username OR email
@@ -28,30 +25,29 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let newErrors = { identifier: "", password: "" };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  let newErrors = { identifier: "", password: "" };
 
-    if (!identifier.trim()) {
-      newErrors.identifier = "Username or Email is required";
-    }
-    if (!password.trim()) {
-      newErrors.password = "Password is required";
-    }
+  if (!identifier.trim()) newErrors.identifier = "Username or Email is required";
+  if (!password.trim()) newErrors.password = "Password is required";
+  setErrors(newErrors);
 
-    setErrors(newErrors);
-
-    if (!newErrors.identifier && !newErrors.password) {
-      dispatch(loginUser({ username: identifier, password }))
-        .unwrap()
-        .then(() => {
-          navigate("/student-dashboard");
-        })
-        .catch(() => {
-          setErrors({ ...newErrors, password: "Invalid credentials ❌" });
-        });
-    }
-  };
+  if (!newErrors.identifier && !newErrors.password) {
+    dispatch(loginUser({ username: identifier, password }))
+      .unwrap()
+      .then((res) => {
+        // ✅ Redirect based on role
+        const roleId = res.roleId;
+        if (roleId === 1) navigate("/student-dashboard");
+        else if (roleId === 2) navigate("/sponsor-dashboard");
+        else if (roleId === 3) navigate("/institution-dashboard");
+      })
+      .catch(() => {
+        setErrors({ ...newErrors, password: "Invalid credentials ❌" });
+      });
+  }
+};
 
   return (
     <div
