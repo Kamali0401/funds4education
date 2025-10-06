@@ -2,37 +2,57 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import login from "../../app/assests/login.jpg";
 import "../../pages/styles.css";
-import { FaFacebook } from "react-icons/fa";
+import { FaLinkedin, FaInstagram, FaTwitter, FaPinterest, FaFacebook } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../app/redux/slices/authSlice";
 
+import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState(""); // can be username OR email
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({ email: "", password: "" });
-  const location = useLocation(); // ✅ use this instead of global 'location'
+  const [errors, setErrors] = useState({ identifier: "", password: "" });
+
+  const location = useLocation();
+  const navigate = useNavigate();
   const [userType, setUserType] = useState(location.state?.userType || "");
-    const handleSubmit = (e) => {
-    e.preventDefault();
-    let newErrors = { email: "", password: "" };
 
-    if (!email.trim()) {
-      newErrors.email = "Email is required";
-    }
-    if (!password.trim()) {
-      newErrors.password = "Password is required";
-    }
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
 
-    setErrors(newErrors);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  let newErrors = { identifier: "", password: "" };
 
-    if (!newErrors.email && !newErrors.password) {
-      alert("Login Successful ✅");
-    }
-  };
+  if (!identifier.trim()) {
+    newErrors.identifier = "Username or Email is required";
+  }
+  if (!password.trim()) {
+    newErrors.password = "Password is required";
+  }
+  if (!userType) {   // <-- check if radio selected
+    newErrors.identifier = "Please select user type (Student / Sponsor)";
+  }
 
+  setErrors(newErrors);
+
+  if (!newErrors.identifier && !newErrors.password) {
+    dispatch(loginUser({ username: identifier, password, userType }))  
+    
+      .unwrap()
+      .then(() => {
+        if (userType === "student") navigate("/student-dashboard");   
+        if (userType === "sponsor") navigate("/sponsor-dashboard");   
+      })
+      .catch(() => {
+        setErrors({ ...newErrors, password: "Invalid credentials ❌" });
+      });
+  }
+};
   return (
     <div
       style={{
@@ -40,7 +60,6 @@ export default function LoginPage() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        //backgroundColor: "#f3f4f6",
       }}
     >
       <div
@@ -75,67 +94,70 @@ export default function LoginPage() {
           >
             Login
           </h2>
-         <p
-  style={{
-    fontSize: "0.875rem",
-    color: "#1D4F56",
-    marginBottom: "1.5rem",
-  }}
->
-  Doesn’t have an account yet?{" "}
-  <Link
-    to={
-      userType === "student"
-        ? RP.signup
-        : userType === "sponsor"
-        ? RP.signupSponsor
-        : RP.signupInstitution
-    }
-    state={{ userType }}
-    style={{ color: "#1D4F56", textDecoration: "underline" }}
-  >
-    Sign Up
-  </Link>
-</p>
 
-<div className="user-radio-group">
-  <label className="user-radio-label">
-    <input
-      type="radio"
-      name="userType"
-      value="student"
-      checked={userType === "student"}
-      onChange={(e) => setUserType(e.target.value)}
-    />
-    <span>Student</span>
-  </label>
+          <p
+            style={{
+              fontSize: "0.875rem",
+              color: "#1D4F56",
+              marginBottom: "1.5rem",
+            }}
+          >
+            Doesn’t have an account yet?{" "}
+            <Link
+              to={
+                userType === "student"
+                  ? RP.signup
+                  : userType === "sponsor"
+                  ? RP.signupSponsor
+                  : RP.signupInstitution
+              }
+              state={{ userType }}
+              style={{ color: "#1D4F56", textDecoration: "underline" }}
+            >
+              Sign Up
+            </Link>
+          </p>
 
-  <label className="user-radio-label">
-    <input
-      type="radio"
-      name="userType"
-      value="sponsor"
-      checked={userType === "sponsor"}
-      onChange={(e) => setUserType(e.target.value)}
-    />
-    <span>Sponsor</span>
-  </label>
+          {/* User Type */}
+          <div className="user-radio-group">
+            <label className="user-radio-label">
+              <input
+                type="radio"
+                name="userType"
+                value="student"
+                checked={userType === "student"}
+                onChange={(e) => setUserType(e.target.value)}
+              />
+              <span>Student</span>
+            </label>
 
-  <label className="user-radio-label">
-    <input
-      type="radio"
-      name="userType"
-      value="institution"
-      checked={userType === "institution"}
-      onChange={(e) => setUserType(e.target.value)}
-    />
-    <span>Institution</span>
-  </label>
-</div>
+            <label className="user-radio-label">
+              <input
+                type="radio"
+                name="userType"
+                value="sponsor"
+                checked={userType === "sponsor"}
+                onChange={(e) => setUserType(e.target.value)}
+              />
+              <span>Sponsor</span>
+            </label>
+
+            <label className="user-radio-label">
+              <input
+                type="radio"
+                name="userType"
+                value="institution"
+                checked={userType === "institution"}
+                onChange={(e) => setUserType(e.target.value)}
+              />
+              <span>Institution</span>
+            </label>
+          </div>
+
+          {/* Username or Email */}
 
 
 
-          
           {/* Email */}
           <div style={{ marginBottom: "1rem" }}>
             <label
@@ -147,13 +169,13 @@ export default function LoginPage() {
                 marginBottom: "0.25rem",
               }}
             >
-              Email Address
+              Username or Email
             </label>
             <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Enter username or email"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               style={{
                 width: "100%",
                 padding: "0.5rem 1rem",
@@ -165,9 +187,9 @@ export default function LoginPage() {
                 boxSizing: "border-box",
               }}
             />
-            {errors.email && (
+            {errors.identifier && (
               <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
-                {errors.email}
+                {errors.identifier}
               </p>
             )}
           </div>
@@ -229,11 +251,17 @@ export default function LoginPage() {
                 {errors.password}
               </p>
             )}
+            {error && (
+              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+                {error}
+              </p>
+            )}
           </div>
 
           {/* Login Button */}
           <button
             type="submit"
+            disabled={loading}
             style={{
               width: "100%",
               backgroundColor: "#1D4F56",
@@ -244,9 +272,10 @@ export default function LoginPage() {
               cursor: "pointer",
               border: "none",
               marginBottom: "1rem",
+              opacity: loading ? 0.7 : 1,
             }}
           >
-            LOGIN
+            {loading ? "Logging in..." : "LOGIN"}
           </button>
 
           {/* Divider */}
@@ -257,7 +286,9 @@ export default function LoginPage() {
               margin: "1rem 0",
             }}
           >
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
             <span
               style={{
                 padding: "0 0.5rem",
@@ -267,46 +298,23 @@ export default function LoginPage() {
             >
               or login with
             </span>
-            <div style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}></div>
+            <div
+              style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
+            ></div>
           </div>
+         <div className="social-buttons">
+  <button className="social-btn"><FcGoogle /> Google</button>
+  <button className="social-btn"><FaFacebook /> Facebook</button>
+  <button className="social-btn"><FaLinkedin /> LinkedIn</button>
+  <button className="social-btn"><FaInstagram /> Instagram</button>
+  <button className="social-btn"><FaTwitter /> X</button>
+  <button className="social-btn"><FaPinterest /> Pinterest</button>
+</div>
 
-          {/* Social Buttons */}
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <button
-              type="button"
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.5rem",
-                padding: "0.5rem",
-                cursor: "pointer",
-              }}
-            >
-              <FcGoogle style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Google
-            </button>
-            <button
-              type="button"
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.5rem",
-                padding: "0.5rem",
-                cursor: "pointer",
-                color: "#1D4F56",
-              }}
-            >
-              <FaFacebook style={{ marginRight: "0.5rem", fontSize: "1.25rem" }} /> Facebook
-            </button>
-          </div>
+
         </form>
 
-        {/* Right: Optional image or illustration */}
+        {/* Right: Optional image */}
         <div
           style={{
             backgroundImage: `url(${login})`,
@@ -314,6 +322,7 @@ export default function LoginPage() {
             backgroundPosition: "center",
           }}
         ></div>
+
       </div>
     </div>
   );

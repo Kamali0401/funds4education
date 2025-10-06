@@ -5,7 +5,7 @@ import storage from "redux-persist/lib/storage";
 import logger from "redux-logger";
 //import {thunk} from "redux-thunk";
 import  scholarshipApplicationSlice  from "./redux/slices/scholarshipApplicationSlice";
-
+import authReducer from "./redux/slices/authSlice"
 const persistConfig = {
   key: "root",
   storage,
@@ -16,6 +16,8 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     scholarshipApplicationList: scholarshipApplicationSlice, 
+     auth: authReducer,
+
     
   })
 );
