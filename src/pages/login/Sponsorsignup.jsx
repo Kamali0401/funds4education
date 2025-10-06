@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import "../../pages/styles.css";
-
+import { useDispatch } from "react-redux";
+import { addNewSponsor, fetchSponsorList } from "../../app/redux/slices/SponsorSlice"; 
 export default function SponsorSignUpPage() {
     const [step, setStep] = useState(0);
     const [userType, setUserType] = useState("sponsor"); // default to sponsor
-
+    const dispatch = useDispatch();
     const [basicDetails, setBasicDetails] = useState({
         sponsorName: "",
         orgType: "",
@@ -59,13 +60,31 @@ export default function SponsorSignUpPage() {
     };
     const prevStep = () => setStep(step - 1);
 
-    const handleSave = () => {
-      debugger;
-        if (!validateStep()) return;
-        const data = { basicDetails, verification };
-        console.log("Sponsor Saved:", data);
-        alert("Sponsor registered successfully!");
+    const handleSave = async () => {
+    if (!validateStep()) return;
+
+    const data = {
+        OrganizationName: basicDetails.sponsorName,
+        OrganizationType: basicDetails.orgType,
+        Email: basicDetails.email,
+        Phone: basicDetails.phone,
+        Website: basicDetails.website,
+        Username: verification.username,
+        PasswordHash: verification.password, // or hash it if backend expects hash
+        CreatedBy: "Admin" // or dynamic user
     };
+
+    try {
+        await addNewSponsor(data, dispatch);
+        alert("Sponsor registered successfully!");
+        setBasicDetails({ sponsorName: "", orgType: "", email: "", phone: "", website: "" });
+        setVerification({ username: "", password: "" });
+        setStep(0);
+    } catch (error) {
+        console.error("Error saving sponsor:", error);
+    }
+};
+
 
     // --- Step completed check ---
     const isStepCompleted = (stepIndex) => {

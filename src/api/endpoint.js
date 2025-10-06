@@ -6,6 +6,6 @@ export const ApiKey = {
    uploadScholarshipFiles:"/scholarshipApplicationForm/UploadFiles",
    downloadscholarshipFiles:"/scholarshipApplicationForm/downloadFiles",
    signup:"/userDto",
-
+   Sponsor:"/SponsorDto",
 
   };
