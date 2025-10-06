@@ -11,5 +11,6 @@ export const ApiKey = {
 SponsorLogin: "/auth/sponsor",
 
 
+   Sponsor:"/SponsorDto",
 
   };

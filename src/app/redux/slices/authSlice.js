@@ -10,6 +10,20 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await loginReq({ username, password });
       return response.data; // response = { id, username, role, token? }
+      debugger;
+      let response;
+
+      // choose API based on userType
+      if (userType === "student") {
+        response = await loginReq({ username, password });
+      } else if (userType === "sponsor") {
+        response = await loginReq({ username, password });
+    
+      } else {
+        throw new Error("Unsupported user type");
+      }
+
+      return { ...response.data, userType }; // return with userType
     } catch (error) {
       return rejectWithValue(error.errorMsg || "Login failed");
     }
