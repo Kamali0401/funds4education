@@ -15,9 +15,13 @@ const Home=() =>{
 
   const navigate = useNavigate();
 
-  const handleClickStudent = () => {
+  /*const handleClickStudent = () => {
   navigate(RP.login, { state: { userType: "student" } });
-};
+};*/
+const handleClickStudent = () => {
+    navigate(RP.studentdashboard);
+  };
+ 
 
 const handleClickSponsor = () => {
   navigate(RP.login, { state: { userType: "sponsor" } });

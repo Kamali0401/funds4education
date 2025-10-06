@@ -40,16 +40,17 @@ export const addNewScholarshipApplication = async (data, dispatch) => {
   try {
     debugger;
     dispatch(setLoading()); // Set loading before making the API request
-    await addNewScholarshipApplicationReq(data); // Call API to add a scholarshipApplication
+  const res=  await addNewScholarshipApplicationReq(data); // Call API to add a scholarshipApplication
 
     // Fetch updated list of scholarshipApplications after adding a new one
     await dispatch(fetchScholarshipApplicationList());
 
     // Optionally show success notification
-    Swal.fire({
+    /*Swal.fire({
       text: "ScholarshipApplication added successfully!",
       icon: "success",
-    });
+    });*/
+    return res.data;
   } catch (error) {
     dispatch(setError()); // Handle error if API fails
     Swal.fire({
@@ -70,10 +71,10 @@ export const updateScholarshipApplication = async (data, dispatch) => {
     // Fetch updated list of scholarshipApplications after updating
     await dispatch(fetchScholarshipApplicationList());
 
-    Swal.fire({
+   /* Swal.fire({
       text: "ScholarshipApplication updated successfully!",
       icon: "success",
-    });
+    });*/
   } catch (error) {
     dispatch(setError()); // Handle error if API fails
     Swal.fire({
