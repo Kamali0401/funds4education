@@ -19,7 +19,7 @@ const Home=() =>{
   navigate(RP.login, { state: { userType: "student" } });
 };
 /*const handleClickStudent = () => {
-    navigate(RP.studentdashboard);
+    navigate(RP.studentdashboard);;;
   };
  */
 
