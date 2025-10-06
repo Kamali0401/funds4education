@@ -9,7 +9,6 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../app/redux/slices/authSlice";
 
-import { publicAxios } from "../../api/config";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
@@ -25,30 +24,35 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
   e.preventDefault();
   let newErrors = { identifier: "", password: "" };
 
-  if (!identifier.trim()) newErrors.identifier = "Username or Email is required";
-  if (!password.trim()) newErrors.password = "Password is required";
+  if (!identifier.trim()) {
+    newErrors.identifier = "Username or Email is required";
+  }
+  if (!password.trim()) {
+    newErrors.password = "Password is required";
+  }
+  if (!userType) {   // <-- check if radio selected
+    newErrors.identifier = "Please select user type (Student / Sponsor)";
+  }
+
   setErrors(newErrors);
 
   if (!newErrors.identifier && !newErrors.password) {
-    dispatch(loginUser({ username: identifier, password }))
+    dispatch(loginUser({ username: identifier, password, userType }))  
+    
       .unwrap()
-      .then((res) => {
-        // ✅ Redirect based on role
-        const roleId = res.roleId;
-        if (roleId === 1) navigate("/student-dashboard");
-        else if (roleId === 2) navigate("/sponsor-dashboard");
-        else if (roleId === 3) navigate("/institution-dashboard");
+      .then(() => {
+        if (userType === "student") navigate("/student-dashboard");   
+        if (userType === "sponsor") navigate("/sponsor-dashboard");   
       })
       .catch(() => {
         setErrors({ ...newErrors, password: "Invalid credentials ❌" });
       });
   }
 };
-
   return (
     <div
       style={{

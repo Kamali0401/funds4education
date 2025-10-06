@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState ,useRef} from "react";
 import { useDispatch } from "react-redux";
 import {
   addNewScholarshipApplication,
+  fetchScholarshipApplicationList,
   updateScholarshipApplication,
 } from "../../../app/redux/slices/scholarshipApplicationSlice";
 import "../../../pages/styles.css";
-import {uploadFormFilesReq} from "../../../api/scholarshipapplication/scholarshipapplication"
+import Swal from "sweetalert2";
+import { useNavigate, useNavigation } from "react-router-dom";
+import {fetchScholarshipApplicationByIdReq, uploadFormFilesReq} from "../../../api/scholarshipapplication/scholarshipapplication"
+import { publicAxios } from "../../../api/config";
+import { ApiKey } from "../../../api/endpoint";
+import { routePath as RP } from "../../../app/components/router/routepath";
 // --- Regex validations ---
 const nameRegex = /^[A-Za-z\s]{0,150}$/;
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com|com\.au|edu)$/;
@@ -25,15 +31,14 @@ const scholarshipOptions = [
 ];
 
 const AddApplicationModal = ({ show, handleClose, application }) => {
-  const [selectedFiles, setSelectedFiles] = useState([]);
-const [filesList, setFilesList] = useState([]);
-  const dispatch = useDispatch();
+const fileInputRef = useRef(null);
+const navigation= useNavigate();
+   const dispatch = useDispatch();
   const today = new Date().toISOString().split("T")[0];
   const minDOB = new Date(new Date().setFullYear(new Date().getFullYear() - 79))
     .toISOString()
     .split("T")[0];
-
-  const initialFormData = {
+   const initialFormData = {
     firstName: "",
     lastName: "",
     email: "",
@@ -54,9 +59,19 @@ const [filesList, setFilesList] = useState([]);
     notesComments: "",
     status: "",
   };
-
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
+  const [selectedFiles, setSelectedFiles] = useState([]);
+//const [filesList, setFilesList] = useState([]);
+// --- State ---
+const [filesList, setFilesList] = useState(formData?.files || []);
+const [fileSelected, setFileSelected] = useState(false);
+const [newFileSelected, setNewFileSelected] = useState(false);
+ 
+
+ 
+
+  
 
   // Populate form if editing
   useEffect(() => {
@@ -169,21 +184,54 @@ const [filesList, setFilesList] = useState([]);
   }
   setErrors({ ...errors, [name]: "" });
 };
-const uploadFiles = async (applicationId) => {
-  if (selectedFiles.length < 1) return;
 
-  const formData = new FormData();
-  selectedFiles.forEach((file) => {
-    formData.append("FormFiles", file);
-  });
-  formData.append("TypeofUser", "SchAppForm");
-  formData.append("id", applicationId);
+
+// --- Clear function ---
+const handleClear = () => {
+  // Clear newly selected files
+  setSelectedFiles([]);
+  setFilesList([]);
+  setFileSelected(false);
+  setNewFileSelected(false);
+
+  // Clear the file input element
+  if (fileInputRef.current) {
+    fileInputRef.current.value = null;
+  }
+
+  // Reset documents field in formData
+  setFormData({ ...formData, documents: null });
+};
+
+// --- File change handler ---
+const handleFileChange = (e) => {
+  const files = Array.from(e.target.files);
+  if (!files || files.length === 0) return;
+
+  // No file type restriction
+  setSelectedFiles(files);
+  setFilesList(files.map(f => f.name));
+  setFileSelected(true);
+  setNewFileSelected(true);
+  setFormData({ ...formData, documents: files });
+};
+// Upload files function returns uploaded file names
+const uploadFiles = async (applicationId) => {
+  if (selectedFiles.length < 1) return [];
+
+  const formDataPayload = new FormData();
+  selectedFiles.forEach((file) => formDataPayload.append("FormFiles", file));
+  formDataPayload.append("TypeofUser", "SchAppForm");
+  formDataPayload.append("id", applicationId);
 
   try {
-   // await AsyncPost(API.uploadScholarshipFiles, formData); // replace with your API
-     const res = await uploadFormFilesReq(formData);
+    await uploadFormFilesReq(formDataPayload);
+
+    // Return names of uploaded files for merging
+    return selectedFiles.map(f => f.name);
   } catch (ex) {
     console.error("File upload failed:", ex);
+    return [];
   }
 };
 
@@ -220,33 +268,114 @@ const uploadFiles = async (applicationId) => {
 
     handleCloseAndReset();
   };*/
-  const handleSubmit = async (e, statusType) => {
+const handleSubmit = async (e, statusType) => {
   e.preventDefault();
   if (!validateForm()) return;
 
-  const finalData = { ...formData, status: statusType };
+  const finalData = {
+    ...formData,
+    status: statusType,
+    dateOfBirth: formData.dateOfBirth || null,
+    yearOfStudy: formData.yearOfStudy || null,
+    phoneNumber: formData.phoneNumber || "",
+    schoolName: formData.schoolName || "",
+    courseOrMajor: formData.courseOrMajor || "",
+    documents: null,
+  };
 
   let applicationId = null;
 
-  if (application) {
-    applicationId = application.id;
-    await updateScholarshipApplication(finalData, dispatch);
-  } else {
-    const res = await addNewScholarshipApplication(finalData, dispatch);
-    applicationId = res?.id; // assuming API returns new application id
+  try {
+    // Create or update application
+    if (application) {
+      applicationId = application.id;
+      await updateScholarshipApplication(finalData, dispatch);
+    } else {
+      const res = await addNewScholarshipApplication(finalData, dispatch);
+      applicationId = res?.id;
+    }
+
+    // Upload files if any
+    if (applicationId && selectedFiles.length > 0) {
+      await uploadFiles(applicationId);
+    }
+
+    // Fetch updated application by ID to get the latest files
+    if (applicationId) {
+      debugger;
+      const updatedApp = await fetchScholarshipApplicationByIdReq(applicationId);
+      setFormData((prev) => ({
+        ...prev,
+        ...updatedApp.data,
+        dateOfBirth: updatedApp.data.dateOfBirth
+          ? updatedApp.data.dateOfBirth.split("T")[0]
+          : "",
+        applicationDate: updatedApp.data.applicationDate
+          ? updatedApp.data.applicationDate.split("T")[0]
+          : today,
+      }));
+    }
+
+    // Reset selected files
+    setSelectedFiles([]);
+    //setFilesList([]);
+
+    // Fetch latest list for Redux
+   // await dispatch(fetchScholarshipApplicationList());
+
+    // Show success Swal
+    const result = await Swal.fire({
+      text: application ? "Application updated successfully!" : "Application added successfully!",
+      icon: "success",
+      confirmButtonText: "OK",
+    });
+
+    // Navigate after OK
+    if (result.isConfirmed) {
+      navigation("/applications"); // useNavigate hook
+    }
+
+    handleCloseAndReset();
+  } catch (err) {
+    console.error("Submit failed:", err);
+    Swal.fire({
+      text: "Error! Try Again!",
+      icon: "error",
+    });
   }
-
-  // Upload files
-  if (applicationId) await uploadFiles(applicationId);
-
-  handleCloseAndReset();
 };
+
 
   const handleCloseAndReset = () => {
     setFormData(initialFormData);
     setErrors({});
     handleClose();
   };
+
+  const downloadFileFun = async (id) => {
+  try {
+    //const res = await AsyncGetFiles(API.downloadScholarshipFiles + "?id=" + id);
+//const res= await 
+ const res = await publicAxios.get(
+      `${ApiKey.downloadscholarshipFiles}/${id}`, 
+      { responseType: "blob" }   // <-- important for file download
+    );
+    
+
+    const url = window.URL.createObjectURL(
+      new Blob([res.data], { type: "application/zip" })
+    );
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "documents.zip"); // you can rename as needed
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  } catch (err) {
+    console.error("File download failed:", err);
+  }
+};
 
   if (!show) return null; // Do not render if modal hidden
 
@@ -456,8 +585,8 @@ const uploadFiles = async (applicationId) => {
       </div>
     </div>
 
-   <div className="row">
-  <div className="form-group col-12">
+    <div className="row">
+  {/*<div className="form-group col-12">
     <label>Upload Documents</label>
     <input
       type="file"
@@ -466,29 +595,104 @@ const uploadFiles = async (applicationId) => {
       multiple
     />
 
-    {filesList && filesList.length > 0 && (
+    Show uploaded files from backend if present 
+    {formData?.files && formData.files.length > 0 && (
       <div className="mt-2">
-        {filesList.map((fileName, index) => (
+        {formData.files.map((fileName, index) => (
           <div
             key={index}
             className="d-flex align-items-center mt-1 border rounded p-2"
           >
             <div className="flex-grow-1">
               <h6 className="mb-0">{fileName}</h6>
-            
+            </div>
             <button
               type="button"
               className="btn btn-sm btn-primary ms-2"
-             // onClick={() => downloadFileFun(fileName)}
+           onClick={() => downloadFileFun(formData.id)}
             >
               Download
             </button>
           </div>
-          </div>
         ))}
       </div>
     )}
+    {formData?.files && formData.files.length > 0 && (
+  <div className="mt-2 border rounded p-3">
+   
+
+    
+    <ul className="mb-2">
+      {formData.files.map((fileName, index) => (
+        <li key={index}>{fileName}</li>
+      ))}
+    </ul>
+
+    
+    <button
+      type="button"
+      className="btn btn-sm btn-primary"
+      onClick={() => downloadFileFun(formData.id)}
+    >
+      Download
+    </button>
   </div>
+)}*/}
+
+
+ <div className="form-group col-12">
+  <label>Upload Documents</label>
+  <input
+    type="file"
+    name="documents"
+    onChange={handleFileChange}
+    multiple
+    ref={fileInputRef}
+  />
+
+  {fileSelected && filesList.length > 0 && (
+  <button
+    type="button"
+    className="btn btn-sm btn-danger mt-2"
+    onClick={handleClear}
+  >
+    Clear
+  </button>
+)}
+
+  {/* Display all files: backend + newly selected */}
+  {(formData?.files?.length > 0 || filesList.length > 0) && (
+    <div className="d-flex flex-column mt-2 rounded">
+      {/* Existing backend files */}
+      {formData?.files?.map((fileName, index) => (
+        <div
+          key={`backend-${index}`}
+          className="d-flex align-items-center justify-content-between border rounded p-2 mb-1"
+        >
+          <span>{fileName || "No File Name"}</span>
+        </div>
+      ))}
+
+     
+
+      {/* Download button for backend files */}
+      {formData?.files?.length > 0 && (
+        <button
+          type="button"
+          className="btn btn-sm btn-primary mt-2"
+          onClick={() => downloadFileFun(formData.id)}
+        >
+          Download
+        </button>
+      )}
+    </div>
+  )}
+</div>
+
+
+
+
+
 </div>
 
 
