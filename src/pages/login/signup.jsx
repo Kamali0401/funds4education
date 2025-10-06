@@ -1,11 +1,15 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { insertNewUser } from "../../app/redux/slices/signupSlice";
 import { routePath as RP } from "../../app/components/router/routepath";
-import "../../pages/styles.css"; // your CSS file
+import { useNavigate } from "react-router-dom";
+import "../../pages/styles.css";
 
 export default function SignUpPage() {
   const [step, setStep] = useState(0);
   const [userType, setUserType] = useState("student"); // default to student
+
   const [basicDetails, setBasicDetails] = useState({
     firstName: "",
     lastName: "",
@@ -17,14 +21,17 @@ export default function SignUpPage() {
 
   const [educationList, setEducationList] = useState([]);
   const [eduErrors, setEduErrors] = useState({});
-
   const [education, setEducation] = useState({ degree: "", college: "", year: "" });
   const [showEducationFields, setShowEducationFields] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
 
   const [verification, setVerification] = useState({ username: "", password: "" });
-
   const [errors, setErrors] = useState({});
+
+  // Redux
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.signup);
 
   // --- Validation regex ---
   const nameRegex = /^[A-Za-z]{0,150}$/;
@@ -32,22 +39,20 @@ export default function SignUpPage() {
   const usernameRegex = /^[A-Za-z]{0,150}$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
   const phoneRegex = /^[0-9]{0,10}$/;
-  const courseRegex = /^[A-Za-z\s]{1,150}$/; // course: letters + spaces only
-  const collegeRegex = /^[A-Za-z\s]{1,250}$/; // college/university max 250 chars
-  const yearRegex = /^[0-9]{4}$/; // year: 4 digits
-             // only digits up to 4
+  const courseRegex = /^[A-Za-z\s]{1,150}$/;
+  const collegeRegex = /^[A-Za-z\s]{1,250}$/;
+  const yearRegex = /^[0-9]{4}$/;
 
-  // --- Email validation to prevent repeated TLDs ---
   const isValidEmail = (email) => {
     if (!emailRegex.test(email)) return false;
     const domainPart = email.split("@")[1];
     const tldMatches = domainPart.match(/\.[a-z]+/gi);
     if (!tldMatches) return false;
     const tldSet = new Set(tldMatches);
-    return tldSet.size === tldMatches.length; // prevent duplicates like .com.com
+    return tldSet.size === tldMatches.length;
   };
 
-  // --- Step validation ---
+  // --- Validation per step ---
   const validateStep = () => {
     let stepErrors = {};
 
@@ -57,7 +62,7 @@ export default function SignUpPage() {
       if (!basicDetails.lastName || !nameRegex.test(basicDetails.lastName))
         stepErrors.lastName = "Last name required (alphabets only, max 150).";
       if (!basicDetails.email || !isValidEmail(basicDetails.email))
-        stepErrors.email = "Invalid email (e.g., .com, .com.au, .edu, no repeated TLD).";
+        stepErrors.email = "Invalid email.";
       if (!basicDetails.phone || !phoneRegex.test(basicDetails.phone))
         stepErrors.phone = "Phone number max 10 digits.";
       if (!basicDetails.dob) stepErrors.dob = "Date of birth is required.";
@@ -65,7 +70,8 @@ export default function SignUpPage() {
     }
 
     if (step === 1) {
-      if (educationList.length === 0) stepErrors.education = "Add at least one education record.";
+      if (educationList.length === 0)
+        stepErrors.education = "Add at least one education record.";
     }
 
     if (step === 2) {
@@ -73,63 +79,76 @@ export default function SignUpPage() {
         stepErrors.username = "Username required (alphabets only, max 150).";
       if (!verification.password || !passwordRegex.test(verification.password))
         stepErrors.password =
-          "Password min 6 chars, must include letters, numbers & 1 special char.";
+          "Password must be min 6 chars, include letters, numbers & special char.";
     }
 
     setErrors(stepErrors);
     return Object.keys(stepErrors).length === 0;
   };
 
-  // --- Navigation handlers ---
+  // --- Step navigation ---
   const nextStep = () => {
     if (validateStep()) setStep(step + 1);
   };
   const prevStep = () => setStep(step - 1);
 
+  // --- Save (Signup dispatch) ---
   const handleSave = () => {
     if (!validateStep()) return;
-    const data = { basicDetails, educationList, verification };
-    console.log("Saved data:", data);
-    alert("Data saved! Check console.");
+
+const payload = {
+  FirstName: basicDetails.firstName,
+  LastName: basicDetails.lastName,
+  Email: basicDetails.email,            // ✅ correct field
+  Phone: basicDetails.phone,
+  DateofBirth: basicDetails.dob,        // ✅ rename
+  Gender: basicDetails.gender,
+  UserName: verification.username,      // ✅ rename
+  PasswordHash: verification.password,  // ✅ raw password
+  RoleId: userType === "student" ? 1 : 2,
+  Education: JSON.stringify(educationList) // ✅ backend expects string
+};
+
+
+    dispatch(insertNewUser(payload , navigate));
   };
 
   // --- Education handlers ---
   const addEducation = () => {
-  let errorsObj = {};
-  if (!courseRegex.test(education.degree)) errorsObj.degree = "Course required (alphabets only, max 150).";
-  if (!collegeRegex.test(education.college)) errorsObj.college = "College/University required (max 250 chars).";
-  if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits number.";
+    let errorsObj = {};
+    if (!courseRegex.test(education.degree)) errorsObj.degree = "Invalid course.";
+    if (!collegeRegex.test(education.college)) errorsObj.college = "Invalid college/university.";
+    if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits.";
 
-  if (Object.keys(errorsObj).length > 0) {
-    setEduErrors(errorsObj);
-    return;
-  }
+    if (Object.keys(errorsObj).length > 0) {
+      setEduErrors(errorsObj);
+      return;
+    }
 
-  setEducationList([...educationList, education]);
-  setEducation({ degree: "", college: "", year: "" });
-  setShowEducationFields(false);
-  setEduErrors({});
-};
+    setEducationList([...educationList, education]);
+    setEducation({ degree: "", college: "", year: "" });
+    setShowEducationFields(false);
+    setEduErrors({});
+  };
 
-const updateEducation = (index) => {
-  let errorsObj = {};
-  if (!courseRegex.test(education.degree)) errorsObj.degree = "Course required (alphabets only, max 150).";
-  if (!collegeRegex.test(education.college)) errorsObj.college = "College/University required (max 250 chars).";
-  if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits number.";
+  const updateEducation = (index) => {
+    let errorsObj = {};
+    if (!courseRegex.test(education.degree)) errorsObj.degree = "Invalid course.";
+    if (!collegeRegex.test(education.college)) errorsObj.college = "Invalid college/university.";
+    if (!yearRegex.test(education.year)) errorsObj.year = "Year must be 4 digits.";
 
-  if (Object.keys(errorsObj).length > 0) {
-    setEduErrors(errorsObj);
-    return;
-  }
+    if (Object.keys(errorsObj).length > 0) {
+      setEduErrors(errorsObj);
+      return;
+    }
 
-  const updated = [...educationList];
-  updated[index] = education;
-  setEducationList(updated);
-  setEditIndex(null);
-  setEducation({ degree: "", college: "", year: "" });
-  setEduErrors({});
-};
-
+    const updated = [...educationList];
+    updated[index] = education;
+    setEducationList(updated);
+    setEditIndex(null);
+    setEducation({ degree: "", college: "", year: "" });
+    setEduErrors({});
+  };
 
   const deleteEducation = (index) => {
     const updated = educationList.filter((_, i) => i !== index);
@@ -142,7 +161,6 @@ const updateEducation = (index) => {
   minDob.setFullYear(minDob.getFullYear() - 79);
   const minDobStr = minDob.toISOString().split("T")[0];
 
-  // --- Step completed check for top navigation ---
   const isStepCompleted = (stepIndex) => {
     if (stepIndex === 0) {
       return (
@@ -170,13 +188,9 @@ const updateEducation = (index) => {
           <h2>Sign up</h2>
           <p>
             Already a member?{" "}
-            <Link
-  to={RP.login}
-  state={{ userType }}
-  className="signup-link"
->
-  Sign in
-</Link>
+            <Link to={RP.login} state={{ userType }} className="signup-link">
+              Sign in
+            </Link>
           </p>
         </div>
 
@@ -200,7 +214,12 @@ const updateEducation = (index) => {
           ))}
         </div>
 
-        {/* Step content */}
+        {/* Error / Loading messages */}
+        {loading && <p className="loading-text">Processing...</p>}
+        {error && <p className="error-text">Something went wrong, try again!</p>}
+
+        {/* Step Content */}
+        {/* Step 0: Basic Details */}
         {step === 0 && (
           <div>
             <h3 className="section-title">Basic Details</h3>
@@ -234,7 +253,6 @@ const updateEducation = (index) => {
                 {errors.lastName && <p className="error-text">{errors.lastName}</p>}
               </div>
             </div>
-
             <div className="row">
               <div className="form-group">
                 <label>Email *</label>
@@ -248,7 +266,7 @@ const updateEducation = (index) => {
                 {errors.email && <p className="error-text">{errors.email}</p>}
               </div>
               <div className="form-group">
-                <label>Phone Number *</label>
+                <label>Phone *</label>
                 <input
                   type="text"
                   maxLength={10}
@@ -258,12 +276,11 @@ const updateEducation = (index) => {
                     setBasicDetails({ ...basicDetails, phone: e.target.value })
                   }
                   className={errors.phone ? "input-error" : ""}
-                  placeholder="Phone Number"
+                  placeholder="Phone"
                 />
                 {errors.phone && <p className="error-text">{errors.phone}</p>}
               </div>
             </div>
-
             <div className="row">
               <div className="form-group">
                 <label>Date of Birth *</label>
@@ -277,33 +294,30 @@ const updateEducation = (index) => {
                 />
                 {errors.dob && <p className="error-text">{errors.dob}</p>}
               </div>
-
-            <div className="form-group">
-  <label>Gender *</label>
-  <div className="gender-group">
-    <label className="gender-option">
-      <input
-        type="radio"
-        name="gender"
-        checked={basicDetails.gender === "Male"}
-        onChange={() => setBasicDetails({ ...basicDetails, gender: "Male" })}
-      />
-      <span>Male</span>
-    </label>
-    <label className="gender-option">
-      <input
-        type="radio"
-        name="gender"
-        checked={basicDetails.gender === "Female"}
-        onChange={() => setBasicDetails({ ...basicDetails, gender: "Female" })}
-      />
-      <span>Female</span>
-    </label>
-  </div>
-  {errors.gender && <p className="error-text">{errors.gender}</p>}
-</div>
-
-
+              <div className="form-group">
+                <label>Gender *</label>
+                <div className="gender-group">
+                  <label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      checked={basicDetails.gender === "Male"}
+                      onChange={() => setBasicDetails({ ...basicDetails, gender: "Male" })}
+                    />
+                    Male
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="gender"
+                      checked={basicDetails.gender === "Female"}
+                      onChange={() => setBasicDetails({ ...basicDetails, gender: "Female" })}
+                    />
+                    Female
+                  </label>
+                </div>
+                {errors.gender && <p className="error-text">{errors.gender}</p>}
+              </div>
             </div>
           </div>
         )}
@@ -470,10 +484,10 @@ const updateEducation = (index) => {
           </div>
         )}
 
-        {/* Verification Step */}
+        {/* Step 2: Verification */}
         {step === 2 && (
           <div>
-            <h3 className="section-title">Verification</h3>
+            <h3>Verification</h3>
             <div className="row">
               <div className="form-group">
                 <label>Username *</label>
@@ -517,8 +531,8 @@ const updateEducation = (index) => {
             </button>
           )}
           {step === 2 && (
-            <button onClick={handleSave} className="save-btn">
-              Save
+            <button onClick={handleSave} className="save-btn" disabled={loading}>
+              {loading ? "Saving..." : "Save"}
             </button>
           )}
         </div>

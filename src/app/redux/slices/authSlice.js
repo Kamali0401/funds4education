@@ -53,28 +53,26 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
+      // Success
+     .addCase(loginUser.fulfilled, (state, action) => {
+  state.loading = false;
+  const { username, roleId, id, token } = action.payload;
 
-        // destructure payload
-        const { username, role, id, token, userType } = action.payload;
+  state.user = username;
+  state.role = roleId; // 👈 rename to roleId for clarity
+  state.id = id;
+  state.token = token || null;
 
-        state.user = username;
-        state.role = role;
-        state.id = id;
-        state.token = token || null;
-        state.userType = userType;
-
-        // ✅ save to localStorage
-        localStorage.setItem("user", username);
-        localStorage.setItem("role", role);
-        localStorage.setItem("id", id);
-        localStorage.setItem("userType", userType);
-        if (token) localStorage.setItem("token", token);
-      })
+  // Store locally
+  localStorage.setItem("user", username);
+  localStorage.setItem("roleId", roleId);
+  localStorage.setItem("id", id);
+  if (token) localStorage.setItem("token", token);
+})
+      // Failed
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Invalid credentials";
       });
   },
 });
