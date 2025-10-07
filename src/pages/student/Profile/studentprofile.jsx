@@ -1,105 +1,129 @@
-import React, { useState } from "react";
-import "../../../pages/styles.css"; // ✅ reuse your signup/signin styles
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchStudentProfile, updateStudent } from "../../../app/redux/slices/studentSlice";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import "../../../pages/styles.css";
 import { routePath as RP } from "../../../app/components/router/routepath";
 
-export default function StudentProfileForm({ profile, onCancel, onSave }) {
+export default function StudentProfileForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { profile, status } = useSelector((state) => state.student);
 
-  // ✅ Prefill profile values
+  // ✅ Load profile on mount
+  useEffect(() => {
+    if (!profile) dispatch(fetchStudentProfile());
+  }, [dispatch, profile]);
+
+  // ✅ Local form data
   const [formData, setFormData] = useState({
-    id: profile.id,
-    firstName: profile.firstName || "",
-    lastName: profile.lastName || "",
-    email: profile.email || "",
-    phone: profile.phone || "",
-    dateofBirth: profile.dateofBirth || "",
-    gender: profile.gender || "",
-    userName: profile.userName || "",
-    passwordHash: "", // don’t prefill actual password
+    id: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    dateofBirth: "",
+    gender: "",
+    userName: "",
+    passwordHash: "",
   });
 
-  // ✅ Education array
-  const [educationList, setEducationList] = useState(
-    Array.isArray(profile.education) ? profile.education : []
-  );
-  const [education, setEducation] = useState({ degree: "", college: "", year: "" });
-  const [editIndex, setEditIndex] = useState(null);
-
+  const [educationList, setEducationList] = useState([]);
+  const [isPasswordChanged, setIsPasswordChanged] = useState(false);
   const [errors, setErrors] = useState({});
-  const [eduErrors, setEduErrors] = useState({});
 
-  // ✅ Validation rules
+  // ✅ Populate form with fetched profile
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        id: profile.id,
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        dateofBirth: profile.dateOfBirth
+          ? new Date(profile.dateOfBirth).toLocaleDateString("en-CA")
+          : "",
+        gender: profile.gender || "",
+        userName: profile.userName || "",
+        passwordHash: "",
+      });
+
+      try {
+        if (profile.education) {
+          const parsed = JSON.parse(profile.education);
+          setEducationList(Array.isArray(parsed) ? parsed : [parsed]);
+        }
+      } catch {
+        setEducationList([]);
+      }
+    }
+  }, [profile]);
+
+  // ✅ Validation
   const nameRegex = /^[A-Za-z]{1,150}$/;
-  const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.(com|edu|org)$/;
   const phoneRegex = /^[0-9]{10}$/;
-  const yearRegex = /^[0-9]{4}$/;
   const usernameRegex = /^[A-Za-z0-9_]{4,150}$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*]).{6,}$/;
 
-  // --- Add or update education ---
-  const addOrUpdateEducation = () => {
-    let errs = {};
-    if (!education.degree) errs.degree = "Course required.";
-    if (!education.college) errs.college = "College required.";
-    if (!yearRegex.test(education.year)) errs.year = "Year must be 4 digits.";
-
-    if (Object.keys(errs).length > 0) {
-      setEduErrors(errs);
-      return;
-    }
-
-    if (editIndex !== null) {
-      const updated = [...educationList];
-      updated[editIndex] = education;
-      setEducationList(updated);
-      setEditIndex(null);
-    } else {
-      setEducationList([...educationList, education]);
-    }
-
-    setEducation({ degree: "", college: "", year: "" });
-    setEduErrors({});
-  };
-
-  const deleteEducation = (index) => {
-    setEducationList(educationList.filter((_, i) => i !== index));
-  };
-
-  // ✅ Validate entire form
   const validateForm = () => {
     let errs = {};
     if (!nameRegex.test(formData.firstName)) errs.firstName = "Invalid first name.";
     if (!nameRegex.test(formData.lastName)) errs.lastName = "Invalid last name.";
-    if (formData.email && !emailRegex.test(formData.email)) errs.email = "Invalid email.";
     if (formData.phone && !phoneRegex.test(formData.phone)) errs.phone = "Phone must be 10 digits.";
     if (!formData.gender) errs.gender = "Gender required.";
     if (!usernameRegex.test(formData.userName)) errs.userName = "Username must be at least 4 characters.";
-    if (!passwordRegex.test(formData.passwordHash))
+    if (isPasswordChanged && !passwordRegex.test(formData.passwordHash))
       errs.passwordHash = "Password must contain a letter, number, and special character.";
     if (educationList.length === 0) errs.education = "Add at least one education record.";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  // ✅ Submit
-  const handleSubmit = (e) => {
+  // ✅ Submit (Update)
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     const payload = {
       ...formData,
-      education: educationList, // send array
+      roleId: 1, // Student
+      dateOfBirth: formData.dateofBirth
+        ? new Date(formData.dateofBirth).toISOString()
+        : null,
+      education: JSON.stringify(educationList),
     };
 
-    console.log("📤 Sending JSON to API:", JSON.stringify(payload, null, 2));
-    onSave(payload); // dispatch Redux action
+    // 🩵 Backend requires PasswordHash: send old one if unchanged
+    if (!isPasswordChanged) {
+      payload.passwordHash = profile.passwordHash;
+    }
+
+    try {
+      await dispatch(updateStudent(payload)).unwrap();
+      Swal.fire({
+        icon: "success",
+        title: "Profile Updated",
+        text: "Your profile has been updated successfully.",
+      });
+      navigate(RP.ViewStudentProfile);
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: err.message || "Could not update profile.",
+      });
+    }
   };
+
+  if (status === "loading" || !profile)
+    return <p className="loading-text">Loading profile...</p>;
 
   return (
     <div className="signup-container">
       <div className="signup-card">
-        <h2 className="walletheader">Edit Student Profile</h2>
+        <h2 className="walletheader">Update Student Profile</h2>
 
         <form onSubmit={handleSubmit}>
           {/* --- Basic Info --- */}
@@ -115,6 +139,7 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
               />
               {errors.firstName && <p className="error-text">{errors.firstName}</p>}
             </div>
+
             <div className="form-group">
               <label>Last Name *</label>
               <input
@@ -130,13 +155,7 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
           <div className="row">
             <div className="form-group">
               <label>Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={errors.email ? "input-error" : ""}
-              />
-              {errors.email && <p className="error-text">{errors.email}</p>}
+              <input type="email" value={formData.email} readOnly />
             </div>
 
             <div className="form-group">
@@ -157,10 +176,11 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
               <label>Date of Birth</label>
               <input
                 type="date"
-                value={formData.dateofBirth ? formData.dateofBirth.split("T")[0] : ""}
+                value={formData.dateofBirth || ""}
                 onChange={(e) => setFormData({ ...formData, dateofBirth: e.target.value })}
               />
             </div>
+
             <div className="form-group">
               <label>Gender *</label>
               <select
@@ -178,39 +198,13 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
 
           {/* --- Education --- */}
           <h3 className="section-title">Education</h3>
-          {errors.education && <p className="error-text">{errors.education}</p>}
-          <div className="row">
-            <input
-              type="text"
-              placeholder="Course"
-              value={education.degree}
-              onChange={(e) => setEducation({ ...education, degree: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="College"
-              value={education.college}
-              onChange={(e) => setEducation({ ...education, college: e.target.value })}
-            />
-            <input
-              type="text"
-              placeholder="Year"
-              value={education.year}
-              onChange={(e) => setEducation({ ...education, year: e.target.value })}
-            />
-            <button type="button" className="sign-action-btn" onClick={addOrUpdateEducation}>
-              {editIndex !== null ? "Update" : "Add"}
-            </button>
-          </div>
-
-          {educationList.length > 0 && (
+          {educationList.length > 0 ? (
             <table className="signup-table">
               <thead>
                 <tr>
                   <th>Course</th>
                   <th>College</th>
                   <th>Year</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -219,32 +213,15 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
                     <td>{edu.degree}</td>
                     <td>{edu.college}</td>
                     <td>{edu.year}</td>
-                    <td>
-                      <button
-                        type="button"
-                        className="sign-action-btn1"
-                        onClick={() => {
-                          setEducation(edu);
-                          setEditIndex(i);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="sign-action-btn1 danger"
-                        onClick={() => deleteEducation(i)}
-                      >
-                        Delete
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          ) : (
+            <p>No education details found.</p>
           )}
 
-          {/* --- Username & Password --- */}
+          {/* --- Account Info --- */}
           <h3 className="section-title">Account</h3>
           <div className="row">
             <div className="form-group">
@@ -257,11 +234,18 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
               />
               {errors.userName && <p className="error-text">{errors.userName}</p>}
             </div>
+
             <div className="form-group">
               <label>Password *</label>
               <input
                 type="password"
-                value={formData.passwordHash}
+                value={isPasswordChanged ? formData.passwordHash : "********"}
+                onFocus={() => {
+                  if (!isPasswordChanged) {
+                    setFormData({ ...formData, passwordHash: "" });
+                    setIsPasswordChanged(true);
+                  }
+                }}
                 onChange={(e) => setFormData({ ...formData, passwordHash: e.target.value })}
                 className={errors.passwordHash ? "input-error" : ""}
               />
@@ -269,7 +253,7 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
             </div>
           </div>
 
-          {/* --- Submit --- */}
+          {/* --- Buttons --- */}
           <div className="btn-row">
             <button type="submit" className="sign-action-btn1">
               Update Profile
@@ -277,7 +261,7 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
             <button
               type="button"
               className="sign-action-btn1 danger"
-              onClick={() => onCancel() || navigate(RP.ViewStudentProfile)}
+              onClick={() => navigate(RP.ViewStudentProfile)}
             >
               Cancel
             </button>
