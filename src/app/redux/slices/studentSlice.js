@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getStudentProfile, updateStudentProfile } from "../../../api/Student/student";
 import Swal from "sweetalert2";
 
+// ✅ Decode JWT for user ID
 const parseJwt = (token) => {
   try {
     return JSON.parse(atob(token.split(".")[1]));
@@ -42,13 +43,29 @@ export const fetchStudentProfile = createAsyncThunk(
   }
 );
 
-// ✅ Update student profile
+// ✅ Update student profile (flat payload)
 export const updateStudent = createAsyncThunk(
   "student/update",
   async (studentData, { dispatch, rejectWithValue }) => {
     try {
-      await updateStudentProfile(studentData);
-      await dispatch(fetchStudentProfile()); // refresh after update
+      // 🩵 Ensure backend-friendly structure here
+      const formatDateForBackend = (dateStr) => {
+        if (!dateStr) return null;
+        const date = new Date(dateStr);
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const day = date.getDate().toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${month}/${day}/${year} 00:00:00`;
+      };
+
+      const formattedData = {
+        ...studentData,
+        dateofBirth: formatDateForBackend(studentData.dateofBirth),
+        roleId: studentData.roleId?.toString() || "1", // ✅ ensure string
+      };
+
+      await updateStudentProfile(formattedData);
+      await dispatch(fetchStudentProfile()); // refresh data
 
       Swal.fire({
         icon: "success",
@@ -57,7 +74,7 @@ export const updateStudent = createAsyncThunk(
         confirmButtonColor: "#3085d6",
       });
 
-      return studentData;
+      return formattedData;
     } catch (err) {
       const message =
         err?.response?.data?.message ||
@@ -100,12 +117,14 @@ const studentSlice = createSlice({
         state.error = action.payload;
       })
 
-      // ✅ Update student profile
+      // ✅ Update profile
       .addCase(updateStudent.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(updateStudent.fulfilled, (state) => {
+      .addCase(updateStudent.fulfilled, (state, action) => {
         state.status = "succeeded";
+        // Merge updated data into current profile
+        state.profile = { ...state.profile, ...action.payload };
       })
       .addCase(updateStudent.rejected, (state, action) => {
         state.status = "failed";

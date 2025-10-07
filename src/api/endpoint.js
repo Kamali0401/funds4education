@@ -7,10 +7,10 @@ export const ApiKey = {
    signup:"/userDto",
    userDto: "/UserDto",
    downloadscholarshipFiles:"/scholarshipApplicationForm/downloadFiles",
-   signup:"/userDto",
+   signup:"/student",
 SponsorLogin: "/auth/sponsor",
 InstitutionSignup:"/Insutition",
-
+ Student:"/student",
 
    Sponsor:"/SponsorDto",
 

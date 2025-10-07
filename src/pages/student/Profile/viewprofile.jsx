@@ -138,7 +138,7 @@ export default function StudentProfile() {
           onCancel={() => setIsEditing(false)}
           onSave={(updatedData) => {
             dispatch(updateStudent(updatedData)).then(() => {
-              setIsEditing(false); // switch back to view mode
+              setIsEditing(false); // ✅ Return to view mode
             });
           }}
         />
