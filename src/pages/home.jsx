@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect}from 'react'
 import { useNavigate } from "react-router-dom";
 import Header from '../app/components/header/header';
 import "../pages/styles.css";
@@ -14,22 +14,140 @@ import "slick-carousel/slick/slick-theme.css";
 const Home=() =>{
 
   const navigate = useNavigate();
+ // ✅ Check token and redirect automatically if valid
+ const token = localStorage.getItem("token");
+    const expiresAt = localStorage.getItem("expiresAt");
+    const roleId = localStorage.getItem("roleId");
+  /*useEffect(() => {
+    
 
-  const handleClickStudent = () => {
-  navigate(RP.login, { state: { userType: "student" } });
-};
-/*const handleClickStudent = () => {
-    navigate(RP.studentdashboard);;;
+    if (token && token !== "" && expiresAt && roleId && roleId !== "0") {
+      const expiryTime = new Date(expiresAt).getTime();
+      const now = new Date().getTime();
+
+      if (now < expiryTime) {
+        // Token valid → redirect to role dashboard
+        redirectToDashboard(roleId);
+      } else {
+        // Token expired → clear it
+       // localStorage.clear();
+      }
+    }
+  }, [navigate]);*/
+
+  // ✅ Helper function for redirection
+  const redirectToDashboard = (roleId) => {
+    debugger
+    switch (roleId) {
+      case "1":
+        navigate(RP.studentdashboard);
+        break;
+      case "2":
+        navigate(RP.sponsordashboard);
+        break;
+      case "4":
+        navigate(RP.institutiondashboard);
+        break;
+      default:
+        break;
+    }
   };
- */
 
-const handleClickSponsor = () => {
-  navigate(RP.login, { state: { userType: "sponsor" } });
+  // ✅ Click Handlers
+  /*const handleClickStudent = () => {
+    debugger;
+    const token = localStorage.getItem("token");
+    const expiresAt = localStorage.getItem("expiresAt");
+    const roleId = localStorage.getItem("roleId");
+
+    // if no valid token → go to login page
+    if (!token || token === "" || !expiresAt || !roleId || roleId === "0") {
+      navigate(RP.login, { state: { userType: "student" } });
+    } else {
+      const expiryTime = new Date(expiresAt).getTime();
+      const now = new Date().getTime();
+      if (now < expiryTime) {
+        redirectToDashboard(roleId);
+      } else {
+      //  localStorage.clear();
+        navigate(RP.login, { state: { userType: "student" } });
+      }
+    }
+  };
+
+  const handleClickSponsor = () => {
+    debugger;
+    const token = localStorage.getItem("token");
+    const expiresAt = localStorage.getItem("expiresAt");
+    const roleId = localStorage.getItem("roleId");
+
+    if (!token || token === "" || !expiresAt || !roleId || roleId === "0") {
+      navigate(RP.login, { state: { userType: "sponsor" } });
+    } else {
+      const expiryTime = new Date(expiresAt).getTime();
+      const now = new Date().getTime();
+      if (now < expiryTime) {
+        redirectToDashboard(roleId);
+      } else {
+       // localStorage.clear();
+        navigate(RP.login, { state: { userType: "sponsor" } });
+      }
+    }
+  };
+
+  const handleClickInstitution = () => {
+    debugger;
+    const token = localStorage.getItem("token");
+    const expiresAt = localStorage.getItem("expiresAt");
+    const roleId = localStorage.getItem("roleId");
+
+    if (!token || token === "" || !expiresAt || !roleId || roleId === "0") {
+      navigate(RP.login, { state: { userType: "institution" } });
+    } else {
+      const expiryTime = new Date(expiresAt).getTime();
+      const now = new Date().getTime();
+      if (now < expiryTime) {
+        redirectToDashboard(roleId);
+      } else {
+       // localStorage.clear();
+        navigate(RP.login, { state: { userType: "institution" } });
+      }
+    }
+  };*/
+  const checkAndNavigate = (expectedRole, userType) => {
+  const token = localStorage.getItem("token");
+  const expiresAt = localStorage.getItem("expiresAt");
+  const roleId = localStorage.getItem("roleId");
+
+  // 🔹 Case 1: No valid token → go to login
+  if (!token || token === "" || !expiresAt || !roleId || roleId === "0") {
+    navigate(RP.login, { state: { userType } });
+    return;
+  }
+
+  // 🔹 Case 2: Token expired → go to login
+  const expiryTime = new Date(expiresAt).getTime();
+  const now = new Date().getTime();
+  if (now >= expiryTime) {
+    // localStorage.clear();
+    navigate(RP.login, { state: { userType } });
+    return;
+  }
+
+  // 🔹 Case 3: Role mismatch → force login
+  if (roleId !== expectedRole) {
+    navigate(RP.login, { state: { userType } });
+    return;
+  }
+
+  // 🔹 Case 4: Valid token + correct role → redirect to dashboard
+  redirectToDashboard(roleId);
 };
 
-const handleClickInstitution = () => {
-  navigate(RP.login, { state: { userType: "institution" } }); 
-};
+// ✅ Click Handlers
+const handleClickStudent = () => checkAndNavigate("1", "student");
+const handleClickSponsor = () => checkAndNavigate("2", "sponsor");
+const handleClickInstitution = () => checkAndNavigate("4", "institution");
  const testimonials = [
     {
       text: "VidyāSetu helped me secure a scholarship that made my education possible.",
