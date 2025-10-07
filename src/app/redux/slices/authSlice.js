@@ -7,8 +7,39 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const response = await loginReq({ username, password });
-      return response.data; // full object from backend
+      debugger;
+      let response;
+
+      // ✅ Choose API based on userType (student/sponsor)
+      if (userType === "student") {
+        response = await loginReq({ username, password });
+      } else if (userType === "sponsor") {
+        response = await loginReq({ username, password });
+      }else if (userType === "institution") {
+        response = await loginReq({ username, password });
+      }
+       else {
+        throw new Error("Unsupported user type");
+      }
+ const data = response.data;
+
+      // ✅ Store all values in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("expiresAt", data.expiresAt);
+      localStorage.setItem("roleId", data.roleId);
+      localStorage.setItem("roleName", data.roleName || "");
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("userType", userType);
+      localStorage.setItem("name", data.name);
+
+      // ✅ Optional: store entire object as well
+      //localStorage.setItem("userData", JSON.stringify(data));
+
+      // ✅ Return response with userType
+      return { ...data, userType };
+      // ✅ Return response with userType
+      //return { ...response.data, userType };
     } catch (error) {
       return rejectWithValue(error.errorMsg || "Login failed");
     }
@@ -50,29 +81,21 @@ const authSlice = createSlice({
       // Success
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const {
-          name,
-          username,
-          roleId,
-          roleName,
-          userId,
-          token,
-        } = action.payload;
+        const { username, roleId, userId, token, userType } = action.payload;
 
-        // ✅ Assign state values
-        state.name = name || "";
-        state.username = username || "";
-        state.roleId = roleId || null;
-        state.roleName = roleName || "";
-        state.userId = userId || null;
+        // ✅ Save details to state
+        state.user = username;
+        state.role = roleId;
+        state.id = userId;
         state.token = token || null;
 
         // ✅ Store locally for persistence
         localStorage.setItem("name", name || "");
         localStorage.setItem("username", username || "");
         localStorage.setItem("roleId", roleId);
-        localStorage.setItem("roleName", roleName || "");
-        localStorage.setItem("userId", userId);
+        localStorage.setItem("id", userId);
+        localStorage.setItem("userType", userType);
+
         if (token) localStorage.setItem("token", token);
       })
       // Failed

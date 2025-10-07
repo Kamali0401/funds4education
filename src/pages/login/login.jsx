@@ -26,6 +26,7 @@ export default function LoginPage() {
   const { loading, error } = useSelector((state) => state.auth);
 
  const handleSubmit = async (e) => {
+  debugger;
   e.preventDefault();
   let newErrors = { identifier: "", password: "" };
 
@@ -41,7 +42,7 @@ dispatch(loginUser({ username: identifier, password, userType }))
         const roleId = res.roleId;
         if (roleId === 1) navigate("/student-dashboard");
         else if (roleId === 2) navigate("/sponsor-dashboard");
-        else if (roleId === 3) navigate("/institution-dashboard");
+        else if (roleId === 4) navigate("/institution-dashboard");
       })
       .catch(() => {
         setErrors({ ...newErrors, password: "Invalid credentials ❌" });
