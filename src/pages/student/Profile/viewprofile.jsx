@@ -1,8 +1,10 @@
 import "../../../pages/styles.css";
-import "../../../pages/styles.css";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchStudentProfile, updateStudent } from "../../../app/redux/slices/studentSlice.js";
+import {
+  fetchStudentProfile,
+  updateStudent,
+} from "../../../app/redux/slices/studentSlice.js";
 import StudentProfileForm from "./studentprofile.jsx";
 
 export default function StudentProfile() {
@@ -15,9 +17,30 @@ export default function StudentProfile() {
     dispatch(fetchStudentProfile());
   }, [dispatch]);
 
+  // ✅ Parse Education JSON safely
+  let educationArray = [];
+  try {
+    if (profile && profile.education) {
+      const parsed = JSON.parse(profile.education);
+      educationArray = Array.isArray(parsed) ? parsed : [parsed];
+    }
+  } catch (err) {
+    console.warn("⚠️ Invalid education JSON:", profile.education, err);
+    educationArray = [];
+  }
+
+  // ✅ Format date of birth properly (local date)
+  const formattedDOB = profile?.dateofBirth
+    ? new Date(profile.dateofBirth).toLocaleDateString("en-CA")
+    : "";
+
   // ✅ Loading & error states
-  if (status === "loading") return <div className="signup-container">Loading profile...</div>;
-  if (error) return <div className="signup-container text-red-600">Error: {error}</div>;
+  if (status === "loading")
+    return <div className="signup-container">Loading profile...</div>;
+  if (error)
+    return (
+      <div className="signup-container text-red-600">Error: {error}</div>
+    );
   if (!profile) return null;
 
   return (
@@ -26,7 +49,10 @@ export default function StudentProfile() {
         <div className="signup-card">
           <div className="profile-header">
             <h2 className="headers">Student Profile</h2>
-            <button className="sign-action-btn" onClick={() => setIsEditing(true)}>
+            <button
+              className="sign-action-btn"
+              onClick={() => setIsEditing(true)}
+            >
               Edit
             </button>
           </div>
@@ -52,7 +78,7 @@ export default function StudentProfile() {
             </div>
             <div className="detail-row">
               <label>Date of Birth:</label>
-              <input type="text" value={profile.dateofBirth || ""} readOnly />
+              <input type="text" value={formattedDOB} readOnly />
             </div>
             <div className="detail-row">
               <label>Gender:</label>
@@ -69,15 +95,37 @@ export default function StudentProfile() {
             </div>
             <div className="detail-row">
               <label>Password:</label>
-              <input type="password" value={profile.passwordHash ? "********" : ""} readOnly />
+              <input
+                type="password"
+                value={profile.passwordHash ? "********" : ""}
+                readOnly
+              />
             </div>
           </div>
 
           {/* --- Education --- */}
           <h3 className="section-title">Education</h3>
-          {profile.education ? (
+          {educationArray.length > 0 ? (
             <div className="profile-details">
-              <input type="text" value={profile.education || ""} readOnly />
+              {educationArray.map((edu, index) => (
+                <div key={index} className="education-item">
+                  <div className="detail-row">
+                    <label>Degree:</label>
+                    <input type="text" value={edu.degree || ""} readOnly />
+                  </div>
+                  <div className="detail-row">
+                    <label>College:</label>
+                    <input type="text" value={edu.college || ""} readOnly />
+                  </div>
+                  <div className="detail-row">
+                    <label>Year:</label>
+                    <input type="text" value={edu.year || ""} readOnly />
+                  </div>
+                  {index < educationArray.length - 1 && (
+                    <hr className="divider" />
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <p>No education details available.</p>
@@ -90,9 +138,7 @@ export default function StudentProfile() {
           onCancel={() => setIsEditing(false)}
           onSave={(updatedData) => {
             dispatch(updateStudent(updatedData)).then(() => {
-              dispatch(fetchStudentProfile()); // refresh updated data
-              setIsEditing(false);
-              alert("✅ Profile updated successfully!");
+              setIsEditing(false); // switch back to view mode
             });
           }}
         />
