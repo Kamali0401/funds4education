@@ -19,6 +19,8 @@ export const fetchSponsorListReq = async () => {
 export const fetchSponsorByIdReq = async (id) => {
     try {
         debugger;
+        console.log("Fetching sponsor ID:", id);
+        console.log("URL:", `${ApiKey.Sponsor}/${id}`);
         const res = await publicAxios.get(`${ApiKey.Sponsor}/${id}`);
 
         const _data = res.data;

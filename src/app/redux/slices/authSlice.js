@@ -61,20 +61,21 @@ const authSlice = createSlice({
       // Fulfilled (Success)
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const { username, roleId, id, token, userType } = action.payload;
+        const { username, roleId, userId, token, userType } = action.payload;
 
         // ✅ Save details to state
         state.user = username;
         state.role = roleId;
-        state.id = id;
+        state.id = userId;
         state.token = token || null;
         state.userType = userType;
 
         // ✅ Store locally
         localStorage.setItem("user", username);
         localStorage.setItem("roleId", roleId);
-        localStorage.setItem("id", id);
+        localStorage.setItem("id", userId);
         localStorage.setItem("userType", userType);
+
         if (token) localStorage.setItem("token", token);
       })
       // Rejected (Failed)

@@ -1,40 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import SponsorProfileForm from "./sponsorProfile.jsx";
+import { fetchSponsorById } from "../../../app/redux/slices/SponsorSlice.js";
 import "../../../pages/styles.css";
 
 export default function ViewProfile() {
+  const dispatch = useDispatch();
+  const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Mock sponsor data (later fetch from API)
-  const [profile, setProfile] = useState({
-    sponsorName: "ABC Foundation",
-    sponsorType: "Nonprofit",
-    website: "https://abcfoundation.org",
-    contactPerson: "John Doe",
-    email: "contact@abcfoundation.org",
-    phone: "9876543210",
-    address: "123 Charity Street, Cityville",
-    budget: "$50,000",
-    studentCriteria: "Low-income students with good grades",
-    studyLevels: "Undergraduate"
-  });
+  useEffect(() => {
+    const sponsorId = localStorage.getItem("id"); // logged-in sponsor ID
+    console.log("🔍 Logged-in Sponsor ID:", sponsorId);
+
+    if (sponsorId) {
+      dispatch(fetchSponsorById(sponsorId))
+        .then((data) => {
+          console.log("✅ Sponsor API data:", data);
+
+          // ✅ Combine API data with extra profile fields
+          setProfile({
+            sponsorName: data.organizationName || "",
+            sponsorType: data.organizationType || "",
+            website: data.website || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            contactPerson: data.contactPerson || "",
+            address: data.address || "",
+            budget: data.budget || "",
+            studentCriteria: data.studentCriteria || "",
+            studyLevels: data.studyLevels || "",
+          });
+        })
+        .catch((err) => console.error("❌ Error fetching sponsor:", err));
+    }
+  }, [dispatch]);
+
+  if (!profile) return <p>Loading sponsor profile...</p>;
 
   return (
     <div className="signup-container">
       {!isEditing ? (
         <div className="signup-card">
-          {/* --- Header --- */}
           <div className="profile-header">
             <h2 className="headers">Sponsor Profile</h2>
-            <button
-              className="sign-action-btn"
-              onClick={() => setIsEditing(true)}
-            >
+            <button className="sign-action-btn" onClick={() => setIsEditing(true)}>
               Edit
             </button>
           </div>
 
-          {/* --- Organization Info --- */}
+          {/* Organization Info */}
           <h3 className="section-title">Organization Info</h3>
           <div className="profile-details">
             <div className="detail-row">
@@ -49,13 +64,9 @@ export default function ViewProfile() {
               <label>Website:</label>
               <input type="text" value={profile.website} readOnly />
             </div>
-            <div className="detail-row">
-              <label>Contact Person:</label>
-              <input type="text" value={profile.contactPerson} readOnly />
-            </div>
           </div>
 
-          {/* --- Contact Info --- */}
+          {/* Contact Info */}
           <h3 className="section-title">Contact Info</h3>
           <div className="profile-details">
             <div className="detail-row">
@@ -66,15 +77,19 @@ export default function ViewProfile() {
               <label>Phone:</label>
               <input type="text" value={profile.phone} readOnly />
             </div>
-            <div className="detail-row">
-              <label>Address:</label>
-              <textarea value={profile.address} readOnly />
-            </div>
           </div>
 
-          {/* --- Scholarship Preferences --- */}
-          <h3 className="section-title">Scholarship Preferences</h3>
+          {/* Extra Info */}
+          <h3 className="section-title">Additional Info</h3>
           <div className="profile-details">
+            <div className="detail-row">
+              <label>Contact Person:</label>
+              <input type="text" value={profile.contactPerson} readOnly />
+            </div>
+            <div className="detail-row">
+              <label>Address:</label>
+              <input type="text" value={profile.address} readOnly />
+            </div>
             <div className="detail-row">
               <label>Budget:</label>
               <input type="text" value={profile.budget} readOnly />
@@ -84,7 +99,7 @@ export default function ViewProfile() {
               <input type="text" value={profile.studentCriteria} readOnly />
             </div>
             <div className="detail-row">
-              <label>Supported Levels:</label>
+              <label>Study Levels:</label>
               <input type="text" value={profile.studyLevels} readOnly />
             </div>
           </div>

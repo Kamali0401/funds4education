@@ -5,6 +5,7 @@ import {
     deleteSponsorReq,
     fetchSponsorListReq,
     updateSponsorReq,
+    fetchSponsorByIdReq
 } from "../../../api/Sponsorsignup/Sponsorsignup";
 
 const sponsorSlice = createSlice({
@@ -120,5 +121,16 @@ export const fetchSponsorList = () => async (dispatch) => {
             text: "Failed to load sponsors",
             icon: "error",
         });
+    }
+};
+export const fetchSponsorById = (id) => async (dispatch) => {
+    try {
+        dispatch(setLoading());
+        const res = await fetchSponsorByIdReq(id);
+        dispatch(addData([res.data])); // store as array in Redux (or use a separate 'currentSponsor' state)
+        return res.data;
+    } catch (error) {
+        dispatch(setError());
+        throw error;
     }
 };
