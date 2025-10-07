@@ -9,6 +9,7 @@ export const ApiKey = {
    downloadscholarshipFiles:"/scholarshipApplicationForm/downloadFiles",
    signup:"/userDto",
 SponsorLogin: "/auth/sponsor",
+InstitutionSignup:"/Insutition",
 
 
    Sponsor:"/SponsorDto",

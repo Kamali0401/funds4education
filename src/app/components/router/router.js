@@ -30,7 +30,7 @@ import AddApplicationPage from "../../../pages/student/scholarshipapplication/ad
 //import AddApplicationPage from "../../../pages/student/addApplication";
 import SponsorSettings from "../../../pages/SponsorDashboard/Settings";
 import SponsorSignUpPage from "../../../pages/login/Sponsorsignup.jsx";
-
+import InstitutionSignUpPage from "../../../pages/login/Institutionsignup.jsx";
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -98,6 +98,7 @@ function App() {
           <Route path={RP.addapplication} element={<AddApplicationPage />} />
     <Route path={RP.settings} element={<SponsorSettings />} />
     <Route path={RP.signupSponsor} element={<SponsorSignUpPage />} />
+      <Route path={RP.signupInstitution} element={<InstitutionSignUpPage />} />
         </Routes>
       </Layout>
     </Router>

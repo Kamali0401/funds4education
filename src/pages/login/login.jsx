@@ -34,7 +34,7 @@ export default function LoginPage() {
   setErrors(newErrors);
 
   if (!newErrors.identifier && !newErrors.password) {
-    dispatch(loginUser({ username: identifier, password }))
+dispatch(loginUser({ username: identifier, password, userType }))
       .unwrap()
       .then((res) => {
         // ✅ Redirect based on role
