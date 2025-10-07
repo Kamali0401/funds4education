@@ -1,19 +1,24 @@
+// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { loginReq } from "../../../api/Users/login"; 
-import { sponsorLoginReq } from "../../../api/Users/Sponsorlogin"; // ✅ sponsor API
 
-// 🔹 Async Thunk for login (student or sponsor)
+
+// ✅ Async thunk for login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password, userType }, { rejectWithValue }) => {
+  async ({ username, password }, { rejectWithValue }) => {
     try {
+      const response = await loginReq({ username, password });
+      return response.data; // response = { id, username, role, token? }
+      debugger;
       let response;
 
       // choose API based on userType
       if (userType === "student") {
         response = await loginReq({ username, password });
       } else if (userType === "sponsor") {
-        response = await sponsorLoginReq({ username, password });
+        response = await loginReq({ username, password });
+    
       } else {
         throw new Error("Unsupported user type");
       }
@@ -25,55 +30,54 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+const initialState = {
+  user: null,
+  role: null,
+  id: null,
+  token: null,
+  loading: false,
+  error: null,
+};
+
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    user: null,
-    role: null,
-    id: null,
-    token: null,
-    userType: null,
-    loading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.role = null;
       state.id = null;
       state.token = null;
-      state.userType = null;
       localStorage.clear();
     },
   },
   extraReducers: (builder) => {
     builder
+      // Pending
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
-        state.loading = false;
+      // Success
+     .addCase(loginUser.fulfilled, (state, action) => {
+  state.loading = false;
+  const { username, roleId, id, token } = action.payload;
 
-        // destructure payload
-        const { username, role, id, token, userType } = action.payload;
+  state.user = username;
+  state.role = roleId; // 👈 rename to roleId for clarity
+  state.id = id;
+  state.token = token || null;
 
-        state.user = username;
-        state.role = role;
-        state.id = id;
-        state.token = token || null;
-        state.userType = userType;
-
-        // ✅ save to localStorage
-        localStorage.setItem("user", username);
-        localStorage.setItem("role", role);
-        localStorage.setItem("id", id);
-        localStorage.setItem("userType", userType);
-        if (token) localStorage.setItem("token", token);
-      })
+  // Store locally
+  localStorage.setItem("user", username);
+  localStorage.setItem("roleId", roleId);
+  localStorage.setItem("id", id);
+  if (token) localStorage.setItem("token", token);
+})
+      // Failed
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Invalid credentials";
       });
   },
 });

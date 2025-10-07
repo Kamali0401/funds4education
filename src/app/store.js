@@ -7,6 +7,8 @@ import logger from "redux-logger";
 import  scholarshipApplicationSlice  from "./redux/slices/scholarshipApplicationSlice";
 import authReducer from "./redux/slices/authSlice"
 import InstitutionSignUpPage from "../pages/login/Institutionsignup";
+import signupReducer from "./redux/slices/signupSlice"
+import studentReducer from "./redux/slices/studentSlice"
 const persistConfig = {
   key: "root",
   storage,
@@ -19,6 +21,9 @@ const persistedReducer = persistReducer(
     scholarshipApplicationList: scholarshipApplicationSlice, 
      auth: authReducer,
    //  InstitutionSignupList:InstitutionSignUpPage,
+     signup : signupReducer,
+     student : studentReducer,
+     
 
     
   })
