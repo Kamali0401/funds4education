@@ -7,6 +7,7 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ username, password, userType }, { rejectWithValue }) => {
     try {
+      debugger;
       let response;
 
       // ✅ Choose API based on userType (student/sponsor)
@@ -14,12 +15,31 @@ export const loginUser = createAsyncThunk(
         response = await loginReq({ username, password });
       } else if (userType === "sponsor") {
         response = await loginReq({ username, password });
-      } else {
+      }else if (userType === "institution") {
+        response = await loginReq({ username, password });
+      }
+       else {
         throw new Error("Unsupported user type");
       }
+ const data = response.data;
+
+      // ✅ Store all values in localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("expiresAt", data.expiresAt);
+      localStorage.setItem("roleId", data.roleId);
+      localStorage.setItem("roleName", data.roleName || "");
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("userType", userType);
+      localStorage.setItem("name", data.name);
+
+      // ✅ Optional: store entire object as well
+      //localStorage.setItem("userData", JSON.stringify(data));
 
       // ✅ Return response with userType
-      return { ...response.data, userType };
+      return { ...data, userType };
+      // ✅ Return response with userType
+      //return { ...response.data, userType };
     } catch (error) {
       return rejectWithValue(error.message || "Login failed");
     }

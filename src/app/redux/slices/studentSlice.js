@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getStudentProfile, updateStudentProfile } from "../../../api/Student/student";
+import Swal from "sweetalert2";
 
 const parseJwt = (token) => {
   try {
@@ -9,23 +10,34 @@ const parseJwt = (token) => {
   }
 };
 
-// --- Thunks ---
-
-// ✅ Fetch logged-in student's profile using token
+// ✅ Fetch student profile
 export const fetchStudentProfile = createAsyncThunk(
   "student/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found");
+
       const decoded = parseJwt(token);
       const userId = decoded?.UserId;
-
       if (!userId) throw new Error("Invalid token: missing UserId");
+
       const data = await getStudentProfile(userId);
       return data;
     } catch (err) {
-      return rejectWithValue(err.message || "Failed to fetch student profile");
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Unable to fetch profile data.";
+
+      Swal.fire({
+        icon: "error",
+        title: "Profile Load Failed",
+        text: message,
+        confirmButtonColor: "#d33",
+      });
+
+      return rejectWithValue(message);
     }
   }
 );
@@ -33,12 +45,33 @@ export const fetchStudentProfile = createAsyncThunk(
 // ✅ Update student profile
 export const updateStudent = createAsyncThunk(
   "student/update",
-  async (studentData, { rejectWithValue }) => {
+  async (studentData, { dispatch, rejectWithValue }) => {
     try {
-      const data = await updateStudentProfile(studentData);
-      return data;
+      await updateStudentProfile(studentData);
+      await dispatch(fetchStudentProfile()); // refresh after update
+
+      Swal.fire({
+        icon: "success",
+        title: "Profile Updated",
+        text: "Your profile has been updated successfully.",
+        confirmButtonColor: "#3085d6",
+      });
+
+      return studentData;
     } catch (err) {
-      return rejectWithValue(err);
+      const message =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update profile.";
+
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: message,
+        confirmButtonColor: "#d33",
+      });
+
+      return rejectWithValue(message);
     }
   }
 );
@@ -54,6 +87,7 @@ const studentSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // ✅ Fetch profile
       .addCase(fetchStudentProfile.pending, (state) => {
         state.status = "loading";
       })
@@ -65,8 +99,17 @@ const studentSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(updateStudent.fulfilled, (state, action) => {
-        state.profile = { ...state.profile, ...action.payload };
+
+      // ✅ Update student profile
+      .addCase(updateStudent.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updateStudent.fulfilled, (state) => {
+        state.status = "succeeded";
+      })
+      .addCase(updateStudent.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });
