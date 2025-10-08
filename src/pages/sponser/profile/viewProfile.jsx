@@ -3,14 +3,18 @@ import { useDispatch } from "react-redux";
 import SponsorProfileForm from "./sponsorProfile.jsx";
 import { fetchSponsorById } from "../../../app/redux/slices/SponsorSlice.js";
 import "../../../pages/styles.css";
-
+import { useNavigate } from "react-router-dom";
 export default function ViewProfile() {
   const dispatch = useDispatch();
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+const navigate = useNavigate();
 
+  const handleBack = () => {
+    navigate(-1); // 👈 goes back to the previous page
+  };
   useEffect(() => {
-    const sponsorId = localStorage.getItem("id"); // logged-in sponsor ID
+    const sponsorId = localStorage.getItem("userid"); // logged-in sponsor ID
     console.log("🔍 Logged-in Sponsor ID:", sponsorId);
 
     if (sponsorId) {
@@ -44,9 +48,12 @@ export default function ViewProfile() {
         <div className="signup-card">
           <div className="profile-header">
             <h2 className="headers">Sponsor Profile</h2>
-            <button className="sign-action-btn" onClick={() => setIsEditing(true)}>
-              Edit
-            </button>
+           <div className="button-group">
+    <button className="sign-action-btn"onClick={handleBack}>Back</button>
+    <button className="sign-action-btn" onClick={() => setIsEditing(true)}>
+      Edit
+    </button>
+  </div>
           </div>
 
           {/* Organization Info */}
