@@ -6,6 +6,7 @@ import Header from "../../app/components/header/header";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { logout } from "../../app/redux/slices/authSlice";
 import "../../pages/styles.css";
+import Swal from "sweetalert2";
 
 const scholarships = [
   { title: "STEM Excellence Scholarship", amount: "$5,000", deadline: "May 15, 2024", status: "Submitted" },
@@ -29,7 +30,8 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   // ✅ Get user info from Redux or localStorage
-  const username = useSelector((state) => state.auth.user) || localStorage.getItem("user");
+ const name =
+  useSelector((state) => state.auth.name) || localStorage.getItem("name");
   const roleId = useSelector((state) => state.auth.roleId) || Number(localStorage.getItem("roleId"));
 
   // ✅ Redirect if not a student
@@ -39,10 +41,17 @@ const StudentDashboard = () => {
   }, [roleId, navigate]);
 
   // ✅ Logout handler
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
-  };
+const handleLogout = () => {
+  dispatch(logout());
+  Swal.fire({
+    icon: "success",
+    title: "Logout Successful",
+    text: "You have been logged out.",
+    confirmButtonColor: "#3085d6",
+    timer: 1800,
+  });
+  navigate("/login");
+};
 
   return (
     <div>
@@ -53,7 +62,7 @@ const StudentDashboard = () => {
           <div className="user-info">
             <FaUserCircle size={50} className="text-gray-500" />
             <div>
-              <h2>{username || "Student"}</h2>
+              <h2>{name || "Student"}</h2>
             </div>
           </div>
 
