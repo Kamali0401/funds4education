@@ -5,7 +5,7 @@ import { loginReq } from "../../../api/Users/login";
 // ✅ Async thunk for login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password }, { rejectWithValue }) => {
+  async ({ username, password , userType }, { rejectWithValue }) => {
     try {
       debugger;
       let response;
@@ -81,7 +81,16 @@ const authSlice = createSlice({
       // Success
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const { username, roleId, userId, token, userType } = action.payload;
+        const {
+  name,
+  username,
+  roleId,
+  roleName,
+  userId,
+  token,
+  userType,
+} = action.payload;
+
 
         // ✅ Save details to state
         state.user = username;

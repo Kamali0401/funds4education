@@ -100,6 +100,7 @@ export default function StudentProfileForm({ profile, onCancel, onSave }) {
     
     const loggedInName = localStorage.getItem("name") || "System";
 
+     debugger;
     const payload = {
       id: formData.id,
       firstName: formData.firstName,
