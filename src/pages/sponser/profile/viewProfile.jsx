@@ -14,7 +14,7 @@ const navigate = useNavigate();
     navigate(-1); // 👈 goes back to the previous page
   };
   useEffect(() => {
-    const sponsorId = localStorage.getItem("id"); // logged-in sponsor ID
+    const sponsorId = localStorage.getItem("userid"); // logged-in sponsor ID
     console.log("🔍 Logged-in Sponsor ID:", sponsorId);
 
     if (sponsorId) {
