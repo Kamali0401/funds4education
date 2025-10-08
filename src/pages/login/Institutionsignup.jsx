@@ -230,9 +230,13 @@ const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com(\.(au|edu|in|org))?|e
           <h2>Institution Sign Up</h2>
           <p>
             Already a member?{" "}
-            <Link to={RP.login} className="signup-link">
-              Sign in
-            </Link>
+            <Link 
+  to={RP.login} 
+  state={{ userType: "institution" }} 
+  className="signup-link"
+>
+  Sign in
+</Link>
           </p>
         </div>
 

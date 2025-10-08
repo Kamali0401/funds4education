@@ -3280,17 +3280,27 @@ padding: 8px;
   margin-top: 4px;
 }
 /* --------------------Sponsor  Settings page --------------------------*/
+/* Container */
 .sponsor-settings {
   width: 900px;
   margin: 40px auto;
   font-family: Arial, sans-serif;
+  color: #333;
 }
 
 .sponsor-settings h1 {
   font-size: 1.8rem;
   margin-bottom: 10px;
+  color: #0a3c2f;
 }
 
+.sponsor-settings p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Card Style */
 .settings-card {
   background: #f9f9f9;
   padding: 20px;
@@ -3308,21 +3318,49 @@ padding: 8px;
   color: #0a3c2f;
 }
 
+.settings-card h3 {
+  font-size: 1.1rem;
+  margin: 15px 0 10px;
+  color: #0a3c2f;
+}
+
+/* Labels */
 .settings-card label {
   display: block;
   margin: 10px 0 5px;
   font-weight: 600;
 }
 
+/* Inputs, Textareas, Selects */
 .settings-card input, 
-.settings-card select {
+.settings-card select, 
+.settings-card textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
   margin-bottom: 15px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
+.settings-card textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Checkboxes */
+.settings-card input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.05);
+}
+
+/* Multi-select height */
+.settings-card select[multiple] {
+  height: 100px;
+}
+
+/* Buttons */
 .settings-card button {
   background: #0a3c2f;
   color: white;
@@ -3330,10 +3368,24 @@ padding: 8px;
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.95rem;
+  margin-top: 5px;
+  transition: background 0.2s;
 }
+
 .settings-card button:hover {
   background: #085c46;
 }
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .sponsor-settings {
+    width: 95%;
+    margin: 20px auto;
+    padding: 0 10px;
+  }
+}
+
 /* Sponsor Sign-up Styles */
 .sponsorsignup-container {
   display: flex;
