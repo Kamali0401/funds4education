@@ -58,6 +58,8 @@ const navigation= useNavigate();
     awardsAchievements: "",
     notesComments: "",
     status: "",
+      createdBy: "",
+  modifiedBy: "",
   };
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
@@ -82,9 +84,14 @@ const [newFileSelected, setNewFileSelected] = useState(false);
         dateOfBirth: application.dateOfBirth ? application.dateOfBirth.split("T")[0] : "",
         applicationDate: application.applicationDate ? application.applicationDate.split("T")[0] : today,
         scholarshipId: application.scholarshipId ? parseInt(application.scholarshipId) : "",
+        modifiedBy:localStorage.getItem("name")
       });
     } else {
-      setFormData(initialFormData);
+     setFormData({
+      ...initialFormData,
+      createdBy: localStorage.getItem("name"),  // ✅ set created by current user
+      
+    });
     }
     setErrors({});
   }, [application, show]);

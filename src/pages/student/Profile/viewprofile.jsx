@@ -6,11 +6,16 @@ import {
   updateStudent,
 } from "../../../app/redux/slices/studentSlice.js";
 import StudentProfileForm from "./studentprofile.jsx";
-
+import { useNavigate } from "react-router-dom";
 export default function StudentProfile() {
   const dispatch = useDispatch();
   const { profile, status, error } = useSelector((state) => state.student);
   const [isEditing, setIsEditing] = useState(false);
+const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate(-1); // 👈 goes back to the previous page
+  };
 
   // ✅ Fetch logged-in student's profile on mount
   useEffect(() => {
@@ -49,12 +54,12 @@ export default function StudentProfile() {
         <div className="signup-card">
           <div className="profile-header">
             <h2 className="headers">Student Profile</h2>
-            <button
-              className="sign-action-btn"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit
-            </button>
+            <div className="button-group">
+    <button className="sign-action-btn"onClick={handleBack}>Back</button>
+    <button className="sign-action-btn" onClick={() => setIsEditing(true)}>
+      Edit
+    </button>
+  </div>
           </div>
 
           {/* --- Basic Info --- */}

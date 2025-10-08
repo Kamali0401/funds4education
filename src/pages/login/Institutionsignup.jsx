@@ -24,6 +24,7 @@ const dispatch = useDispatch();
     contactPhone: "",
     numStudentsEligible: "",
     verificationAuthority: "",
+    
   });
 const [step, setStep] = useState(0);
   const [verification, setVerification] = useState({ username: "", password: "" });
@@ -178,14 +179,14 @@ const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com(\.(au|edu|in|org))?|e
       contactPhone: institutionDetails.contactPhone,
       numStudentsEligible: parseInt(institutionDetails.numStudentsEligible, 10),
       verificationAuthority: institutionDetails.verificationAuthority,
-      institutionCreatedBy: "Admin", // can be replaced with logged user if needed
+      institutionCreatedBy: localStorage.getItem("name") || "Admin", // can be replaced with logged user if needed
       institutionCreatedDate: new Date().toISOString(),
-      institutionModifiedBy: "",
+      institutionModifiedBy: localStorage.getItem("name") || "Admin",
       institutionModifiedDate: new Date().toISOString(),
       username: verification.username,
       passwordHash: verification.password, // backend can hash it if needed
       roleId: 4 || localStorage.getItem("roleId"), // assuming 4 = Institution role
-      userCreatedBy: "string",
+      userCreatedBy: localStorage.getItem("name") ||"Admin",
       userCreatedDate: new Date().toISOString(),
     };
 
@@ -196,7 +197,7 @@ const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com(\.(au|edu|in|org))?|e
         // SweetAlert success
         Swal.fire({
           title: "Success!",
-          text: "Sweetheart, Institution inserted successfully 💖",
+          text: "Institution inserted successfully",
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {

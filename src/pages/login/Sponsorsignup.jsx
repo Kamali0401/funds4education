@@ -72,7 +72,7 @@ export default function SponsorSignUpPage() {
         Username: verification.username,
         PasswordHash: verification.password, // or hash it if backend expects hash
         RoleId: userType === "student" ? 1 : userType === "sponsor" ? 2 : 3,
-        CreatedBy: "Admin" // or dynamic user
+        CreatedBy: localStorage.getItem("name") // or dynamic user
     };
 
     try {
