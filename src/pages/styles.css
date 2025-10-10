@@ -3533,3 +3533,19 @@ padding: 8px;
   justify-content: flex-end;
 }
 
+.logout-button {
+  background-color: #396D70; /* red */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #396D70;
+}
+
+

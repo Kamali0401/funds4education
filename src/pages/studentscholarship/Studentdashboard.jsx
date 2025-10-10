@@ -30,8 +30,8 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   // ✅ Get user info from Redux or localStorage
- const name =
-  useSelector((state) => state.auth.name) || localStorage.getItem("name");
+  const name =
+    useSelector((state) => state.auth.name) || localStorage.getItem("name");
   const roleId = useSelector((state) => state.auth.roleId) || Number(localStorage.getItem("roleId"));
 
   // ✅ Redirect if not a student
@@ -41,17 +41,17 @@ const StudentDashboard = () => {
   }, [roleId, navigate]);
 
   // ✅ Logout handler
-const handleLogout = () => {
-  dispatch(logout());
-  Swal.fire({
-    icon: "success",
-    title: "Logout Successful",
-    text: "You have been logged out.",
-    confirmButtonColor: "#3085d6",
-    timer: 1800,
-  });
-  navigate("/login");
-};
+  const handleLogout = () => {
+    dispatch(logout());
+    Swal.fire({
+      icon: "success",
+      title: "Logout Successful",
+      text: "You have been logged out.",
+      confirmButtonColor: "#3085d6",
+      timer: 1800,
+    });
+    navigate("/login");
+  };
 
   return (
     <div>
@@ -76,28 +76,15 @@ const handleLogout = () => {
             <Link to={RP.ViewStudentProfile}>Profile</Link>
             <Link to={RP.studentwallet}>Wallet</Link>
           </nav>
-
           {/* ✅ Logout Button */}
           <div style={{ marginTop: "auto", padding: "1rem" }}>
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                padding: "0.5rem 1rem",
-                backgroundColor: "#e53e3e",
-                color: "#fff",
-                border: "none",
-                borderRadius: "0.5rem",
-                fontWeight: "600",
-                cursor: "pointer",
-                transition: "background 0.3s ease",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#c53030")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#e53e3e")}
-            >
+            <button onClick={handleLogout} className="logout-button">
               Logout
             </button>
-          </div>
+            </div>
+
+            
+          
         </aside>
 
         {/* Main Content */}
