@@ -12,11 +12,10 @@ const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const name =
-    useSelector((state) => state.auth.name) || localStorage.getItem("name");
-  const roleId =
-    useSelector((state) => state.auth.roleId) ||
-    Number(localStorage.getItem("roleId"));
+  // ✅ Get user info from Redux or localStorage
+ const name =
+  useSelector((state) => state.auth.name) || localStorage.getItem("name");
+  const roleId = useSelector((state) => state.auth.roleId) || Number(localStorage.getItem("roleId"));
 
   const { data: scholarships = [], loading = false } =
     useSelector((state) => state.scholarship || {});
@@ -27,32 +26,18 @@ const StudentDashboard = () => {
     else if (roleId !== 1) navigate("/unauthorized");
   }, [roleId, navigate]);
 
-  useEffect(() => {
-    dispatch(fetchScholarshipList());
-  }, [dispatch]);
-  const { applications = [] } = useSelector((state) => state.applications || {});
-
-  const upcomingDeadlines = useMemo(() => {
-    const today = new Date();
-    return scholarships.filter((s) => {
-      if (!s.endDate) return false;
-      const end = new Date(s.endDate);
-      const diffDays = (end - today) / (1000 * 60 * 60 * 24);
-      return diffDays > 0 && diffDays <= 5;
-    });
-  }, [scholarships]);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    Swal.fire({
-      icon: "success",
-      title: "Logout Successful",
-      text: "You have been logged out.",
-      confirmButtonColor: "#3085d6",
-      timer: 1800,
-    });
-    navigate("/login");
-  };
+  // ✅ Logout handler
+const handleLogout = () => {
+  dispatch(logout());
+  Swal.fire({
+    icon: "success",
+    title: "Logout Successful",
+    text: "You have been logged out.",
+    confirmButtonColor: "#3085d6",
+    timer: 1800,
+  });
+  navigate("/login");
+};
 
   return (
     <div>
@@ -77,7 +62,7 @@ const StudentDashboard = () => {
             <Link to={RP.studentwallet}>Wallet</Link>
           </nav>
 
-          {/* Logout Button */}
+          {/* ✅ Logout Button */}
           <div style={{ marginTop: "auto", padding: "1rem" }}>
             <button
               onClick={handleLogout}
@@ -92,14 +77,15 @@ const StudentDashboard = () => {
                 cursor: "pointer",
                 transition: "background 0.3s ease",
               }}
-              onMouseOver={(e) =>
-                (e.target.style.backgroundColor = "#c53030")
-              }
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#c53030")}
               onMouseOut={(e) => (e.target.style.backgroundColor = "#e53e3e")}
             >
               Logout
             </button>
-          </div>
+            </div>
+
+            
+          
         </aside>
 
         {/* Main Content */}

@@ -2,19 +2,22 @@ import React, { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import login from "../../app/assests/login.jpg";
 import "../../pages/styles.css";
-import { FaLinkedin, FaInstagram, FaTwitter, FaPinterest, FaFacebook } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import {
+  FaLinkedin,
+  FaInstagram,
+  FaTwitter,
+  FaPinterest,
+  FaFacebook,
+} from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../app/redux/slices/authSlice";
 
-import { publicAxios } from "../../api/config";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [identifier, setIdentifier] = useState(""); // can be username OR email
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ identifier: "", password: "" });
 
@@ -25,30 +28,30 @@ export default function LoginPage() {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
 
- const handleSubmit = async (e) => {
-  debugger;
-  e.preventDefault();
-  let newErrors = { identifier: "", password: "" };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    let newErrors = { identifier: "", password: "" };
 
-  if (!identifier.trim()) newErrors.identifier = "Username or Email is required";
-  if (!password.trim()) newErrors.password = "Password is required";
-  setErrors(newErrors);
+    if (!identifier.trim())
+      newErrors.identifier = "Username or Email is required";
+    if (!password.trim()) newErrors.password = "Password is required";
 
-  if (!newErrors.identifier && !newErrors.password) {
-dispatch(loginUser({ username: identifier, password, userType }))
-      .unwrap()
-      .then((res) => {
-        // ✅ Redirect based on role
-        const roleId = res.roleId;
-        if (roleId === 1) navigate("/student-dashboard");
-        else if (roleId === 2) navigate("/sponsor-dashboard");
-        else if (roleId === 4) navigate("/institution-dashboard");
-      })
-      .catch(() => {
-        setErrors({ ...newErrors, password: "Invalid credentials ❌" });
-      });
-  }
-};
+    setErrors(newErrors);
+
+    if (!newErrors.identifier && !newErrors.password) {
+      dispatch(loginUser({ username: identifier, password, userType }))
+        .unwrap()
+        .then((res) => {
+          const roleId = res.roleId;
+          if (roleId === 1) navigate("/student-dashboard");
+          else if (roleId === 2) navigate("/sponsor-dashboard");
+          else if (roleId === 4) navigate("/institution-dashboard");
+        })
+        .catch(() => {
+          // Let Redux handle error — don't add local form error here
+        });
+    }
+  };
 
   return (
     <div
@@ -99,7 +102,7 @@ dispatch(loginUser({ username: identifier, password, userType }))
               marginBottom: "1.5rem",
             }}
           >
-            Doesn’t have an account yet?{" "}
+            Don’t have an account yet?{" "}
             <Link
               to={
                 userType === "student"
@@ -115,7 +118,7 @@ dispatch(loginUser({ username: identifier, password, userType }))
             </Link>
           </p>
 
-          {/* User Type */}
+          {/* User Type Radio */}
           <div className="user-radio-group">
             <label className="user-radio-label">
               <input
@@ -152,10 +155,6 @@ dispatch(loginUser({ username: identifier, password, userType }))
           </div>
 
           {/* Username or Email */}
-
-
-
-          {/* Email */}
           <div style={{ marginBottom: "1rem" }}>
             <label
               style={{
@@ -192,68 +191,67 @@ dispatch(loginUser({ username: identifier, password, userType }))
           </div>
 
           {/* Password */}
-          <div style={{ marginBottom: "1rem", position: "relative" }}>
-            <label
-              style={{
-                display: "block",
-                fontSize: "0.875rem",
-                fontWeight: 500,
-                color: "#1D4F56",
-                marginBottom: "0.25rem",
-              }}
-            >
-              Password
-            </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "0.5rem 1rem",
-                fontSize: "14px",
-                border: "1px solid #d1d5db",
-                borderRadius: "0.5rem",
-                outline: "none",
-                height: "36px",
-                boxSizing: "border-box",
-              }}
-            />
+          <div style={{ marginBottom: "1rem" }}>
+  <label
+    style={{
+      display: "block",
+      fontSize: "0.875rem",
+      fontWeight: 500,
+      color: "#1D4F56",
+      marginBottom: "0.25rem",
+    }}
+  >
+    Password
+  </label>
 
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: "absolute",
-                top: "65%",
-                right: "10px",
-                transform: "translateY(-50%)",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "#1D4F56",
-                fontSize: "20px",
-              }}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-            >
-              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
-            </button>
-            {errors.password && (
-              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
-                {errors.password}
-              </p>
-            )}
-            {error && (
-              <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
-                {error}
-              </p>
-            )}
-          </div>
+  <div style={{ position: "relative" }}>
+    <input
+      type={showPassword ? "text" : "password"}
+      placeholder="Enter password"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      style={{
+        width: "100%",
+        padding: "0.5rem 1rem",
+        fontSize: "14px",
+        border: "1px solid #d1d5db",
+        borderRadius: "0.5rem",
+        outline: "none",
+        height: "36px",
+        boxSizing: "border-box",
+      }}
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      style={{
+        position: "absolute",
+        top: "50%", // works now
+        right: "10px",
+        transform: "translateY(-50%)",
+        background: "transparent",
+        border: "none",
+        cursor: "pointer",
+        padding: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#1D4F56",
+        fontSize: "20px",
+      }}
+      aria-label={showPassword ? "Hide password" : "Show password"}
+    >
+      {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+    </button>
+  </div>
+
+  {errors.password && (
+    <p style={{ color: "red", fontSize: "12px", marginTop: "4px" }}>
+      {errors.password}
+    </p>
+  )}
+</div>
 
           {/* Login Button */}
           <button
@@ -274,6 +272,13 @@ dispatch(loginUser({ username: identifier, password, userType }))
           >
             {loading ? "Logging in..." : "LOGIN"}
           </button>
+
+          {/* ✅ Moved error display here */}
+          {error && (
+            <p style={{ color: "red", fontSize: "12px", marginTop: "-0.5rem", marginBottom: "1rem" }}>
+              {error}
+            </p>
+          )}
 
           {/* Divider */}
           <div
@@ -299,19 +304,30 @@ dispatch(loginUser({ username: identifier, password, userType }))
               style={{ flexGrow: 1, height: "1px", backgroundColor: "#d1d5db" }}
             ></div>
           </div>
-         <div className="social-buttons">
-  <button className="social-btn"><FcGoogle /> Google</button>
-  <button className="social-btn"><FaFacebook /> Facebook</button>
-  <button className="social-btn"><FaLinkedin /> LinkedIn</button>
-  <button className="social-btn"><FaInstagram /> Instagram</button>
-  <button className="social-btn"><FaTwitter /> X</button>
-  <button className="social-btn"><FaPinterest /> Pinterest</button>
-</div>
 
-
+          <div className="social-buttons">
+            <button className="social-btn">
+              <FcGoogle /> Google
+            </button>
+            <button className="social-btn">
+              <FaFacebook /> Facebook
+            </button>
+            <button className="social-btn">
+              <FaLinkedin /> LinkedIn
+            </button>
+            <button className="social-btn">
+              <FaInstagram /> Instagram
+            </button>
+            <button className="social-btn">
+              <FaTwitter /> X
+            </button>
+            <button className="social-btn">
+              <FaPinterest /> Pinterest
+            </button>
+          </div>
         </form>
 
-        {/* Right: Optional image */}
+        {/* Right: Login Image */}
         <div
           style={{
             backgroundImage: `url(${login})`,
@@ -319,7 +335,6 @@ dispatch(loginUser({ username: identifier, password, userType }))
             backgroundPosition: "center",
           }}
         ></div>
-
       </div>
     </div>
   );
