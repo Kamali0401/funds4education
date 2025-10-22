@@ -28,6 +28,8 @@ scholarshipPage: "/sponsor-dashboard/scholarshipPage",
   signup: "/signup",
   signupSponsor: "/sponsor/signup",
   signupInstitution: "/institution/signup",
+    resetPassword: "/reset-password",
+
 };
 
 

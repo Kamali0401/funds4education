@@ -1,57 +1,58 @@
-import React, { useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../app/components/header/header";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { logout } from "../../app/redux/slices/authSlice";
+import { fetchScholarshipList } from "../../app/redux/slices/ScholarshipSlice";
 import "../../pages/styles.css";
 import Swal from "sweetalert2";
-
-const scholarships = [
-  { title: "STEM Excellence Scholarship", amount: "$5,000", deadline: "May 15, 2024", status: "Submitted" },
-  { title: "Achievers Scholarship", amount: "$2,500", deadline: "June 1, 2024" },
-  { title: "Community Leader Award", amount: "$1,000", deadline: "June 20, 2024" },
-];
-
-const applications = [
-  { title: "STEM Excellence Scholarship", status: "Submitted" },
-  { title: "Future Innovators Grant", status: "In Review" },
-  { title: "Emerging Talent Scholarship", status: "Pending" },
-];
-
-const deadlines = [
-  { title: "Service to Society Scholarship", date: "April 28, 2024" },
-  { title: "Women in Science Scholarship", date: "May 10, 2024" },
-];
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Get user info from Redux or localStorage
- const name =
-  useSelector((state) => state.auth.name) || localStorage.getItem("name");
-  const roleId = useSelector((state) => state.auth.roleId) || Number(localStorage.getItem("roleId"));
+  const name =
+    useSelector((state) => state.auth.name) || localStorage.getItem("name");
+  const roleId =
+    useSelector((state) => state.auth.roleId) ||
+    Number(localStorage.getItem("roleId"));
 
-  // ✅ Redirect if not a student
+  const { data: scholarships = [], loading = false } =
+    useSelector((state) => state.scholarship || {});
+    debugger;
+
   useEffect(() => {
     if (!roleId) navigate("/login");
     else if (roleId !== 1) navigate("/unauthorized");
   }, [roleId, navigate]);
 
-  // ✅ Logout handler
-const handleLogout = () => {
-  dispatch(logout());
-  Swal.fire({
-    icon: "success",
-    title: "Logout Successful",
-    text: "You have been logged out.",
-    confirmButtonColor: "#3085d6",
-    timer: 1800,
-  });
-  navigate("/login");
-};
+  useEffect(() => {
+    dispatch(fetchScholarshipList());
+  }, [dispatch]);
+  const { applications = [] } = useSelector((state) => state.applications || {});
+
+  const upcomingDeadlines = useMemo(() => {
+    const today = new Date();
+    return scholarships.filter((s) => {
+      if (!s.endDate) return false;
+      const end = new Date(s.endDate);
+      const diffDays = (end - today) / (1000 * 60 * 60 * 24);
+      return diffDays > 0 && diffDays <= 5;
+    });
+  }, [scholarships]);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    Swal.fire({
+      icon: "success",
+      title: "Logout Successful",
+      text: "You have been logged out.",
+      confirmButtonColor: "#3085d6",
+      timer: 1800,
+    });
+    navigate("/login");
+  };
 
   return (
     <div>
@@ -60,7 +61,6 @@ const handleLogout = () => {
         {/* Sidebar */}
         <aside>
           <div className="user-info">
-            <FaUserCircle size={50} className="text-gray-500" />
             <div>
               <h2>{name || "Student"}</h2>
             </div>
@@ -77,7 +77,7 @@ const handleLogout = () => {
             <Link to={RP.studentwallet}>Wallet</Link>
           </nav>
 
-          {/* ✅ Logout Button */}
+          {/* Logout Button */}
           <div style={{ marginTop: "auto", padding: "1rem" }}>
             <button
               onClick={handleLogout}
@@ -92,7 +92,9 @@ const handleLogout = () => {
                 cursor: "pointer",
                 transition: "background 0.3s ease",
               }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#c53030")}
+              onMouseOver={(e) =>
+                (e.target.style.backgroundColor = "#c53030")
+              }
               onMouseOut={(e) => (e.target.style.backgroundColor = "#e53e3e")}
             >
               Logout
@@ -106,21 +108,55 @@ const handleLogout = () => {
             <h1>Scholarship Matches</h1>
           </header>
 
-          {/* Scholarship Matches */}
+          {/* Scholarships Section */}
           <div className="scholarship-section">
-            {scholarships.map((scholarship, index) => (
-              <div key={index} className="scholarship-card">
-                <div>
-                  <h3>{scholarship.title}</h3>
-                  <p>{scholarship.amount}</p>
-                  <p>Deadline: {scholarship.deadline}</p>
-                </div>
-                <button className="btn-view">View</button>
-              </div>
-            ))}
-          </div>
+            {loading ? (
+              <p>Loading scholarships...</p>
+            ) : scholarships.length === 0 ? (
+              <p>No scholarships available.</p>
+            ) : (
+              scholarships.map((s, index) => {
+                const today = new Date();
+                const endDate = s.endDate
+                  ? new Date(s.endDate).toLocaleDateString()
+                  : "N/A";
+                const diffDays = s.endDate
+                  ? Math.ceil(
+                      (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
+                    )
+                  : null;
 
-          {/* Application Status */}
+                return (
+                  <div key={index} className="scholarship-card">
+                    <div>
+                      
+                      <h3>{s.scholarshipName}</h3>
+                      <p>
+                        <strong>Type:</strong> {s.scholarshipType || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Amount:</strong> ₹
+                        {s.scholarshipAmount?.toLocaleString() || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Eligibility:</strong>{" "}
+                        {s.eligibilityCriteria || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Deadline:</strong> {endDate}
+                      </p>
+                      {diffDays > 0 && diffDays <= 5 && (
+                        <p style={{ color: "red", fontWeight: "600" }}>
+                          {diffDays} day(s) left
+                        </p>
+                      )}
+                    </div>
+                    <button className="btn-view">View</button>
+                  </div>
+                );
+              })
+            )}
+          </div>
           <section className="application-status">
             <h2>Application Status</h2>
             {applications.map((app, index) => (
@@ -142,14 +178,20 @@ const handleLogout = () => {
           {/* Upcoming Deadlines */}
           <section className="upcoming-deadlines">
             <h2>Upcoming Deadlines</h2>
-            <ul>
-              {deadlines.map((deadline, index) => (
-                <li key={index}>
-                  <span>• {deadline.title}</span>
-                  <span>{deadline.date}</span>
-                </li>
-              ))}
-            </ul>
+            {upcomingDeadlines.length === 0 ? (
+              <p>No upcoming deadlines this week.</p>
+            ) : (
+              <ul>
+                {upcomingDeadlines.map((deadline, index) => (
+                  <li key={index}>
+                    <span>• {deadline.scholarshipName}</span>
+                    <span>
+                      {new Date(deadline.endDate).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </main>
       </div>

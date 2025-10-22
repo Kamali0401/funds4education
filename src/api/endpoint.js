@@ -11,6 +11,7 @@ export const ApiKey = {
 SponsorLogin: "/auth/sponsor",
 InstitutionSignup:"/Insutition",
  Student:"/student",
+ Scholarship:"/Scholarship",
 
    Sponsor:"/SponsorDto",
 

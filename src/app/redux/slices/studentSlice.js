@@ -1,29 +1,18 @@
+// src/features/student/studentSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getStudentProfile, updateStudentProfile } from "../../../api/Student/student";
 import Swal from "sweetalert2";
-
-// ✅ Decode JWT for user ID
-const parseJwt = (token) => {
-  try {
-    return JSON.parse(atob(token.split(".")[1]));
-  } catch {
-    return null;
-  }
-};
 
 // ✅ Fetch student profile
 export const fetchStudentProfile = createAsyncThunk(
   "student/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("No token found");
+      // ✅ Always use the student record ID (id), not userId
+      const id = localStorage.getItem("id"); // From login response
+      if (!id) throw new Error("No student ID found in localStorage");
 
-      const decoded = parseJwt(token);
-      const userId = decoded?.UserId;
-      if (!userId) throw new Error("Invalid token: missing UserId");
-
-      const data = await getStudentProfile(userId);
+      const data = await getStudentProfile(id);
       return data;
     } catch (err) {
       const message =
@@ -43,12 +32,12 @@ export const fetchStudentProfile = createAsyncThunk(
   }
 );
 
-// ✅ Update student profile (flat payload)
+// ✅ Update student profile
 export const updateStudent = createAsyncThunk(
   "student/update",
   async (studentData, { dispatch, rejectWithValue }) => {
     try {
-      // 🩵 Ensure backend-friendly structure here
+      // 🩵 Ensure backend-friendly structure for date & IDs
       const formatDateForBackend = (dateStr) => {
         if (!dateStr) return null;
         const date = new Date(dateStr);
@@ -61,11 +50,13 @@ export const updateStudent = createAsyncThunk(
       const formattedData = {
         ...studentData,
         dateofBirth: formatDateForBackend(studentData.dateofBirth),
-        roleId: studentData.roleId?.toString() || "1", // ✅ ensure string
+        roleId: studentData.roleId?.toString() || "1",
       };
 
+      // ✅ Update student record
       await updateStudentProfile(formattedData);
-      await dispatch(fetchStudentProfile()); // refresh data
+      // ✅ Refresh profile data after update
+      await dispatch(fetchStudentProfile());
 
       Swal.fire({
         icon: "success",
@@ -93,7 +84,7 @@ export const updateStudent = createAsyncThunk(
   }
 );
 
-// --- Slice ---
+// --- Redux Slice ---
 const studentSlice = createSlice({
   name: "student",
   initialState: {
@@ -107,6 +98,7 @@ const studentSlice = createSlice({
       // ✅ Fetch profile
       .addCase(fetchStudentProfile.pending, (state) => {
         state.status = "loading";
+        state.error = null;
       })
       .addCase(fetchStudentProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
@@ -123,7 +115,6 @@ const studentSlice = createSlice({
       })
       .addCase(updateStudent.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Merge updated data into current profile
         state.profile = { ...state.profile, ...action.payload };
       })
       .addCase(updateStudent.rejected, (state, action) => {

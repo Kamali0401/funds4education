@@ -5,54 +5,49 @@ import { loginReq } from "../../../api/Users/login";
 // ✅ Async thunk for login
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async ({ username, password , userType }, { rejectWithValue }) => {
+  async ({ username, password, userType }, { rejectWithValue }) => {
     try {
-      debugger;
       let response;
 
-      // ✅ Choose API based on userType (student/sponsor)
-      if (userType === "student") {
+      // ✅ Choose API based on userType
+      if (["student", "sponsor", "institution"].includes(userType)) {
         response = await loginReq({ username, password });
-      } else if (userType === "sponsor") {
-        response = await loginReq({ username, password });
-      }else if (userType === "institution") {
-        response = await loginReq({ username, password });
-      }
-       else {
+      } else {
         throw new Error("Unsupported user type");
       }
- const data = response.data;
 
-      // ✅ Store all values in localStorage
+      const data = response.data;
+
+      // ✅ Store token and user info
       localStorage.setItem("token", data.token);
       localStorage.setItem("expiresAt", data.expiresAt);
       localStorage.setItem("roleId", data.roleId);
       localStorage.setItem("roleName", data.roleName || "");
       localStorage.setItem("username", data.username);
-      localStorage.setItem("userId", data.userId);
-      localStorage.setItem("userType", userType);
       localStorage.setItem("name", data.name);
+      localStorage.setItem("userType", userType);
 
-      // ✅ Optional: store entire object as well
-      //localStorage.setItem("userData", JSON.stringify(data));
+      // ✅ Store IDs separately — do not overwrite
+      localStorage.setItem("id", data.id);         // ✅ Student record ID (used for GET /student/:id)
+      localStorage.setItem("userId", data.userId); // ✅ User account ID (for login/auth)
 
-      // ✅ Return response with userType
+      // ✅ Return response data
       return { ...data, userType };
-      // ✅ Return response with userType
-      //return { ...response.data, userType };
     } catch (error) {
-      return rejectWithValue(error.errorMsg || "Login failed");
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
 
 const initialState = {
-  name: null,        // ✅ Student’s actual name (e.g., “Karthik M”)
-  username: null,    // (keep if you need student ID like AK12345)
+  name: null,
+  username: null,
   roleId: null,
-  roleName: null,    // ✅ e.g., “Student”
-  userId: null,
+  roleName: null,
+  id: null,        // ✅ Student record ID
+  userId: null,    // ✅ User account ID
   token: null,
+  userType: null,
   loading: false,
   error: null,
 };
@@ -66,8 +61,10 @@ const authSlice = createSlice({
       state.username = null;
       state.roleId = null;
       state.roleName = null;
+      state.id = null;
       state.userId = null;
       state.token = null;
+      state.userType = null;
       localStorage.clear();
     },
   },
@@ -78,33 +75,39 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // Success
+      // ✅ Success
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        const {
-  name,
-  username,
-  roleId,
-  roleName,
-  userId,
-  token,
-  userType,
-} = action.payload;
 
+        const {
+          name,
+          username,
+          roleId,
+          roleName,
+          id,       // ✅ Student record ID
+          userId,   // ✅ User account ID
+          token,
+          userType,
+        } = action.payload;
 
         // ✅ Save details to state
-        state.user = username;
-        state.role = roleId;
-        state.id = userId;
+        state.name = name;
+        state.username = username;
+        state.roleId = roleId;
+        state.roleName = roleName;
+        state.id = id;
+        state.userId = userId;
         state.token = token || null;
+        state.userType = userType;
 
         // ✅ Store locally for persistence
         localStorage.setItem("name", name || "");
         localStorage.setItem("username", username || "");
         localStorage.setItem("roleId", roleId);
-        localStorage.setItem("id", userId);
+        localStorage.setItem("roleName", roleName || "");
+        localStorage.setItem("id", id);        // ✅ Student record ID
+        localStorage.setItem("userId", userId);
         localStorage.setItem("userType", userType);
-
         if (token) localStorage.setItem("token", token);
       })
       // Failed
