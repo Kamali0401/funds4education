@@ -9,7 +9,7 @@ import authReducer from "./redux/slices/authSlice"
 import InstitutionSignUpPage from "../pages/login/Institutionsignup";
 import signupReducer from "./redux/slices/signupSlice"
 import studentReducer from "./redux/slices/studentSlice";
-import scholarshipReducer from "./redux/slices/sponsorscholarshipSlice"
+import scholarshipReducer from "./redux/slices/sponsorscholarshipSlice";
 const persistConfig = {
   key: "root",
   storage,
@@ -26,6 +26,7 @@ const persistedReducer = persistReducer(
      signup : signupReducer,
      student : studentReducer,
      scholarship:scholarshipReducer,
+     
      
 
     
