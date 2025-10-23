@@ -8,8 +8,8 @@ import  scholarshipApplicationSlice  from "./redux/slices/scholarshipApplication
 import authReducer from "./redux/slices/authSlice"
 import InstitutionSignUpPage from "../pages/login/Institutionsignup";
 import signupReducer from "./redux/slices/signupSlice"
-import studentReducer from "./redux/slices/studentSlice"
-import scholarshipReducer from "./redux/slices/ScholarshipSlice"
+import studentReducer from "./redux/slices/studentSlice";
+import scholarshipReducer from "./redux/slices/sponsorscholarshipSlice"
 const persistConfig = {
   key: "root",
   storage,
@@ -21,6 +21,7 @@ const persistedReducer = persistReducer(
   combineReducers({
     scholarshipApplicationList: scholarshipApplicationSlice, 
      auth: authReducer,
+     scholarshipList:scholarshipReducer,
    //  InstitutionSignupList:InstitutionSignUpPage,
      signup : signupReducer,
      student : studentReducer,

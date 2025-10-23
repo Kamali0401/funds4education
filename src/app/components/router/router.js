@@ -22,8 +22,8 @@ import MessagesPage from "../../../pages/student/message.jsx";
 import MonetizationAds from "../../../pages/MonetizationAds/MonetizationAds";
 import SponsorAdDashboard from "../../../pages/SponsorAdDashboard/SponsorAdDashboard";
 import SponsorApplications from "../../../pages/SponsorDashboard/SponsorApplications";
-import ScholarshipPage from "../../../pages/SponsorDashboard/ScholarshipPage";
-
+import ScholarshipPage from "../../../pages/SponsorDashboard/SponsorScholarship/ScholarshipPage.jsx";
+import AddScholarshipPage from "../../../pages/SponsorDashboard/SponsorScholarship/AddScholarshipPage.jsx"
 import ApplicationsPage from "../../../pages/student/scholarshipapplication/studentApplication.jsx";
 import AddApplicationPage from "../../../pages/student/scholarshipapplication/addApplication.jsx";
 ////import ApplicationsPage from "../../../pages/student/studentApplication";
@@ -100,6 +100,7 @@ function App() {
     <Route path={RP.settings} element={<SponsorSettings />} />
     <Route path={RP.signupSponsor} element={<SponsorSignUpPage />} />
       <Route path={RP.signupInstitution} element={<InstitutionSignUpPage />} />
+      <Route path={RP.addscholarshippage} element={<AddScholarshipPage/>}/>
         <Route path={RP.resetPassword} element={<ResetPassword/>} />
         </Routes>
       </Layout>
