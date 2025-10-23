@@ -25,6 +25,7 @@ const persistedReducer = persistReducer(
     //  InstitutionSignupList:InstitutionSignUpPage,
     signup: signupReducer,
     student: studentReducer,
+    // scholarship:scholarshipReducer,
     scholarship: scholarshipReducer,
 
 
