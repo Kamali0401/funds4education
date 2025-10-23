@@ -14,7 +14,7 @@ SponsorLogin: "/auth/sponsor",
 InstitutionSignup:"/Insutition",
  Student:"/student",
  Scholarship:"/Scholarship",
-
+SponsorScholarship:"/Scholarship",
    Sponsor:"/SponsorDto",
 
   };
