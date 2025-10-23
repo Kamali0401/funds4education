@@ -8,10 +8,12 @@ export const ApiKey = {
    userDto: "/UserDto",
    downloadscholarshipFiles:"/scholarshipApplicationForm/downloadFiles",
    downloadsponsorscholarshipFiles:"/Scholarship/downloadFiles",
-   signup:"/userDto",
+ 
+   signup:"/student",
 SponsorLogin: "/auth/sponsor",
 InstitutionSignup:"/Insutition",
-SponsorScholarship:"/Scholarship",
+ Student:"/student",
+ Scholarship:"/Scholarship",
 
    Sponsor:"/SponsorDto",
 

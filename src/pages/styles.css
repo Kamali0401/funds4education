@@ -3286,17 +3286,27 @@ padding: 8px;
   margin-top: 4px;
 }
 /* --------------------Sponsor  Settings page --------------------------*/
+/* Container */
 .sponsor-settings {
   width: 900px;
   margin: 40px auto;
   font-family: Arial, sans-serif;
+  color: #333;
 }
 
 .sponsor-settings h1 {
   font-size: 1.8rem;
   margin-bottom: 10px;
+  color: #0a3c2f;
 }
 
+.sponsor-settings p {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Card Style */
 .settings-card {
   background: #f9f9f9;
   padding: 20px;
@@ -3314,21 +3324,49 @@ padding: 8px;
   color: #0a3c2f;
 }
 
+.settings-card h3 {
+  font-size: 1.1rem;
+  margin: 15px 0 10px;
+  color: #0a3c2f;
+}
+
+/* Labels */
 .settings-card label {
   display: block;
   margin: 10px 0 5px;
   font-weight: 600;
 }
 
+/* Inputs, Textareas, Selects */
 .settings-card input, 
-.settings-card select {
+.settings-card select, 
+.settings-card textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 6px;
   margin-bottom: 15px;
+  font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
+.settings-card textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Checkboxes */
+.settings-card input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.05);
+}
+
+/* Multi-select height */
+.settings-card select[multiple] {
+  height: 100px;
+}
+
+/* Buttons */
 .settings-card button {
   background: #0a3c2f;
   color: white;
@@ -3336,10 +3374,24 @@ padding: 8px;
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.95rem;
+  margin-top: 5px;
+  transition: background 0.2s;
 }
+
 .settings-card button:hover {
   background: #085c46;
 }
+
+/* Responsive */
+@media screen and (max-width: 600px) {
+  .sponsor-settings {
+    width: 95%;
+    margin: 20px auto;
+    padding: 0 10px;
+  }
+}
+
 /* Sponsor Sign-up Styles */
 .sponsorsignup-container {
   display: flex;
@@ -3508,4 +3560,125 @@ padding: 8px;
 
 .renewable-field label {
   margin: 0;
+}
+.logout-button {
+  background-color: #396D70; /* red */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #396D70;
+}
+
+
+/* =====================================
+   Reset Password Page Styling
+===================================== */
+.auth-container {
+  position: fixed;            /* ✅ Always stays fixed on screen */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;              /* Full screen height */
+  display: flex;
+  justify-content: center;    /* Center horizontally */
+  align-items: center;        /* Center vertically */
+  background-color: #f4f6f9;  /* Subtle background */
+  z-index: 10;                /* Keep it above background content */
+}
+
+.auth-card {
+  background: #ffffff;
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  margin: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.auth-card:hover {
+  transform: translateY(-3px);
+}
+
+.auth-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 1.5rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.auth-input:focus {
+  border-color: #16a34a;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+
+/* ✅ Green Reset Button */
+.auth-button {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #16a34a; /* Green */
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.auth-button:hover {
+  background-color: #15803d; /* Darker green on hover */
+}
+
+/* Success & Error Messages */
+.auth-error {
+  color: #dc2626;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.auth-success {
+  color: #16a34a;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Back to Login link */
+.auth-link {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
 }

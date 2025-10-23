@@ -3,11 +3,24 @@ import "../../pages/styles.css";
 import logo from "../../app/assests/Logo.png"
 import Header from "../../app/components/header/header";
 import student1 from "../../app/assests/Img1.jpg";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import student2 from "../../app/assests/img2.jpg";
 import student3 from "../../app/assests/img3.jpg";
-import { Link } from "react-router-dom"; 
+import { logout } from "../../app/redux/slices/authSlice";
+import { Link } from "react-router-dom";
 import { routePath as RP } from "../../app/components/router/routepath";
 export default function SponsorDashboard() {
+
+ const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    dispatch(logout());
+    
+    navigate("/login");
+  };
+
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
@@ -19,29 +32,33 @@ export default function SponsorDashboard() {
         </div>
 
         <nav className="sidebar-nav">
-  <button className="active">Dashboard</button>
-  <Link to= "/sponsor-dashboard/sponsorapplication" className="nav-link">
-  Sponsored Students
-  </Link>
-  <Link to = "/sponsor-dashboard/scholarshipPage" className="nav-link">
-  Applications
-  </Link>
+          <button className="active">Dashboard</button>
+          <Link to="/sponsor-dashboard/sponsorapplication" className="nav-link">
+            Sponsored Students
+          </Link>
+          <Link to="/sponsor-dashboard/scholarshipPage" className="nav-link">
+            Applications
+          </Link>
 
-  <Link to="/sponsor-dashboard/report" className="nav-link">
-    Reports
-  </Link>
-  <Link to={RP.ViewSponsorProfile} className="nav-link">
-    Profile
-  </Link>
+          <Link to="/sponsor-dashboard/report" className="nav-link">
+            Reports
+          </Link>
+          <Link to={RP.ViewSponsorProfile} className="nav-link">
+            Profile
+          </Link>
+          </nav>
+          {/* ✅ Logout Button */}
+          <div style={{ marginTop: "auto", padding: "1rem" }}>
+            <button onClick={handleLogout} className="logout-button">
+              Logout
+            </button>
+          </div>
 
-  <button>
-  <Link to={RP.settings}>Settings</Link>
-</button>
-</nav>
+        
 
       </aside>
       <div className="main-section">
-       
+
         {/*<headerr className="header">
           <div className="header-left">
             <img src={logo} alt="logo" className="logo" />
@@ -81,14 +98,14 @@ export default function SponsorDashboard() {
                 field: "Engineering",
                 deadline: "May 1, 2024",
                 background: "Women in STEM",
-                avatar:student1,
+                avatar: student1,
               },
               {
                 name: "Community Service Scholarship",
                 field: "$1,500",
                 deadline: "July 10, 2024",
                 background: "Community Service",
-                avatar:student2,
+                avatar: student2,
               },
               {
                 name: "Future Leaders Scholarship",
@@ -100,7 +117,7 @@ export default function SponsorDashboard() {
             ].map((student, i) => (
               <div key={i} className="student-card">
                 <div className="student-info">
-                 <img src={student.avatar} alt={student.name} className="student-avatar" />
+                  <img src={student.avatar} alt={student.name} className="student-avatar" />
                   <div>
                     <h4>{student.name}</h4>
                     <p>{student.field}</p>
@@ -112,30 +129,30 @@ export default function SponsorDashboard() {
               </div>
             ))}
           </div>
-         <div className="applications">
-  <div className="app-header">
-    <h3 className="sub-title">Applications</h3>
-    <button className="download-btn">Download Reports</button>
-  </div>
+          <div className="applications">
+            <div className="app-header">
+              <h3 className="sub-title">Applications</h3>
+              <button className="download-btn">Download Reports</button>
+            </div>
 
-  <div className="app-card">
-    <div className="app-card-header">
-      <p><strong>Vijay T.</strong> - Arts</p>
-      <span className="status">In Review</span>
-    </div>
+            <div className="app-card">
+              <div className="app-card-header">
+                <p><strong>Vijay T.</strong> - Arts</p>
+                <span className="status">In Review</span>
+              </div>
 
-    <div className="app-row">
-      <span>Funds Disbursed</span>
-      <div className="progress-bar">
-        <div className="progress" style={{ width: "60%" }}></div>
-      </div>
-    </div>
+              <div className="app-row">
+                <span>Funds Disbursed</span>
+                <div className="progress-bar">
+                  <div className="progress" style={{ width: "60%" }}></div>
+                </div>
+              </div>
 
-    <div className="app-row">
-      <span>Customize Branding</span>
-    </div>
-  </div>
-</div>
+              <div className="app-row">
+                <span>Customize Branding</span>
+              </div>
+            </div>
+          </div>
 
         </main>
       </div>

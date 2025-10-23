@@ -29,6 +29,8 @@ addscholarshippage:"/sponsor-dashboard/addscholarshipPage",
   signup: "/signup",
   signupSponsor: "/sponsor/signup",
   signupInstitution: "/institution/signup",
+    resetPassword: "/reset-password",
+
 };
 
 

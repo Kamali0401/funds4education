@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../app/components/header/header";
 import { FaGraduationCap } from "react-icons/fa"; // Graduation cap icon
-import tick from "../../app/assests/tickimage.png";
+import tick from "../../app/assests/tickimage.png"; // Import tick image
 
 import {
   LineChart,

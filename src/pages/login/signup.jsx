@@ -95,7 +95,7 @@ export default function SignUpPage() {
   // --- Save (Signup dispatch) ---
   const handleSave = () => {
     if (!validateStep()) return;
-
+  const createdBy = `${basicDetails.firstName} ${basicDetails.lastName}`.trim();
 const payload = {
   FirstName: basicDetails.firstName,
   LastName: basicDetails.lastName,
@@ -105,8 +105,9 @@ const payload = {
   Gender: basicDetails.gender,
   UserName: verification.username,      // ✅ rename
   PasswordHash: verification.password,  // ✅ raw password
-  RoleId: userType === "student" ? 1 : 2,
-  Education: JSON.stringify(educationList) // ✅ backend expects string
+  RoleId: "1",
+  Education: JSON.stringify(educationList) ,// ✅ backend expects string
+  CreatedBy: createdBy,  
 };
 
 
