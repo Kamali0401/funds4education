@@ -2176,9 +2176,10 @@ input:not([type="radio"]) {
   border: 1px solid #ccc;
   border-radius: 6px;
   outline: none;
-  font-size: 14px;
+ /* font-size: 14px;*/
   background-color: #fff;
   transition: border-color 0.2s, box-shadow 0.2s;
+  font-size: 16px;
 }
 
 .form-group select:focus,
@@ -2489,15 +2490,16 @@ display: block;           /* make button block-level */
 }
 .form-group textarea {
 
-  padding: 8px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   background-color: #fff; /* same as inputs in readonly */
   color: #000;
-  font-size: 14px;
+  font-size: 16px;
   resize: none; /* disable resize handle */
   height: 70px; /* adjust for address */
   box-sizing: border-box;
+  
 }
 
 /*stud message*/
@@ -2959,7 +2961,7 @@ padding: 8px;
   gap: 10px;
 }
 
-.btn-view, .btn-edit {
+.btn-view, .btn-edit,.btn-danger {
   padding: 6px 12px;
   border-radius: 6px;
   border: none;
@@ -2981,6 +2983,10 @@ padding: 8px;
 }
 .btn-edit:hover {
   background: #7e22ce;
+}
+.btn-danger {
+  background: #dc3229;
+  color: white;
 }
 
 /* Responsive */
@@ -3480,4 +3486,26 @@ padding: 8px;
   gap: 10px; /* space between buttons */
   justify-content: flex-end;
 }
+.scholarship-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem; /* responsive on small screens */
+}
+.scholarship-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* space between filter and button */
+}
+.renewable-field {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* spacing between label and checkbox */
+  /*padding-top: 1.5rem; /* align visually with other input fields */
+}
 
+.renewable-field label {
+  margin: 0;
+}

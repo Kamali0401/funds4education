@@ -22,6 +22,7 @@ export const routePath = {
 sponsoraddashboard: "/sponsor-ad-dashboard",
 sponsorapplication: "/sponsor-dashboard/sponsorapplication",
 scholarshipPage: "/sponsor-dashboard/scholarshipPage",
+addscholarshippage:"/sponsor-dashboard/addscholarshipPage",
   applications: "/applications",
   addapplication: "/add-application",
   settings: "/settings",
