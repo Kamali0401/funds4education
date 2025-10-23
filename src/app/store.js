@@ -26,7 +26,7 @@ const persistedReducer = persistReducer(
      signup : signupReducer,
      student : studentReducer,
     // scholarship:scholarshipReducer,
-         scholarship: scholarshipReducer, // ✅ use "scholarship"
+         scholarship: scholarshipReducer,
 
      
 
