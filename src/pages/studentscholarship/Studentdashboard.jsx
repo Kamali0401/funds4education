@@ -1,3 +1,4 @@
+// src/pages/student/StudentDashboard.jsx
 import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
@@ -5,34 +6,44 @@ import Header from "../../app/components/header/header";
 import { routePath as RP } from "../../app/components/router/routepath";
 import { logout } from "../../app/redux/slices/authSlice";
 import { fetchScholarshipList } from "../../app/redux/slices/ScholarshipSlice";
-import "../../pages/styles.css";
 import Swal from "sweetalert2";
+import "../../pages/styles.css";
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-   const { applications = [] } = useSelector((state) => state.applications || {});
+  // 🧠 Redux Selectors
+  const { applications = [] } = useSelector((state) => state.applications || {});
 
   const name =
     useSelector((state) => state.auth.name) || localStorage.getItem("name");
+
+  const userId =
+    useSelector((state) => state.auth.userId) ||
+    Number(localStorage.getItem("userId"));
+
   const roleId =
     useSelector((state) => state.auth.roleId) ||
     Number(localStorage.getItem("roleId"));
 
   const { data: scholarships = [], loading = false } =
     useSelector((state) => state.scholarship || {});
-    debugger;
 
-  /*useEffect(() => {
+  // 🧭 Redirect on invalid access
+ /* useEffect(() => {
     if (!roleId) navigate("/login");
     else if (roleId !== 1) navigate("/unauthorized");
   }, [roleId, navigate]);*/
 
+  // 🚀 Fetch Scholarships
   useEffect(() => {
-    dispatch(fetchScholarshipList());
-  }, [dispatch]);
+    if (userId && roleId) {
+      dispatch(fetchScholarshipList(userId, roleId));
+    }
+  }, [dispatch, userId, roleId]);
 
+  // 📅 Upcoming deadlines
   const upcomingDeadlines = useMemo(() => {
     const today = new Date();
     return scholarships.filter((s) => {
@@ -43,6 +54,7 @@ const StudentDashboard = () => {
     });
   }, [scholarships]);
 
+  // 🔐 Logout
   const handleLogout = () => {
     dispatch(logout());
     Swal.fire({
@@ -55,6 +67,8 @@ const StudentDashboard = () => {
     navigate("/login");
   };
 
+  console.log("🎓 Scholarships from Redux:", scholarships);
+
   return (
     <div>
       <Header variant="student-profile" />
@@ -62,9 +76,7 @@ const StudentDashboard = () => {
         {/* Sidebar */}
         <aside>
           <div className="user-info">
-            <div>
-              <h2>{name || "Student"}</h2>
-            </div>
+            <h2>{name || "Student"}</h2>
           </div>
 
           <nav>
@@ -78,7 +90,6 @@ const StudentDashboard = () => {
             <Link to={RP.studentwallet}>Wallet</Link>
           </nav>
 
-          {/* Logout Button */}
           <div style={{ marginTop: "auto", padding: "1rem" }}>
             <button
               onClick={handleLogout}
@@ -93,9 +104,7 @@ const StudentDashboard = () => {
                 cursor: "pointer",
                 transition: "background 0.3s ease",
               }}
-              onMouseOver={(e) =>
-                (e.target.style.backgroundColor = "#c53030")
-              }
+              onMouseOver={(e) => (e.target.style.backgroundColor = "#c53030")}
               onMouseOut={(e) => (e.target.style.backgroundColor = "#e53e3e")}
             >
               Logout
@@ -113,9 +122,7 @@ const StudentDashboard = () => {
           <div className="scholarship-section">
             {loading ? (
               <p>Loading scholarships...</p>
-            ) : scholarships.length === 0 ? (
-              <p>No scholarships available.</p>
-            ) : (
+            ) : Array.isArray(scholarships) && scholarships.length > 0 ? (
               scholarships.map((s, index) => {
                 const today = new Date();
                 const endDate = s.endDate
@@ -123,14 +130,13 @@ const StudentDashboard = () => {
                   : "N/A";
                 const diffDays = s.endDate
                   ? Math.ceil(
-                      (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
-                    )
+                    (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
+                  )
                   : null;
 
                 return (
                   <div key={index} className="scholarship-card">
                     <div>
-                      
                       <h3>{s.scholarshipName}</h3>
                       <p>
                         <strong>Type:</strong> {s.scholarshipType || "N/A"}
@@ -152,12 +158,21 @@ const StudentDashboard = () => {
                         </p>
                       )}
                     </div>
-                    <button className="btn-view">View</button>
+                    <button
+                      className="btn-view"
+                      onClick={() => navigate(`/scholarship/${s.id}`)} // 👈 use id directly
+                    >
+                      View
+                    </button>
                   </div>
                 );
               })
+            ) : (
+              <p>No scholarships available.</p>
             )}
           </div>
+
+          {/* Application Status */}
           <section className="application-status">
             <h2>Application Status</h2>
             {applications.map((app, index) => (
@@ -169,7 +184,9 @@ const StudentDashboard = () => {
                 <br />
                 <div className="status-bar">
                   <div
-                    className={`progress ${app.status.toLowerCase().replace(" ", "-")}`}
+                    className={`progress ${app.status
+                      .toLowerCase()
+                      .replace(" ", "-")}`}
                   ></div>
                 </div>
               </div>
