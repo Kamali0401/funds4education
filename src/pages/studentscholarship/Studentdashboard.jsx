@@ -24,10 +24,10 @@ const StudentDashboard = () => {
 
   const [activeTab, setActiveTab] = useState("live");
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!roleId) navigate("/login");
     else if (roleId !== 1) navigate("/unauthorized");
-  }, [roleId, navigate]);
+  }, [roleId, navigate]);*/
 
   useEffect(() => {
     if (userId && roleId) {

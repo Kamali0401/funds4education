@@ -1,7 +1,10 @@
 // src/app/redux/slices/ScholarshipSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import Swal from "sweetalert2";
-import { fetchScholarshipListReq } from "../../../api/Scholarship/Scholarship";
+import {
+  fetchScholarshipListReq,
+  fetchScholarshipByIdReq, // ✅ add this API function
+} from "../../../api/Scholarship/Scholarship";
 
 const scholarshipSlice = createSlice({
   name: "scholarship",
@@ -9,6 +12,7 @@ const scholarshipSlice = createSlice({
     loading: false,
     error: false,
     data: [],
+    selectedScholarship: null, // ✅ store for one scholarship
   },
   reducers: {
     setLoading: (state) => {
@@ -24,13 +28,27 @@ const scholarshipSlice = createSlice({
       state.loading = false;
       state.error = true;
     },
+    setSelectedScholarship: (state, { payload }) => {
+      state.loading = false;
+      state.error = false;
+      state.selectedScholarship = payload;
+    },
+    clearSelectedScholarship: (state) => {
+      state.selectedScholarship = null;
+    },
   },
 });
 
-export const { setLoading, addData, setError } = scholarshipSlice.actions;
+export const {
+  setLoading,
+  addData,
+  setError,
+  setSelectedScholarship,
+  clearSelectedScholarship,
+} = scholarshipSlice.actions;
 export default scholarshipSlice.reducer;
 
-// ✅ Redux Thunk
+// ✅ Redux Thunk — fetch all
 export const fetchScholarshipList = (userId, roleId) => async (dispatch) => {
   try {
     const role = roleId === 1 ? "student" : roleId === 2 ? "sponsor" : null;
@@ -66,6 +84,44 @@ export const fetchScholarshipList = (userId, roleId) => async (dispatch) => {
         error?.errorMsg ||
         error?.message ||
         "Something went wrong while fetching scholarships.",
+    });
+  }
+};
+
+// ✅ Redux Thunk — fetch single scholarship by ID
+export const fetchScholarshipById = (id) => async (dispatch) => {
+  try {
+    if (!id) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing ID",
+        text: "Scholarship ID is required to fetch details.",
+      });
+      return;
+    }
+
+    dispatch(setLoading());
+    const res = await fetchScholarshipByIdReq(id);
+
+    if (!res.error) {
+      dispatch(setSelectedScholarship(res.data));
+    } else {
+      dispatch(setError());
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: res.errorMsg || "Failed to load scholarship details.",
+      });
+    }
+  } catch (error) {
+    dispatch(setError());
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text:
+        error?.errorMsg ||
+        error?.message ||
+        "Something went wrong while fetching scholarship details.",
     });
   }
 };

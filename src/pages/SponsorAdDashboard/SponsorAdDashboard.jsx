@@ -1,7 +1,6 @@
 import React from "react";
 import Header from "../../app/components/header/header";
 import { FaGraduationCap } from "react-icons/fa"; // Graduation cap icon
-import tick from "../../app/assests/tickImage.png"; // Import tick image
 
 import {
   LineChart,
@@ -33,70 +32,70 @@ const SponsorAdDashboard = () => {
         <p className="subtitle">
           View key metrics and manage your <br />scholarship ad campaigns.
         </p>
- <button className="btn-small-new">
-  + New Campaign
-</button>
+        <button className="btn-small-new">
+          + New Campaign
+        </button>
 
 
 
         {/* Stats Section */}
-    <section className="stats-cards">
-  <div className="stats-card">
-    <p>Total Spend</p>
-    <h3>$2,500</h3>
-  </div>
-  <div className="stats-card">
-    <p>Clicks</p>
-    <h3>12,540</h3>
-  </div>
-  <div className="stats-card">
-    <p>CTR</p>
-    <h3>3.2%</h3>
-  </div>
-  <div className="stats-card">
-    <p>Applications</p>
-    <h3>384</h3>
-  </div>
-</section>
+        <section className="stats-cards">
+          <div className="stats-card">
+            <p>Total Spend</p>
+            <h3>$2,500</h3>
+          </div>
+          <div className="stats-card">
+            <p>Clicks</p>
+            <h3>12,540</h3>
+          </div>
+          <div className="stats-card">
+            <p>CTR</p>
+            <h3>3.2%</h3>
+          </div>
+          <div className="stats-card">
+            <p>Applications</p>
+            <h3>384</h3>
+          </div>
+        </section>
 
 
         <div className="dashboard-sections">
-  {/* Ad Performance Section */}
-  <section className="performance">
-    <h2>Ad Performance</h2>
-    <div className="graph-container">
-      <ResponsiveContainer width="100%" height={200}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="cpc" stroke="#0a3c2f" strokeWidth={2} />
-          <Line type="monotone" dataKey="cpa" stroke="#43a047" strokeWidth={2} />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-    <div className="stats">
-      <div>
-        <p>Current Balance</p>
-        <h3>$2,150.00</h3>
-      </div>
-    </div>
-  </section>
+          {/* Ad Performance Section */}
+          <section className="performance">
+            <h2>Ad Performance</h2>
+            <div className="graph-container">
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={data}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="cpc" stroke="#0a3c2f" strokeWidth={2} />
+                  <Line type="monotone" dataKey="cpa" stroke="#43a047" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="stats">
+              <div>
+                <p>Current Balance</p>
+                <h3>$2,150.00</h3>
+              </div>
+            </div>
+          </section>
 
-  {/* Top Campaigns Section */}
-  <section className="campaigns">
-    <h2>Top Campaigns</h2>
-    <div className="campaign-card">
-      <h3>STEM Scholarship</h3>
-      <p>8,510 Clicks • 250 Applications</p>
-    </div>
-    <div className="campaign-card">
-      <h3>Diversity in Arts</h3>
-      <p>4,030 Clicks • 134 Applications</p>
-    </div>
-  </section>
-</div>
+          {/* Top Campaigns Section */}
+          <section className="campaigns">
+            <h2>Top Campaigns</h2>
+            <div className="campaign-card">
+              <h3>STEM Scholarship</h3>
+              <p>8,510 Clicks • 250 Applications</p>
+            </div>
+            <div className="campaign-card">
+              <h3>Diversity in Arts</h3>
+              <p>4,030 Clicks • 134 Applications</p>
+            </div>
+          </section>
+        </div>
 
         {/* Footer */}
         <div

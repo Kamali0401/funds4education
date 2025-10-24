@@ -5,12 +5,18 @@ import "../pages/styles.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { FaGraduationCap, FaHandHoldingUsd, FaUniversity } from 'react-icons/fa';
 //import studentImg from "../app/assests/studentlogo.png";
-import studentImg from "../app/assests/Homepage.png"
+//import studentImg from "../app/assests/Homepage.png"
+import Image1 from "../app/assests/Image1.png";
+import Image2 from "../app/assests/Image2.png";
+import Image3 from "../app/assests/Image3.png";
+import Image4 from "../app/assests/Image4.png";
+import Image5 from "../app/assests/Image5.png";
 import { routePath as RP } from "../app/components/router/routepath";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 const Home=() =>{
 
   const navigate = useNavigate();
@@ -118,7 +124,11 @@ const Home=() =>{
   const token = localStorage.getItem("token");
   const expiresAt = localStorage.getItem("expiresAt");
   const roleId = localStorage.getItem("roleId");
-
+// 🔹 Special case: student → direct dashboard access
+  if (expectedRole === "1") {
+    navigate(RP.studentdashboard);
+    return;
+  }
   // 🔹 Case 1: No valid token → go to login
   if (!token || token === "" || !expiresAt || !roleId || roleId === "0") {
     navigate(RP.login, { state: { userType } });
@@ -146,6 +156,10 @@ const Home=() =>{
 
 // ✅ Click Handlers
 const handleClickStudent = () => checkAndNavigate("1", "student");
+/*const handleClickStudent=()=>{
+  debugger;
+  navigate(RP.studentdashboard);
+}*/
 const handleClickSponsor = () => checkAndNavigate("2", "sponsor");
 const handleClickInstitution = () => checkAndNavigate("4", "institution");
  const testimonials = [
@@ -174,24 +188,46 @@ const handleClickInstitution = () => checkAndNavigate("4", "institution");
   };
   return (
 
-    <div className="homepage">
+    <div className="homepage" style={{marginTop:"5%"}}>
       <Header/>
       {/* Hero Section */}
-      <section className="hero">
-        <div className="hero-left">
-        <img src={studentImg} alt="Student illustration" />
-        </div>
-        <div className="hero-right">
-          <h1>
-          <span>  Bridging Students with <br />
-            Scholarship Opportunities</span>
-          </h1>
-          <p>
-            Discover and apply for scholarships or support aspiring scholars.
-          </p>
-          <button className="btn-primary">Find Your Path</button>
-        </div>
-      </section>
+    <section className="hero">
+  <div className="hero-left">
+    <Carousel
+      autoPlay
+      infiniteLoop
+      showThumbs={false}
+      showStatus={false}
+      interval={3000}
+    >
+      <div>
+        <img src={Image1} alt="Student illustration" />
+      </div>
+      <div>
+        <img src={Image2} alt="Image 1" />
+      </div>
+      <div>
+        <img src={Image3} alt="Image 2" />
+      </div>
+      <div>
+        <img src={Image4} alt="Image 3" />
+      </div>
+      <div>
+        <img src={Image5} alt="Image 4" />
+      </div>
+    </Carousel>
+  </div>
+
+  <div className="hero-right">
+    <h1>
+      <span>
+        Bridging Students with <br /> Scholarship Opportunities
+      </span>
+    </h1>
+    <p>Discover and apply for scholarships or support aspiring scholars.</p>
+    <button className="btn-primary">Find Your Path</button>
+  </div>
+</section>
 
       {/* Role Cards */}
       <section className="roles">
