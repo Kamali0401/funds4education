@@ -1,60 +1,40 @@
-// src/pages/student/StudentDashboard.jsx
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Header from "../../app/components/header/header";
-import { routePath as RP } from "../../app/components/router/routepath";
 import { logout } from "../../app/redux/slices/authSlice";
 import { fetchScholarshipList } from "../../app/redux/slices/ScholarshipSlice";
 import Swal from "sweetalert2";
-import "../../pages/styles.css";
+import "../../pages/studentscholarship/studentdashboard.css";
+import logoUrl from "../../app/assests/kotak.png";
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // 🧠 Redux Selectors
-  const { applications = [] } = useSelector((state) => state.applications || {});
-
-  const name =
-    useSelector((state) => state.auth.name) || localStorage.getItem("name");
-
-  const userId =
-    useSelector((state) => state.auth.userId) ||
-    Number(localStorage.getItem("userId"));
+  const { data: scholarships = [], loading = false } =
+    useSelector((state) => state.scholarship || {});
 
   const roleId =
     useSelector((state) => state.auth.roleId) ||
     Number(localStorage.getItem("roleId"));
+  const userId =
+    useSelector((state) => state.auth.userId) ||
+    Number(localStorage.getItem("userId"));
 
-  const { data: scholarships = [], loading = false } =
-    useSelector((state) => state.scholarship || {});
+  const [activeTab, setActiveTab] = useState("live");
 
-  // 🧭 Redirect on invalid access
   useEffect(() => {
     if (!roleId) navigate("/login");
     else if (roleId !== 1) navigate("/unauthorized");
   }, [roleId, navigate]);
 
-  // 🚀 Fetch Scholarships
   useEffect(() => {
     if (userId && roleId) {
       dispatch(fetchScholarshipList(userId, roleId));
     }
   }, [dispatch, userId, roleId]);
 
-  // 📅 Upcoming deadlines
-  const upcomingDeadlines = useMemo(() => {
-    const today = new Date();
-    return scholarships.filter((s) => {
-      if (!s.endDate) return false;
-      const end = new Date(s.endDate);
-      const diffDays = (end - today) / (1000 * 60 * 60 * 24);
-      return diffDays > 0 && diffDays <= 5;
-    });
-  }, [scholarships]);
-
-  // 🔐 Logout
   const handleLogout = () => {
     dispatch(logout());
     Swal.fire({
@@ -67,145 +47,227 @@ const StudentDashboard = () => {
     navigate("/login");
   };
 
-  console.log("🎓 Scholarships from Redux:", scholarships);
+  const today = new Date();
+
+  // 🧠 Days left logic
+  const getDaysLeftText = (endDate) => {
+    if (!endDate) return null;
+    const end = new Date(endDate);
+    const diffDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return null;
+    if (diffDays === 0) return "Last day to go";
+    if (diffDays <= 15) return `${diffDays} days to go`;
+    return null;
+  };
+
+  const liveScholarships = useMemo(
+    () => scholarships.filter((s) => s.endDate && new Date(s.endDate) >= today),
+    [scholarships]
+  );
+
+  const upcomingScholarships = useMemo(() => {
+    const nextTenDays = new Date();
+    nextTenDays.setDate(today.getDate() + 10);
+    return scholarships.filter((s) => {
+      if (!s.startDate) return false;
+      const startDate = new Date(s.startDate);
+      return startDate > today && startDate <= nextTenDays;
+    });
+  }, [scholarships]);
+
+  const featuredScholarships = useMemo(() => {
+    return scholarships
+      .filter((s) => !!s.scholarshipAmount && !isNaN(Number(s.scholarshipAmount)))
+      .sort((a, b) => Number(b.scholarshipAmount) - Number(a.scholarshipAmount))
+      .slice(0, 5);
+  }, [scholarships]);
+
+  const featuredIds = useMemo(
+    () => featuredScholarships.map((s) => s.id || s.scholarshipId),
+    [featuredScholarships]
+  );
+
+  const displayedScholarships =
+    activeTab === "upcoming" ? upcomingScholarships : liveScholarships;
 
   return (
     <div>
       <Header variant="student-profile" />
-      <div className="flex h-screen">
+      <div className="dashboard-container">
         {/* Sidebar */}
-        <aside>
-          <div className="user-info">
-            <h2>{name || "Student"}</h2>
+        <aside className="sidebar">
+          <div>
+            <div className="filter-title">Filters</div>
+            <div className="filter-group">
+              {["Class", "Country", "Gender", "Religion", "State", "Course"].map(
+                (label) => (
+                  <div key={label}>
+                    <label>Select {label}</label>
+                    <select>
+                      <option>All</option>
+                    </select>
+                  </div>
+                )
+              )}
+            </div>
           </div>
-
-          <nav>
-            <Link to="/student-dashboard" className="active">
-              Dashboard
-            </Link>
-            <Link to="/applications">Applications</Link>
-            <Link to="/scholarship-match">Matches</Link>
-            <Link to={RP.studentmessages}>Messages</Link>
-            <Link to={RP.ViewStudentProfile}>Profile</Link>
-            <Link to={RP.studentwallet}>Wallet</Link>
-          </nav>
-
-          <div style={{ marginTop: "auto", padding: "1rem" }}>
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                padding: "0.5rem 1rem",
-                backgroundColor: "#e53e3e",
-                color: "#fff",
-                border: "none",
-                borderRadius: "0.5rem",
-                fontWeight: "600",
-                cursor: "pointer",
-                transition: "background 0.3s ease",
-              }}
-              onMouseOver={(e) => (e.target.style.backgroundColor = "#c53030")}
-              onMouseOut={(e) => (e.target.style.backgroundColor = "#e53e3e")}
-            >
-              Logout
-            </button>
-          </div>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
         </aside>
 
         {/* Main Content */}
-        <main>
-          <header>
-            <h1>Scholarship Matches</h1>
-          </header>
-
-          {/* Scholarships Section */}
-          <div className="scholarship-section">
-            {loading ? (
-              <p>Loading scholarships...</p>
-            ) : Array.isArray(scholarships) && scholarships.length > 0 ? (
-              scholarships.map((s, index) => {
-                const today = new Date();
-                const endDate = s.endDate
-                  ? new Date(s.endDate).toLocaleDateString()
-                  : "N/A";
-                const diffDays = s.endDate
-                  ? Math.ceil(
-                      (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
-                    )
-                  : null;
-
-                return (
-                  <div key={index} className="scholarship-card">
-                    <div>
-                      <h3>{s.scholarshipName}</h3>
-                      <p>
-                        <strong>Type:</strong> {s.scholarshipType || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Amount:</strong> ₹
-                        {s.scholarshipAmount?.toLocaleString() || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Eligibility:</strong>{" "}
-                        {s.eligibilityCriteria || "N/A"}
-                      </p>
-                      <p>
-                        <strong>Deadline:</strong> {endDate}
-                      </p>
-                      {diffDays > 0 && diffDays <= 5 && (
-                        <p style={{ color: "red", fontWeight: "600" }}>
-                          {diffDays} day(s) left
-                        </p>
-                      )}
-                    </div>
-                    <button className="btn-view">View</button>
-                  </div>
-                );
-              })
-            ) : (
-              <p>No scholarships available.</p>
-            )}
+        <main className="main-content">
+          {/* Tabs */}
+          <div className="tab-container">
+            <div className="tab-group">
+              <button
+                className={`tab ${activeTab === "live" ? "active" : ""}`}
+                onClick={() => setActiveTab("live")}
+              >
+                Live Scholarships ({liveScholarships.length})
+              </button>
+              <button
+                className={`tab ${activeTab === "upcoming" ? "active" : ""}`}
+                onClick={() => setActiveTab("upcoming")}
+              >
+                Upcoming Scholarships ({upcomingScholarships.length})
+              </button>
+            </div>
           </div>
 
-          {/* Application Status */}
-          <section className="application-status">
-            <h2>Application Status</h2>
-            {applications.map((app, index) => (
-              <div key={index} className="application-item">
-                <div className="flex justify-between mb-1">
-                  <span>{app.title}</span>
-                  <span>{app.status}</span>
-                </div>
-                <br />
-                <div className="status-bar">
-                  <div
-                    className={`progress ${app.status
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </section>
+          {/* Scholarships Grid + Featured Sidebar */}
+          <div className="content-layout">
+            <div className="scholarship-grid">
+              {loading ? (
+                <p>Loading scholarships...</p>
+              ) : displayedScholarships.length === 0 ? (
+                <p>No scholarships found.</p>
+              ) : (
+                displayedScholarships.map((s, i) => {
+                  const startDate = s.startDate ? new Date(s.startDate) : null;
+                  const endDate = s.endDate ? new Date(s.endDate) : null;
+                  const daysLeftText = getDaysLeftText(s.endDate);
+                  const diffDays = endDate
+                    ? Math.ceil((endDate - today) / (1000 * 60 * 60 * 24))
+                    : null;
+                  const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
 
-          {/* Upcoming Deadlines */}
-          <section className="upcoming-deadlines">
-            <h2>Upcoming Deadlines</h2>
-            {upcomingDeadlines.length === 0 ? (
-              <p>No upcoming deadlines this week.</p>
-            ) : (
-              <ul>
-                {upcomingDeadlines.map((deadline, index) => (
-                  <li key={index}>
-                    <span>• {deadline.scholarshipName}</span>
-                    <span>
-                      {new Date(deadline.endDate).toLocaleDateString()}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
+                  return (
+                    <div className="scholarship-card" key={i}>
+                      {/* Featured Tag */}
+                      {!activeTab.includes("upcoming") && isFeatured && (
+                        <div className="featured-tag">Featured</div>
+                      )}
+
+                      {/* 🟠 Days Left Badge (Top Right Corner) */}
+                      {activeTab === "live" && daysLeftText && (
+                        <div
+                          className={`deadline-badge ${
+                            diffDays <= 1 ? "urgent" : "warning"
+                          }`}
+                        >
+                          {daysLeftText}
+                        </div>
+                      )}
+
+                      {/* Header */}
+                      <div className="card-header-flex">
+                        <div className="logo-wrapper">
+                          <img
+                            src={logoUrl}
+                            alt={s.scholarshipName}
+                            className="card-logo"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Scholarship Info */}
+                      <div className="card-body">
+                        <h3 className="card-title">{s.scholarshipName}</h3>
+
+                        <p>
+                          <strong>🏆 Award:</strong> {s.scholarshipAmount || "N/A"}
+                        </p>
+
+                        <p>
+                          <strong>🎓 Eligibility:</strong>{" "}
+                          {s.renewalCriteria || "Not specified"}
+                        </p>
+
+                       {/* ✅ Show Start Date for Upcoming, OR Deadline if no "days to go" badge */}
+{activeTab === "upcoming" ? (
+  <p className="start-line">
+    <strong>🚀 Start Date:</strong>{" "}
+    {startDate
+      ? startDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : "N/A"}
+  </p>
+) : !daysLeftText ? ( // ✅ only show deadline if no "days to go" text
+  <p className="deadline-line">
+    <strong>📅 Deadline:</strong>{" "}
+    {endDate
+      ? endDate.toLocaleDateString("en-GB", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
+      : "N/A"}
+  </p>
+) : null}
+
+
+                        {/* ✅ Fixed Footer */}
+<div className="card-footer-updated">
+  Last Updated On{" "}
+  {s.modifiedDate
+    ? new Date(s.modifiedDate).toISOString().split("T")[0]
+    : "N/A"}
+</div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Featured Sidebar */}
+            <aside className="featured-sidebar">
+              <div className="featured-header">Featured Scholarships</div>
+              {featuredScholarships.length === 0 ? (
+                <p style={{ padding: "12px" }}>No featured scholarships found.</p>
+              ) : (
+                featuredScholarships.map((s, i) => (
+                  <div className="featured-item" key={i}>
+                    <img
+                      src={logoUrl}
+                      alt={s.scholarshipName}
+                      className="featured-logo"
+                    />
+                    <div>
+                      <p className="featured-title">{s.scholarshipName}</p>
+                      {s.endDate ? (
+                        <p className="featured-deadline">
+                          Deadline Date:{" "}
+                          {new Date(s.endDate).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      ) : (
+                        <p className="featured-deadline">No Deadline</p>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </aside>
+          </div>
         </main>
       </div>
     </div>
