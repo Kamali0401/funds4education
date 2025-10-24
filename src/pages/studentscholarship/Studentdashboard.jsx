@@ -24,10 +24,10 @@ const StudentDashboard = () => {
     useSelector((state) => state.scholarship || {});
     debugger;
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (!roleId) navigate("/login");
     else if (roleId !== 1) navigate("/unauthorized");
-  }, [roleId, navigate]);
+  }, [roleId, navigate]);*/
 
   useEffect(() => {
     dispatch(fetchScholarshipList());
