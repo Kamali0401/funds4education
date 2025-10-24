@@ -7,6 +7,7 @@ import { fetchScholarshipList } from "../../app/redux/slices/ScholarshipSlice";
 import Swal from "sweetalert2";
 import "../../pages/studentscholarship/studentdashboard.css";
 import logoUrl from "../../app/assests/kotak.png";
+import { routePath as RP } from "../../app/components/router/routepath";
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
@@ -154,13 +155,17 @@ const StudentDashboard = () => {
                   const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
 
                   return (
-                    <div className="scholarship-card" key={i}>
+                  <div
+                  className="scholarship-card"
+                  key={i}
+                  onClick={() => navigate(RP.scholarshipViewPage)}
+                  >
+
                       {/* Featured Tag */}
                       {!activeTab.includes("upcoming") && isFeatured && (
                         <div className="featured-tag">Featured</div>
                       )}
 
-                      {/* 🟠 Days Left Badge (Top Right Corner) */}
                       {activeTab === "live" && daysLeftText && (
                         <div
                           className={`deadline-badge ${

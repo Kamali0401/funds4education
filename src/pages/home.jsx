@@ -20,7 +20,6 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 const Home=() =>{
 
   const navigate = useNavigate();
- // ✅ Check token and redirect automatically if valid
  const token = localStorage.getItem("token");
     const expiresAt = localStorage.getItem("expiresAt");
     const roleId = localStorage.getItem("roleId");
