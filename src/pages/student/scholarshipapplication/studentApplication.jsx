@@ -7,10 +7,10 @@ import {
 } from "../../../app/redux/slices/scholarshipApplicationSlice";
 import Swal from "sweetalert2";
 import AddApplicationModal from "./addApplication"; // <-- your modal component
-
+import { useLocation } from "react-router-dom";
 const ApplicationsPage = () => {
   const dispatch = useDispatch();
-
+const location = useLocation();
   // Redux state
   const { data: applications = [], loading = false } =
     useSelector((state) => state.scholarshipApplicationList || {});
@@ -38,11 +38,18 @@ const ApplicationsPage = () => {
   const displayedApps = filteredApps.filter((app) =>
     app.firstName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+useEffect(() => {
+  // ✅ Open Add Modal automatically when user came from Apply Now
+  if (location.state?.openAddModal) {
+    setSelectedApplication(null);
+    setShowModal(true);
+  }
+}, [location.state]);
   // Open modal in Add mode
   const handleAddApplication = () => {
     setSelectedApplication(null);
     setShowModal(true);
+    
   };
 
   // Open modal in Edit mode

@@ -56,6 +56,8 @@ const routeToVariant = {
   [RP.sponsorapplication]:"sponsorapplication",
   [RP.SponsorSignUpPage]:"sponsorsignup",
   [RP.scholarshipPage]:"scholarshippage",
+ [RP.scholarshipViewPage]: "scholarshipview",
+  
 };
 
 // 🔹 Layout wrapper
@@ -104,8 +106,8 @@ function App() {
       <Route path={RP.signupInstitution} element={<InstitutionSignUpPage />} />
       <Route path={RP.addscholarshippage} element={<AddScholarshipPage/>}/>
         <Route path={RP.resetPassword} element={<ResetPassword/>} />
-        <Route path="/scholarship-view/:id" element={<ScholarshipViewPage />} />
-        </Routes>
+       <Route path={RP.scholarshipViewPage} element={<ScholarshipViewPage />} />
+ </Routes>
       </Layout>
     </Router>
   );

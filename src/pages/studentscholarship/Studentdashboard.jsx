@@ -130,8 +130,8 @@ const StudentDashboard = () => {
                   : "N/A";
                 const diffDays = s.endDate
                   ? Math.ceil(
-                      (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
-                    )
+                    (new Date(s.endDate) - today) / (1000 * 60 * 60 * 24)
+                  )
                   : null;
 
                 return (
@@ -158,7 +158,12 @@ const StudentDashboard = () => {
                         </p>
                       )}
                     </div>
-                    <button className="btn-view">View</button>
+                    <button
+                      className="btn-view"
+                      onClick={() => navigate(`/scholarship/${s.id}`)} // 👈 use id directly
+                    >
+                      View
+                    </button>
                   </div>
                 );
               })
