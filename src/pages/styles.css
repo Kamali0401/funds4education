@@ -10,23 +10,38 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 60px 80px;
-  gap: 40px;
+  gap: 60px; /* more breathing space between image and text */
 }
 
 .hero-left {
-  flex: 1;
-  max-width: 400px;   /* size of box */
-  height: 300px;
+  flex: 1.2; /* slightly bigger than right side */
+  max-width: 650px; /* increased from 400px */
+  height: 430px; /* taller for bigger carousel */
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
-.hero-left img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain; /* keeps image inside box */
+.carousel.carousel-slider .control-arrow:hover {
+    /* background: rgba(0, 0, 0, 0.2); */
 }
+.carousel .control-next.control-arrow:before {
+    border-left: 8px solid #878181;
+}
+.carousel .control-prev.control-arrow:before {
+    border-right: 8px solid #878181;
+}
+.hero-left .carousel .slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* makes all images consistent */
+  border-radius: 16px;
+  /*box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);*/
+}
+
+.carousel-root {
+  width: 100%;
+}
+
 
 .hero-right h1 {
   font-size: 2.8rem;
@@ -3681,4 +3696,174 @@ padding: 8px;
 
 .auth-link:hover {
   text-decoration: underline;
+}
+/* --------------------Scholarship details page --------------------------*/
+
+/* 🌈 Page Background for Scholarship View */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 🌈 Scholarship Page Full Width */
+.scholarship-page {
+  background: linear-gradient(180deg, #e6f1ff 0%, #f9fcff 100%);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #1c3c64;
+  min-height: 100vh;
+  width: 100%;      /* 🆕 ensure full width */
+  box-sizing: border-box; /* 🆕 include padding in width calculations */
+  overflow-x: hidden;
+}
+
+/* 🔙 Back Button */
+.scholarship-view-back-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 1rem;
+  margin: 2rem 0 1rem 2rem; /* 🆕 aligned left edge */
+  transition: all 0.3s ease;
+}
+
+.scholarship-view-back-btn:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* 🏷️ Page Content Wrapper - 🆕 full width */
+.page-content {
+  width: 100%;
+  padding: 0; /* 🆕 removed side padding */
+  text-align: left;
+  margin: 0;
+}
+h2, h3, p {
+  margin: 0;
+  padding: 0;
+}
+
+/* 🎓 Main Scholarship Title - 🆕 full width, bold and centered */
+.scholarship-view-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: left;
+  margin: 0 auto 1.5rem;
+  background: linear-gradient(90deg, #0066ff, #00b7ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: capitalize;
+  
+  padding: 1rem 0;
+  width: 100%; /* 🆕 full-width title section */
+  background-color: #f0f7ff; /* 🆕 soft title background strip */
+}
+
+/* 💬 Subheading (About The Program) - 🆕 spans full width */
+.scholarship-subtitle {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #0F1F33;
+  margin: 1.5rem 0 0.75rem 0; /* 🆕 removed left margin */
+  padding: 0; /* 🆕 removed all padding */
+  width: 100%; /* 🆕 full width */
+  text-align: cener; /* 🆕 center align for balance with title */
+  border-left: none; /* 🆕 no offset border */
+}
+.highlight-word {
+  color: #F08650;
+}
+
+/* 📝 Description / Text */
+.scholarship-view-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #2f3e51;
+  margin: 0;
+}
+
+/* 📌 Section Header (Eligibility / Amount / etc.) - 🆕 full width */
+.scholarship-eligibility-header {
+  width: 100%;
+  padding: 0;               /* 🆕 remove any padding */
+  margin: 1rem 0 0 0;       /* keeps spacing from previous section */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;   
+  margin-bottom: 1rem;   /* better vertical alignment */
+  color: #1c3c64;
+  background-color: transparent; /* 🆕 remove the white box background */
+  border: none;             /* 🆕 remove any border if present */
+}
+
+.scholarship-eligibility-header h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+  
+  padding-left: 10px;
+  text-transform: capitalize;
+}
+
+/* 🧩 Detail Containers (Cards) - 🆕 now full-width but reduced internal padding */
+.scholarship-detail-container {
+  width: calc(100% - 6rem); /* ✅ aligns perfectly with header that has 2rem side padding */
+  margin: 0 auto 1.5rem; /* ✅ centers under heading */
+  background: #ffffff;
+  padding: 1.25rem 2rem;
+  border-radius: 8px; /* looks cleaner */
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.05);
+  
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scholarship-detail-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* 🗓️ Deadline Info */
+.deadline-info {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.deadline-label {
+  margin-right: 0.5rem;
+}
+
+.deadline-date::before {
+  font-size: 1.1rem;
+  margin-right: 0.3rem;
+}
+
+/* 📱 Responsive - 🆕 keeps full width but smaller padding */
+@media (max-width: 768px) {
+  .scholarship-view-back-btn {
+    margin: 1rem;
+  }
+
+  .scholarship-view-title {
+    font-size: 2rem;
+    padding: 0.75rem 0;
+  }
+
+  .scholarship-subtitle {
+    font-size: 1.2rem;
+    margin: 1rem 0 0.5rem 1rem;
+  }
+
+  .scholarship-detail-container,
+  .scholarship-eligibility-header {
+    padding: 1rem;
+  }
 }

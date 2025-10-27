@@ -1,48 +1,50 @@
 import { publicAxios } from "../config";
 import { ApiKey } from "../endpoint";
 
-// ✅ Get all scholarships
-export const fetchScholarshipListReq = async (userId, role) => {
+export const fetchScholarshipListReq = async (UserId, role) => {
   try {
-    // 🔹 Fallback: get from localStorage if not passed in
-    const id = userId || localStorage.getItem("userId");
-    let userRole = role || localStorage.getItem("role");
-
-    // 🔹 If not found, default to "student"
-    if (!userRole) {
-      userRole = "student";
+    if (!UserId || !role) {
+      throw { error: true, data: [], message: "", errorMsg: "Invalid UserId or role" };
     }
 
-    // 🔹 Convert numeric roles to proper string for backend
-    if (!isNaN(userRole)) {
-      switch (Number(userRole)) {
-        case 1:
-          userRole = "student";
-          break;
-        case 2:
-          userRole = "sponsor";
-          break;
-        default:
-          userRole = "student"; // fallback
-      }
-    }
+    const url = `${ApiKey.Scholarship}?id=${UserId}&role=${role}`;
+    const res = await publicAxios.get(url);
 
+    const _data = Array.isArray(res.data) ? res.data : res.data?.data || [];
+
+    return { error: false, data: _data, message: "", errorMsg: "" };
+  } catch (err) {
+    let errorMsg;
+    if (err.response)
+      errorMsg = err.response.data.detail || err.response.data.message || "Response error";
+    else if (err.request) errorMsg = "Request error";
+    else errorMsg = err.errorMsg || "Something went wrong, please try again later";
+
+    throw { error: true, data: [], message: "", errorMsg };
+  }
+};
+export const fetchScholarshipByIdReq = async (id) => {
+  try {
     if (!id) {
-      throw new Error("Missing userId. Cannot fetch scholarships.");
+      throw { error: true, data: [], message: "", errorMsg: "Invalid Scholarship ID" };
     }
 
-    // ✅ Log for debugging (optional)
-    console.log(
-      `📤 Fetching scholarships for id=${id}, role=${userRole}`
-    );
+    // Assuming your backend endpoint follows this REST pattern:
+    // GET /api/scholarship/:id
+    const url = `${ApiKey.Scholarship}/${id}`;
+    const res = await publicAxios.get(url);
 
-    const response = await publicAxios.get(
-      `${ApiKey.Scholarship}?id=${id}&role=${userRole}`
-    );
+    const _data = res.data?.data || res.data || {};
 
-    return response;
-  } catch (error) {
-    console.error("❌ Error fetching scholarship list:", error);
-    throw error.response?.data || new Error("Failed to fetch scholarships");
+    return { error: false, data: _data, message: "", errorMsg: "" };
+  } catch (err) {
+    let errorMsg;
+    if (err.response)
+      errorMsg =
+        err.response.data.detail || err.response.data.message || "Response error";
+    else if (err.request) errorMsg = "Request error";
+    else errorMsg = err.errorMsg || "Something went wrong, please try again later";
+
+    throw { error: true, data: [], message: "", errorMsg };
   }
 };
