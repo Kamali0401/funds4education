@@ -49,10 +49,8 @@ export const {
 export default scholarshipSlice.reducer;
 
 // ✅ Redux Thunk — fetch all
-export const fetchScholarshipList = (userId, roleId) => async (dispatch) => {
+export const fetchScholarshipList = (userId, role) => async (dispatch) => {
   try {
-    const role = roleId === 1 ? "student" : roleId === 2 ? "sponsor" : null;
-
     if (!userId || !role) {
       Swal.fire({
         icon: "warning",

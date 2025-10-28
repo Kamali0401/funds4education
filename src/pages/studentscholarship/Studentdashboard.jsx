@@ -159,8 +159,10 @@ const StudentDashboard = () => {
                       className="scholarship-card"
                       key={i}
                       onClick={() =>
-                        navigate(`${RP.scholarshipViewPage}?id=${s.id || s.scholarshipId}`)
-                      }                  >
+                        navigate(RP.scholarshipViewPage, {
+                          state: { id: s.id || s.scholarshipId },
+                        })
+                      }                 >
 
                       {/* Featured Tag */}
                       {!activeTab.includes("upcoming") && isFeatured && (
