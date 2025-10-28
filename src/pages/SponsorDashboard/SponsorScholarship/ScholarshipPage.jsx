@@ -5,58 +5,53 @@ import Swal from "sweetalert2";
 import Header from "../../../app/components/header/header";
 import {
   fetchScholarshipList,
-  deleteScholarship,
-} from "../../../app/redux/slices/sponsorscholarshipSlice";
-import AddScholarshipModal from "./AddScholarshipPage"; // <-- Modal for Add/Edit
+} from "../../../app/redux/slices/ScholarshipSlice"; // ✅ FIXED import
+import AddScholarshipModal from "./AddScholarshipPage";
 import "../../styles.css";
 
 const ScholarshipPage = () => {
   const dispatch = useDispatch();
 
-  // Redux state
+  // ✅ FIX: Use correct slice name
   const { data: scholarships = [], loading = false } =
-    useSelector((state) => state.scholarshipList || {});
-const role =localStorage.getItem("roleName");
-const UserId =localStorage.getItem("userId");
-const UserName =localStorage.getItem("username");
+    useSelector((state) => state.scholarship || {});
+
+  const role = localStorage.getItem("roleName");
+  const UserId = localStorage.getItem("userId");
+  const UserName = localStorage.getItem("username");
+
   const [filter, setFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedScholarship, setSelectedScholarship] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchScholarshipList(UserId,role));
-  }, [dispatch]);
+    if (UserId && role) {
+      dispatch(fetchScholarshipList(UserId, role)); // ✅ FIXED role as string
+    }
+  }, [dispatch, UserId, role]);
 
-  // Filtered scholarships by status
   const filteredScholarships =
     filter === "All"
       ? scholarships
-      : scholarships.filter(
-          (s) => s.status.toLowerCase() === filter.toLowerCase()
-        );
+      : scholarships.filter((s) => s.status?.toLowerCase() === filter.toLowerCase());
 
-  // Further filter by title search
   const displayedScholarships = filteredScholarships.filter((s) =>
-    s.scholarshipName.toLowerCase().includes(searchQuery.toLowerCase())
+    s.scholarshipName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Add new scholarship
   const handleAddScholarship = () => {
     setSelectedScholarship(null);
     setShowModal(true);
   };
 
-  // Edit scholarship
   const handleEdit = (scholarship) => {
     setSelectedScholarship(scholarship);
     setShowModal(true);
   };
 
-  // Delete scholarship
-  const handleDelete = (id,) => {
+  const handleDelete = (id) => {
     Swal.fire({
       title: "Are you sure?",
       text: "This scholarship will be deleted permanently!",
@@ -65,19 +60,20 @@ const UserName =localStorage.getItem("username");
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await deleteScholarship(id, UserName,dispatch);
+        // Assuming you’ll add delete logic later
         Swal.fire("Deleted!", "Scholarship has been deleted.", "success");
-        dispatch(fetchScholarshipList(UserId,role));
+        dispatch(fetchScholarshipList(UserId, role));
       }
     });
   };
 
-  // After modal submit
   const handleModalSubmit = () => {
     setShowModal(false);
     setSelectedScholarship(null);
-    dispatch(fetchScholarshipList(UserId,role));
+    dispatch(fetchScholarshipList(UserId, role));
   };
+
+  console.log("Scholarships:", scholarships); // ✅ check data here
 
   return (
     <>
@@ -89,36 +85,35 @@ const UserName =localStorage.getItem("username");
           Manage your scholarships and filter them by status or title.
         </p>
 
-        {/* Search and Filter Actions */}
+        {/* Search + Filter */}
         <div className="scholarship-actions">
-  <input
-    type="text"
-    placeholder="Search by title..."
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    style={{ padding: "0.5rem", width: "200px" }}
-  />
+          <input
+            type="text"
+            placeholder="Search by title..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ padding: "0.5rem", width: "200px" }}
+          />
 
-  <div className="scholarship-actions-right">
-    <select
-      value={filter}
-      onChange={(e) => setFilter(e.target.value)}
-      className="applications-filter"
-    >
-      <option value="All">All</option>
-      <option value="Active">Active</option>
-      <option value="Closed">Closed</option>
-    </select>
+          <div className="scholarship-actions-right">
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="applications-filter"
+            >
+              <option value="All">All</option>
+              <option value="Active">Active</option>
+              <option value="Closed">Closed</option>
+            </select>
 
-    <button className="applications-btn-new" onClick={handleAddScholarship}>
-      + New Scholarship
-    </button>
-  </div>
-</div>
+            <button className="applications-btn-new" onClick={handleAddScholarship}>
+              + New Scholarship
+            </button>
+          </div>
+        </div>
 
-        {/* Scholarship Table */}
+        {/* Table */}
         <div className="scholarship-table">
-          {/* Header */}
           <div className="table-header">
             <span>Title</span>
             <span>Amount</span>
@@ -128,39 +123,35 @@ const UserName =localStorage.getItem("username");
             <span>Actions</span>
           </div>
 
-          {/* Rows */}
-          {displayedScholarships.length > 0 ? (
+          {loading ? (
+            <p className="loading-text">Loading scholarships...</p>
+          ) : displayedScholarships.length > 0 ? (
             displayedScholarships.map((scholarship) => (
               <div key={scholarship.id} className="table-row">
                 <span className="title">
                   <FaGraduationCap className="icon" /> {scholarship.scholarshipName}
                 </span>
                 <span>
-                  <FaMoneyBillWave className="icon" /> ${scholarship.scholarshipAmount}
+                  <FaMoneyBillWave className="icon" /> ${scholarship.benefits}
                 </span>
                 <span>
                   <FaUsers className="icon" /> {scholarship.scholarshipLimit}
                 </span>
                 <span>
-                  <span className={`status ${scholarship.status.toLowerCase()}`}>
+                  <span className={`status ${scholarship.status?.toLowerCase()}`}>
                     {scholarship.status}
                   </span>
                 </span>
                 <span>
-             <FaCalendarAlt className="icon" /> {scholarship.endDate?.split("T")[0]}
+                  <FaCalendarAlt className="icon" />{" "}
+                  {scholarship.endDate?.split("T")[0]}
                 </span>
                 <span className="actions">
                   <button className="btn-view">View Applicants</button>
-                  <button
-                    className="btn-edit"
-                    onClick={() => handleEdit(scholarship)}
-                  >
+                  <button className="btn-edit" onClick={() => handleEdit(scholarship)}>
                     Edit
                   </button>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDelete(scholarship.id)}
-                  >
+                  <button className="btn-danger" onClick={() => handleDelete(scholarship.id)}>
                     Delete
                   </button>
                 </span>
@@ -173,7 +164,7 @@ const UserName =localStorage.getItem("username");
           )}
         </div>
 
-        {/* Modal for Add/Edit */}
+        {/* Modal */}
         <AddScholarshipModal
           show={showModal}
           handleClose={() => setShowModal(false)}

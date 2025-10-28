@@ -1,35 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { fetchScholarshipById } from "../../app/redux/slices/ScholarshipSlice";
 import AddApplicationModal from "../../pages/student/scholarshipapplication/addApplication.jsx";
 
 const ScholarshipViewPage = () => {
-    const [searchParams] = useSearchParams();
-    const id = searchParams.get("id");
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const isLoggedIn = useSelector((state) => state.auth.token);
-    const [showModal, setShowModal] = useState(false);
-    // Application form URL (adjust accordingly)
-    const applicationFormPath = "/applications";  // or whatever path your app uses
-    const loginPath = "/login";
-    const handleApplyNowClick = () => {
-        debugger;
-        if (isLoggedIn) {
-            setShowModal(true);
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
 
-        } else {
-            navigate(loginPath);
-        }
-    };
-    // ✅ Use selectedScholarship instead of data[]
+    // ✅ Get ID from location.state (preferred) OR from ?id query (fallback)
+    const id = location.state?.id || searchParams.get("id");
+
+    const isLoggedIn = useSelector((state) => state.auth.token);
     const { selectedScholarship: scholarship, loading } = useSelector(
         (state) => state.scholarship
     );
 
+    const [showModal, setShowModal] = useState(false);
+
+    const handleApplyNowClick = () => {
+        if (isLoggedIn) {
+            setShowModal(true);
+        } else {
+            navigate("/login");
+        }
+    };
+
     useEffect(() => {
-        if (id) dispatch(fetchScholarshipById(id));
+        if (id) {
+            dispatch(fetchScholarshipById(id));
+        }
     }, [dispatch, id]);
 
     if (loading) return <p>Loading scholarship details...</p>;
@@ -58,7 +60,8 @@ const ScholarshipViewPage = () => {
                 <div className="deadline-info">
                     <span className="deadline-label">Deadline Date:</span>
                     <span className="deadline-date">
-                        📅 {new Date(scholarship.endDate).toLocaleDateString("en-GB", {
+                        📅{" "}
+                        {new Date(scholarship.endDate).toLocaleDateString("en-GB", {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",
@@ -68,26 +71,20 @@ const ScholarshipViewPage = () => {
             </div>
 
             <div className="scholarship-detail-container">
-                {/* Combined Eligibility + Eligibility Criteria */}
                 {(scholarship.eligibility || scholarship.eligibilityCriteria) && (
                     <div className="scholarship-view-text">
-
                         <ul>
-                            {/* First list: eligibility */}
                             {scholarship.eligibility &&
                                 scholarship.eligibility
                                     .split(/\r?\n/)
                                     .filter(Boolean)
                                     .map((line, idx) => <li key={`elig-${idx}`}>{line.trim()}</li>)}
 
-                            {/* Second list: eligibilityCriteria */}
                             {scholarship.eligibilityCriteria &&
                                 scholarship.eligibilityCriteria
                                     .split(/\. |\r?\n/)
                                     .filter(Boolean)
-                                    .map((line, idx) => (
-                                        <li key={`criteria-${idx}`}>{line.trim()}</li>
-                                    ))}
+                                    .map((line, idx) => <li key={`criteria-${idx}`}>{line.trim()}</li>)}
                         </ul>
                     </div>
                 )}
@@ -99,7 +96,7 @@ const ScholarshipViewPage = () => {
             </div>
 
             <div className="scholarship-detail-container">
-                <p className="scholarship-view-text">₹{scholarship.scholarshipAmount}</p>
+                <p className="scholarship-view-text">₹{scholarship.benefits}</p>
             </div>
 
             {/* Documents Section */}
@@ -111,9 +108,9 @@ const ScholarshipViewPage = () => {
                 {scholarship.documents && scholarship.documents.trim().length > 0 ? (
                     <ul className="scholarship-view-text">
                         {scholarship.documents
-                            .split(/\r?\n/) // split by both \r\n and \n
-                            .map((line) => line.trim()) // remove whitespace
-                            .filter((line) => line.length > 0) // remove empty lines
+                            .split(/\r?\n/)
+                            .map((line) => line.trim())
+                            .filter((line) => line.length > 0)
                             .map((line, index) => (
                                 <li key={index}>{line}</li>
                             ))}
@@ -123,7 +120,6 @@ const ScholarshipViewPage = () => {
                 )}
             </div>
 
-
             {/* Web Portal Section (How can you Apply?) */}
             {scholarship.webportaltoApply && (
                 <>
@@ -131,12 +127,14 @@ const ScholarshipViewPage = () => {
                         <h3>How can you Apply?</h3>
                     </div>
                     <div className="scholarship-detail-container">
-                        {/* 🧩 Split by newline or ". " and show bullet points */}
                         <ul className="scholarship-view-text">
                             {scholarship.webportaltoApply
-                                .split(/\r?\n|\. /) // split by line or ". "
+                                .split(/\r?\n|\. /)
                                 .map((line) => line.trim())
-                                .filter((line) => line.length > 0 && !line.toLowerCase().startsWith("note"))
+                                .filter(
+                                    (line) =>
+                                        line.length > 0 && !line.toLowerCase().startsWith("note")
+                                )
                                 .map((line, idx) => (
                                     <li key={idx}>{line}</li>
                                 ))}
@@ -146,7 +144,8 @@ const ScholarshipViewPage = () => {
                         <div style={{ textAlign: "center", marginTop: "20px" }}>
                             <button
                                 style={{
-                                    background: "linear-gradient(to right, rgb(14, 42, 206), rgb(59, 183, 191))",
+                                    background:
+                                        "linear-gradient(to right, rgb(14, 42, 206), rgb(59, 183, 191))",
                                     color: "#fff",
                                     border: "none",
                                     borderRadius: "6px",
@@ -166,6 +165,7 @@ const ScholarshipViewPage = () => {
                     </div>
                 </>
             )}
+
             {/* Contact Details Section */}
             {scholarship.contactDetails && (
                 <>
@@ -173,14 +173,16 @@ const ScholarshipViewPage = () => {
                         <h3>Contact Details</h3>
                     </div>
                     <div className="scholarship-detail-container">
-                        {/* 🧩 Use <pre> or replace \n with <br/> to show line-by-line */}
-                        <p className="scholarship-view-text" style={{ whiteSpace: "pre-line" }}>
+                        <p
+                            className="scholarship-view-text"
+                            style={{ whiteSpace: "pre-line" }}
+                        >
                             {scholarship.contactDetails}
                         </p>
                     </div>
-
                 </>
             )}
+
             {/* 📅 Important Dates Section */}
             <div className="scholarship-eligibility-header">
                 <h3>Important Dates</h3>
@@ -198,13 +200,13 @@ const ScholarshipViewPage = () => {
                         : "Not specified"}
                 </p>
             </div>
+
             <AddApplicationModal
                 show={showModal}
                 handleClose={() => setShowModal(false)}
-                onSubmit={() => setShowModal(false)} // or handle form submit
+                onSubmit={() => setShowModal(false)}
                 application={null}
             />
-
         </div>
     );
 };
