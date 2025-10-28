@@ -2,7 +2,7 @@ import React from "react";
 import "./SponsorDashboardReport.css";
 import Header from "../../app/components/header/header";
 import { FaGraduationCap } from "react-icons/fa"; // graduation cap icon
-import tickImage from "../../app/assests/tickImage.png";
+import tickImage from "../../app/assests/tickimage.png";
 import {
   LineChart,
   Line,
