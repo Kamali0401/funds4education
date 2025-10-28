@@ -106,7 +106,7 @@ function App() {
       <Route path={RP.signupInstitution} element={<InstitutionSignUpPage />} />
       <Route path={RP.addscholarshippage} element={<AddScholarshipPage/>}/>
         <Route path={RP.resetPassword} element={<ResetPassword/>} />
-       <Route path={RP.scholarshipViewPage} element={<ScholarshipViewPage />} />
+       <Route path={RP.scholarshipViewPage} element={< ScholarshipViewPage/>} />
  </Routes>
       </Layout>
     </Router>
