@@ -27,7 +27,9 @@ export default function LoginPage() {
 
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
-
+const handleOAuthLogin = (provider) => {
+  window.location.href = `https://yourapi.com/api/auth/${provider}/login`;
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = { identifier: "", password: "" };
@@ -306,22 +308,22 @@ export default function LoginPage() {
           </div>
 
           <div className="social-buttons">
-            <button className="social-btn">
+            <button className="social-btn" onClick={() => handleOAuthLogin("google")}>
               <FcGoogle /> Google
             </button>
-            <button className="social-btn">
+            <button className="social-btn" onClick={() => handleOAuthLogin("facebook")}>
               <FaFacebook /> Facebook
             </button>
-            <button className="social-btn">
+            <button className="social-btn"onClick={() => handleOAuthLogin("linkedin")}>
               <FaLinkedin /> LinkedIn
             </button>
-            <button className="social-btn">
+            <button className="social-btn"onClick={() => handleOAuthLogin("instagram")}>
               <FaInstagram /> Instagram
             </button>
-            <button className="social-btn">
+            <button className="social-btn"onClick={() => handleOAuthLogin("twitter")}>
               <FaTwitter /> X
             </button>
-            <button className="social-btn">
+            <button className="social-btn"onClick={() => handleOAuthLogin("pinterest")}>
               <FaPinterest /> Pinterest
             </button>
           </div>

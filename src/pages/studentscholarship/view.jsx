@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { fetchScholarshipById } from "../../app/redux/slices/ScholarshipSlice";
 import AddApplicationModal from "../../pages/student/scholarshipapplication/addApplication.jsx";
 
 const ScholarshipViewPage = () => {
-    const { id } = useParams();
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const isLoggedIn = useSelector((state) => state.auth.token);

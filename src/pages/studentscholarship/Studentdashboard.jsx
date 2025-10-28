@@ -155,11 +155,12 @@ const StudentDashboard = () => {
                   const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
 
                   return (
-                  <div
-                  className="scholarship-card"
-                  key={i}
-                  onClick={() => navigate(RP.scholarshipViewPage)}
-                  >
+                    <div
+                      className="scholarship-card"
+                      key={i}
+                      onClick={() =>
+                        navigate(`${RP.scholarshipViewPage}?id=${s.id || s.scholarshipId}`)
+                      }                  >
 
                       {/* Featured Tag */}
                       {!activeTab.includes("upcoming") && isFeatured && (
@@ -168,9 +169,8 @@ const StudentDashboard = () => {
 
                       {activeTab === "live" && daysLeftText && (
                         <div
-                          className={`deadline-badge ${
-                            diffDays <= 1 ? "urgent" : "warning"
-                          }`}
+                          className={`deadline-badge ${diffDays <= 1 ? "urgent" : "warning"
+                            }`}
                         >
                           {daysLeftText}
                         </div>
@@ -200,39 +200,39 @@ const StudentDashboard = () => {
                           {s.renewalCriteria || "Not specified"}
                         </p>
 
-                       {/* ✅ Show Start Date for Upcoming, OR Deadline if no "days to go" badge */}
-{activeTab === "upcoming" ? (
-  <p className="start-line">
-    <strong>🚀 Start Date:</strong>{" "}
-    {startDate
-      ? startDate.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      : "N/A"}
-  </p>
-) : !daysLeftText ? ( // ✅ only show deadline if no "days to go" text
-  <p className="deadline-line">
-    <strong>📅 Deadline:</strong>{" "}
-    {endDate
-      ? endDate.toLocaleDateString("en-GB", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      : "N/A"}
-  </p>
-) : null}
+                        {/* ✅ Show Start Date for Upcoming, OR Deadline if no "days to go" badge */}
+                        {activeTab === "upcoming" ? (
+                          <p className="start-line">
+                            <strong>🚀 Start Date:</strong>{" "}
+                            {startDate
+                              ? startDate.toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
+                              : "N/A"}
+                          </p>
+                        ) : !daysLeftText ? ( // ✅ only show deadline if no "days to go" text
+                          <p className="deadline-line">
+                            <strong>📅 Deadline:</strong>{" "}
+                            {endDate
+                              ? endDate.toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
+                              : "N/A"}
+                          </p>
+                        ) : null}
 
 
                         {/* ✅ Fixed Footer */}
-<div className="card-footer-updated">
-  Last Updated On{" "}
-  {s.modifiedDate
-    ? new Date(s.modifiedDate).toISOString().split("T")[0]
-    : "N/A"}
-</div>
+                        <div className="card-footer-updated">
+                          Last Updated On{" "}
+                          {s.modifiedDate
+                            ? new Date(s.modifiedDate).toISOString().split("T")[0]
+                            : "N/A"}
+                        </div>
                       </div>
                     </div>
                   );
