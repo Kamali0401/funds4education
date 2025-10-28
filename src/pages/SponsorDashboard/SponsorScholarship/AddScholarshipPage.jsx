@@ -28,6 +28,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         scholarshipName: "",
         scholarshipType: "",
         description: "",
+        eligibility: "",
         eligibilityCriteria: "",
         applicableCourses: "",
         applicableDepartments: "",
@@ -192,6 +193,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     };
 
     const handleSubmit = async (e) => {
+        debugger;
         e.preventDefault();
         if (!validateForm()) return;
 
@@ -210,6 +212,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         try {
             // --- Create or Update Scholarship ---
             if (scholarship) {
+                debugger;
                 scholarshipId = scholarship.id;
                 await updateScholarship(payload, dispatch);
             } else {
@@ -352,7 +355,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                             </div>
 
                             <div className="form-group col-6">
-                                <label>Scholarship Amount</label>
+                                <label>Benefits</label>
                                 <input
                                     type="text"
                                     name="scholarshipAmount"
@@ -372,7 +375,16 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     placeholder="Scholarship details..."
                                 />
                             </div>
+                            <div className="form-group col-6">
+                                <label>Eligibility</label>
+                                <input
+                                    type="text"
+                                    name="eligibility"
+                                    value={formData.eligibility || ""}
+                                    onChange={handleChange}
 
+                                />
+                            </div>
                             <div className="form-group col-6">
                                 <label>Eligibility Criteria</label>
                                 <textarea
@@ -590,7 +602,54 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     maxLength={5} // Prevent more than 5 characters
                                     inputMode="numeric" // Brings up numeric keypad on mobile
                                 />
+
                             </div>
+                            <div className="row">
+                                <div className="form-group col-6">
+                                    <label>Eligibility</label>
+                                    <input
+                                        type="text"
+                                        name="eligibility"
+                                        value={formData.eligibility || ""}
+                                        onChange={handleChange}
+                                        placeholder="Enter eligibility details"
+                                    />
+                                </div>
+
+                                <div className="form-group col-6">
+                                    <label>Web Portal to Apply</label>
+                                    <input
+                                        type="text"
+                                        name="webportaltoApply"
+                                        value={formData.webportaltoApply || ""}
+                                        onChange={handleChange}
+                                        placeholder="Enter application website link"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="form-group col-6">
+                                    <label>Can Apply</label>
+                                    <textarea
+                                        name="canApply"
+                                        value={formData.canApply || ""}
+                                        onChange={handleChange}
+                                        placeholder="Who can apply for this scholarship?"
+                                    />
+                                </div>
+
+                                <div className="form-group col-6">
+                                    <label>Contact Details</label>
+                                    <textarea
+                                        name="contactDetails"
+                                        value={formData.contactDetails || ""}
+                                        onChange={handleChange}
+                                        placeholder="Email / Phone / Address"
+                                    />
+                                </div>
+                            </div>
+
                             <div className="form-group col-4">
                                 <label>Upload Documents</label>
                                 <input

@@ -166,7 +166,7 @@ const StudentDashboard = () => {
 
       <div className="dashboard-container">
         {/* Sidebar */}
-        <aside className="sidebar">
+        {/*<aside className="sidebar">
           <div>
             <div className="filter-title">Filters</div>
 
@@ -239,7 +239,7 @@ const StudentDashboard = () => {
               ) : (
                 displayedScholarships.map((s, i) => {
                   const startDate = s.startDate ? new Date(s.startDate) : null;
-                  const endDate = s.endDate ? new Date(s.endDate) : null;
+                  const endDate = s.endDate ? new Date(s.endDaste) : null;
                   const daysLeftText = getDaysLeftText(s.endDate);
                   const diffDays = endDate ? Math.ceil((endDate - today) / 86400000) : null;
                   const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
