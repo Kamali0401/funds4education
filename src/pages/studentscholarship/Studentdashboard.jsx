@@ -96,7 +96,7 @@ const StudentDashboard = () => {
       <Header variant="student-profile" />
       <div className="dashboard-container">
         {/* Sidebar */}
-        <aside className="sidebar">
+        {/*<aside className="sidebar">
           <div>
             <div className="filter-title">Filters</div>
             <div className="filter-group">
@@ -115,7 +115,7 @@ const StudentDashboard = () => {
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
-        </aside>
+        </aside>*/}
 
         {/* Main Content */}
         <main className="main-content">
@@ -147,7 +147,7 @@ const StudentDashboard = () => {
               ) : (
                 displayedScholarships.map((s, i) => {
                   const startDate = s.startDate ? new Date(s.startDate) : null;
-                  const endDate = s.endDate ? new Date(s.endDate) : null;
+                  const endDate = s.endDate ? new Date(s.endDaste) : null;
                   const daysLeftText = getDaysLeftText(s.endDate);
                   const diffDays = endDate
                     ? Math.ceil((endDate - today) / (1000 * 60 * 60 * 24))
