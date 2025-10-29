@@ -3727,7 +3727,7 @@ html, body {
   color: #007bff;
   cursor: pointer;
   font-size: 1rem;
-  margin: 2rem 0 1rem 2rem; /* 🆕 aligned left edge */
+  margin: 2rem 0 1rem 0rem; /* 🆕 aligned left edge */
   transition: all 0.3s ease;
 }
 
@@ -3747,13 +3747,15 @@ h2, h3, p {
   margin: 0;
   padding: 0;
 }
-
+.schololarship-viwe-pad{
+  padding-left: 3% !important;
+}
 /* 🎓 Main Scholarship Title - 🆕 full width, bold and centered */
 .scholarship-view-title {
   font-size: 2.5rem;
   font-weight: 800;
   letter-spacing: 0.5px;
-  text-align: left;
+  text-align: center;
   margin: 0 auto 1.5rem;
   background: linear-gradient(90deg, #0066ff, #00b7ff);
   -webkit-background-clip: text;
@@ -3763,6 +3765,7 @@ h2, h3, p {
   padding: 1rem 0;
   width: 100%; /* 🆕 full-width title section */
   background-color: #f0f7ff; /* 🆕 soft title background strip */
+  
 }
 
 /* 💬 Subheading (About The Program) - 🆕 spans full width */
@@ -3771,10 +3774,11 @@ h2, h3, p {
   font-weight: 600;
   color: #0F1F33;
   margin: 1.5rem 0 0.75rem 0; /* 🆕 removed left margin */
-  padding: 0; /* 🆕 removed all padding */
+
   width: 100%; /* 🆕 full width */
   text-align: cener; /* 🆕 center align for balance with title */
   border-left: none; /* 🆕 no offset border */
+  padding-left: 1%;
 }
 .highlight-word {
   color: #F08650;
@@ -3786,6 +3790,7 @@ h2, h3, p {
   line-height: 1.7;
   color: #2f3e51;
   margin: 0;
+  /*padding-left:5%*/
 }
 
 /* 📌 Section Header (Eligibility / Amount / etc.) - 🆕 full width */
@@ -3835,6 +3840,7 @@ h2, h3, p {
   font-size: 1rem;
   font-weight: 600;
   color: #007bff;
+  padding-right:2%;
 }
 
 .deadline-label {
