@@ -2,9 +2,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Swal from "sweetalert2";
 import {
-  fetchScholarshipByStatusReq,   // ✅ existing API (live/upcoming)
-  fetchScholarshipByIdReq,        // ✅ existing API (by ID)
-  fetchFeaturedScholarshipsReq,   // ✅ NEW API for featured
+  fetchScholarshipListReq,
+  fetchScholarshipByStatusReq,
+  fetchScholarshipByIdReq,
+  fetchFeaturedScholarshipsReq,
 } from "../../../api/Scholarship/Scholarship";
 
 const scholarshipSlice = createSlice({
@@ -15,7 +16,8 @@ const scholarshipSlice = createSlice({
     data: {
       live: [],
       upcoming: [],
-      featured: [], // ✅ new field
+      featured: [],
+      sponsor: [],
     },
     selectedScholarship: null,
   },
@@ -27,18 +29,23 @@ const scholarshipSlice = createSlice({
     addData: (state, { payload }) => {
       state.loading = false;
       state.error = false;
-
-      // ✅ Merge live/upcoming with existing featured
       state.data = {
-        live: payload.live || [],
-        upcoming: payload.upcoming || [],
-        featured: state.data.featured || [],
+        ...state.data,
+        live: Array.isArray(payload.live) ? payload.live : state.data.live,
+        upcoming: Array.isArray(payload.upcoming)
+          ? payload.upcoming
+          : state.data.upcoming,
       };
     },
     addFeatured: (state, { payload }) => {
       state.loading = false;
       state.error = false;
       state.data.featured = Array.isArray(payload) ? payload : [];
+    },
+    addSponsorScholarship: (state, { payload }) => {
+      state.loading = false;
+      state.error = false;
+      state.data.sponsor = Array.isArray(payload) ? payload : [];
     },
     setError: (state) => {
       state.loading = false;
@@ -59,6 +66,7 @@ export const {
   setLoading,
   addData,
   addFeatured,
+  addSponsorScholarship,
   setError,
   setSelectedScholarship,
   clearSelectedScholarship,
@@ -67,7 +75,7 @@ export const {
 export default scholarshipSlice.reducer;
 
 //
-// ✅ Fetch both “live” and “upcoming” scholarships
+// ✅ 1️⃣ Fetch both “live” and “upcoming” scholarships
 //
 export const fetchScholarshipList = () => async (dispatch) => {
   try {
@@ -78,12 +86,10 @@ export const fetchScholarshipList = () => async (dispatch) => {
       fetchScholarshipByStatusReq("upcoming"),
     ]);
 
-    const liveList =
-      liveRes.errorMsg?.includes("No scholarships found") ? [] : liveRes.data;
-    const upcomingList =
-      upcomingRes.errorMsg?.includes("No scholarships found")
-        ? []
-        : upcomingRes.data;
+    const liveList = Array.isArray(liveRes?.data) ? liveRes.data : [];
+    const upcomingList = Array.isArray(upcomingRes?.data)
+      ? upcomingRes.data
+      : [];
 
     dispatch(addData({ live: liveList, upcoming: upcomingList }));
   } catch (error) {
@@ -100,12 +106,11 @@ export const fetchScholarshipList = () => async (dispatch) => {
 };
 
 //
-// ✅ Fetch featured scholarships (green tag + right sidebar)
+// ✅ 2️⃣ Fetch featured scholarships
 //
 export const fetchFeaturedScholarships = () => async (dispatch) => {
   try {
     dispatch(setLoading());
-
     const res = await fetchFeaturedScholarshipsReq();
 
     if (!res.error && Array.isArray(res.data)) {
@@ -133,7 +138,7 @@ export const fetchFeaturedScholarships = () => async (dispatch) => {
 };
 
 //
-// ✅ Fetch single scholarship by ID
+// ✅ 3️⃣ Fetch single scholarship by ID
 //
 export const fetchScholarshipById = (id) => async (dispatch) => {
   try {
@@ -149,7 +154,7 @@ export const fetchScholarshipById = (id) => async (dispatch) => {
     dispatch(setLoading());
     const res = await fetchScholarshipByIdReq(id);
 
-    if (!res.error) {
+    if (!res.error && res.data) {
       dispatch(setSelectedScholarship(res.data));
     } else {
       dispatch(setError());
@@ -171,3 +176,4 @@ export const fetchScholarshipById = (id) => async (dispatch) => {
     });
   }
 };
+

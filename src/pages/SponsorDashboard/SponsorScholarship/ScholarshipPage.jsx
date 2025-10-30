@@ -1,41 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { FaGraduationCap, FaMoneyBillWave, FaCalendarAlt, FaUsers } from "react-icons/fa";
+import {
+  FaGraduationCap,
+  FaMoneyBillWave,
+  FaCalendarAlt,
+  FaUsers,
+} from "react-icons/fa";
 import Swal from "sweetalert2";
 import Header from "../../../app/components/header/header";
 import {
-  fetchScholarshipList,
-} from "../../../app/redux/slices/ScholarshipSlice"; // ✅ FIXED import
+  fetchScholarshipBySponsor,
+  deleteScholarship,
+} from "../../../app/redux/slices/sponsorscholarshipSlice";
 import AddScholarshipModal from "./AddScholarshipPage";
 import "../../styles.css";
 
 const ScholarshipPage = () => {
   const dispatch = useDispatch();
 
-  // ✅ FIX: Use correct slice name
-  const { data: scholarships = [], loading = false } =
-    useSelector((state) => state.scholarship || {});
+  // ✅ Correct slice name
+  const { data, loading = false } = useSelector(
+    (state) => state.sponsorScholarship || {}
+  );
+
+  // ✅ Ensure data is always an array
+  const scholarships = Array.isArray(data) ? data : [];
+  console.log("Redux data:", data);
+  console.log("Scholarships array:", scholarships);
 
   const role = localStorage.getItem("roleName");
   const UserId = localStorage.getItem("userId");
-  const UserName = localStorage.getItem("username");
 
   const [filter, setFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [selectedScholarship, setSelectedScholarship] = useState(null);
 
   useEffect(() => {
+    debugger;
     if (UserId && role) {
-      dispatch(fetchScholarshipList(UserId, role)); // ✅ FIXED role as string
+      dispatch(fetchScholarshipBySponsor(UserId, role));
+    } else {
+      console.log("❌ Missing UserId or role!");
     }
   }, [dispatch, UserId, role]);
 
+  // ✅ Filter and search logic
   const filteredScholarships =
     filter === "All"
       ? scholarships
-      : scholarships.filter((s) => s.status?.toLowerCase() === filter.toLowerCase());
+      : scholarships.filter(
+          (s) => s.status?.toLowerCase() === filter.toLowerCase()
+        );
 
   const displayedScholarships = filteredScholarships.filter((s) =>
     s.scholarshipName?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -47,6 +63,7 @@ const ScholarshipPage = () => {
   };
 
   const handleEdit = (scholarship) => {
+    debugger;
     setSelectedScholarship(scholarship);
     setShowModal(true);
   };
@@ -58,11 +75,10 @@ const ScholarshipPage = () => {
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
+    }).then((result) => {
       if (result.isConfirmed) {
-        // Assuming you’ll add delete logic later
-        Swal.fire("Deleted!", "Scholarship has been deleted.", "success");
-        dispatch(fetchScholarshipList(UserId, role));
+        const modifiedBy = localStorage.getItem("userId");
+        dispatch(deleteScholarship(id, modifiedBy));
       }
     });
   };
@@ -70,10 +86,8 @@ const ScholarshipPage = () => {
   const handleModalSubmit = () => {
     setShowModal(false);
     setSelectedScholarship(null);
-    dispatch(fetchScholarshipList(UserId, role));
+    dispatch(fetchScholarshipBySponsor(UserId, role));
   };
-
-  console.log("Scholarships:", scholarships); // ✅ check data here
 
   return (
     <>
@@ -85,7 +99,6 @@ const ScholarshipPage = () => {
           Manage your scholarships and filter them by status or title.
         </p>
 
-        {/* Search + Filter */}
         <div className="scholarship-actions">
           <input
             type="text"
@@ -106,13 +119,15 @@ const ScholarshipPage = () => {
               <option value="Closed">Closed</option>
             </select>
 
-            <button className="applications-btn-new" onClick={handleAddScholarship}>
+            <button
+              className="applications-btn-new"
+              onClick={handleAddScholarship}
+            >
               + New Scholarship
             </button>
           </div>
         </div>
 
-        {/* Table */}
         <div className="scholarship-table">
           <div className="table-header">
             <span>Title</span>
@@ -129,29 +144,39 @@ const ScholarshipPage = () => {
             displayedScholarships.map((scholarship) => (
               <div key={scholarship.id} className="table-row">
                 <span className="title">
-                  <FaGraduationCap className="icon" /> {scholarship.scholarshipName}
+                  <FaGraduationCap className="icon" />{" "}
+                  {scholarship.scholarshipName || "N/A"}
                 </span>
                 <span>
-                  <FaMoneyBillWave className="icon" /> ${scholarship.benefits}
+                  <FaMoneyBillWave className="icon" /> $
+                  {scholarship.benefits ?? "0"}
                 </span>
                 <span>
-                  <FaUsers className="icon" /> {scholarship.scholarshipLimit}
+                  <FaUsers className="icon" /> {scholarship.scholarshipLimit ?? "-"}
                 </span>
                 <span>
-                  <span className={`status ${scholarship.status?.toLowerCase()}`}>
-                    {scholarship.status}
+                  <span
+                    className={`status ${scholarship.status?.toLowerCase() || ""}`}
+                  >
+                    {scholarship.status || "N/A"}
                   </span>
                 </span>
                 <span>
                   <FaCalendarAlt className="icon" />{" "}
-                  {scholarship.endDate?.split("T")[0]}
+                  {scholarship.endDate ? scholarship.endDate.split("T")[0] : "-"}
                 </span>
                 <span className="actions">
                   <button className="btn-view">View Applicants</button>
-                  <button className="btn-edit" onClick={() => handleEdit(scholarship)}>
+                  <button
+                    className="btn-edit"
+                    onClick={() => handleEdit(scholarship)}
+                  >
                     Edit
                   </button>
-                  <button className="btn-danger" onClick={() => handleDelete(scholarship.id)}>
+                  <button
+                    className="btn-danger"
+                    onClick={() => handleDelete(scholarship.id)}
+                  >
                     Delete
                   </button>
                 </span>
@@ -164,7 +189,6 @@ const ScholarshipPage = () => {
           )}
         </div>
 
-        {/* Modal */}
         <AddScholarshipModal
           show={showModal}
           handleClose={() => setShowModal(false)}

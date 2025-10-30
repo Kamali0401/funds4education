@@ -6,6 +6,7 @@ import { ApiKey } from "../endpoint";
 //
 export const fetchScholarshipListReq = async (UserId, role) => {
   try {
+    debugger;
     if (!UserId || !role) {
       return {
         error: true,
