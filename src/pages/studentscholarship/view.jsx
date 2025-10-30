@@ -46,12 +46,17 @@ const ScholarshipViewPage = () => {
 
             {/* 🎓 Title & About Section */}
             <div className="page-content">
-                <h2 className="scholarship-view-title">{scholarship.scholarshipName}</h2>
+               <h2
+                    className="scholarship-view-title"
+                   
+                    >
+                    {scholarship.scholarshipName}
+                </h2>
 
                 <h3 className="scholarship-subtitle">
                     About The <span className="highlight-word">Program</span>
                 </h3>
-                <p className="scholarship-view-text">{scholarship.description}</p>
+                <p className="scholarship-view-text schololarship-viwe-pad">{scholarship.description}</p>
             </div>
 
             {/* Eligibility Section */}
@@ -96,7 +101,7 @@ const ScholarshipViewPage = () => {
             </div>
 
             <div className="scholarship-detail-container">
-                <p className="scholarship-view-text">₹{scholarship.benefits}</p>
+                <p className="scholarship-view-text">₹{scholarship.scholarshipAmount}</p>
             </div>
 
             {/* Documents Section */}
@@ -108,7 +113,7 @@ const ScholarshipViewPage = () => {
                 {scholarship.documents && scholarship.documents.trim().length > 0 ? (
                     <ul className="scholarship-view-text">
                         {scholarship.documents
-                            .split(/\r?\n/)
+                              .split(/\. |\r?\n/)
                             .map((line) => line.trim())
                             .filter((line) => line.length > 0)
                             .map((line, index) => (
