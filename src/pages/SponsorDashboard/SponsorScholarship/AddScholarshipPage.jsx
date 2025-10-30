@@ -3,10 +3,14 @@ import { useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import "../../../pages/styles.css";
 import {
+
+    fetchScholarshipBySponsor,
+} from "../../../app/redux/slices/sponsorscholarshipSlice";
+import {
     addNewScholarship,
     updateScholarship,
-    fetchScholarshipList,
 } from "../../../app/redux/slices/sponsorscholarshipSlice";
+
 import { uploadFormFilesReq } from "../../../api/scholarshipapplication/scholarshipapplication"
 import { publicAxios } from "../../../api/config";
 import { ApiKey } from "../../../api/endpoint";
@@ -23,6 +27,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const today = new Date().toISOString().split("T")[0];
     const role = localStorage.getItem("roleName");
     const UserId = localStorage.getItem("userId");
+
     const initialData = {
         scholarshipCode: "",
         scholarshipName: "",
@@ -73,10 +78,24 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         if (scholarship) {
             setFormData({
                 ...initialData,
-                ...scholarship,
-                startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
-                endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
+                ...scholarship, // ✅ API response values will override initial empty values
+
+                startDate: scholarship.startDate
+                    ? scholarship.startDate.split("T")[0]
+                    : "",
+
+                endDate: scholarship.endDate
+                    ? scholarship.endDate.split("T")[0]
+                    : "",
+
                 modifiedBy: localStorage.getItem("name"),
+
+                // ✅ Ensure new fields fill correctly in edit mode
+                eligibility: scholarship.eligibility ?? "",
+                eligibilityCriteria: scholarship.eligibilityCriteria ?? "",
+                webportaltoApply: scholarship.webportaltoApply ?? "",
+                canApply: scholarship.canApply ?? "",
+                contactDetails: scholarship.contactDetails ?? "",
             });
         } else {
             setFormData({
@@ -86,6 +105,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
             });
         }
     }, [scholarship, show]);
+
     // --- Clear function ---
     const handleClear = () => {
         // Clear newly selected files
@@ -199,71 +219,52 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
 
         const payload = {
             ...formData,
-            minPercentageOrCGPA: formData.minPercentageOrCGPA
-                ? parseFloat(formData.minPercentageOrCGPA)
-                : null,
+            minPercentageOrCGPA: formData.minPercentageOrCGPA ? parseFloat(formData.minPercentageOrCGPA) : null,
             maxFamilyIncome: formData.maxFamilyIncome ? parseFloat(formData.maxFamilyIncome) : null,
-            scholarshipAmount: formData.scholarshipAmount ? parseFloat(formData.scholarshipAmount) : null,
+            benefits: formData.benefits ? formData.benefits : null,
             documents: null,
+            id: scholarship ? scholarship.id : 0,
         };
 
-        let scholarshipId = null;
-
         try {
-            // --- Create or Update Scholarship ---
+            let res;
+            let scholarshipId;
+
             if (scholarship) {
-                debugger;
+                res = await dispatch(updateScholarship(payload));
                 scholarshipId = scholarship.id;
-                await updateScholarship(payload, dispatch);
             } else {
-                const res = await addNewScholarship(payload, dispatch);
+                res = await dispatch(addNewScholarship(payload));
                 scholarshipId = res?.id;
             }
 
-            /*  await dispatch(fetchScholarshipList(UserId,role));
-              handleCloseAndReset();
-            } catch (err) {
-              console.error("Error saving scholarship:", err);
-              Swal.fire({ text: "Error saving scholarship!", icon: "error" });
-            }
-          };*/
-            // --- Upload Files if Any ---
-            if (scholarshipId && selectedFiles?.length > 0) {
-                await uploadFiles(scholarshipId); // <-- implement uploadFiles() similar to your first example
+
+            // upload files (if any)
+            if (scholarshipId && selectedFiles && selectedFiles.length > 0) {
+                await uploadFiles(scholarshipId);
             }
 
-            // --- Fetch Updated Scholarship Details ---
-            /*if (scholarshipId) {
-              const updatedScholarship = await fetchScholarshipByIdReq(scholarshipId);
-              setFormData((prev) => ({
-                ...prev,
-                ...updatedScholarship.data,
-                startDate: updatedScholarship.data.startDate
-                  ? updatedScholarship.data.startDate.split("T")[0]
-                  : "",
-                endDate: updatedScholarship.data.endDate
-                  ? updatedScholarship.data.endDate.split("T")[0]
-                  : "",
-              }));
-            }*/
+            // refresh list BEFORE success popup
+            const UserId = localStorage.getItem("userId");
+            const role = localStorage.getItem("roleName");
+            if (UserId && role) {
+                await dispatch(fetchScholarshipBySponsor(UserId, role));
+            }
 
-            // --- Reset Files & Refresh List ---
-            setSelectedFiles([]);
-            await dispatch(fetchScholarshipList(UserId, role));
-
-            // --- Success Message ---
-            const result = await Swal.fire({
+            // success popup
+            await Swal.fire({
                 text: scholarship ? "Scholarship updated successfully!" : "Scholarship added successfully!",
                 icon: "success",
                 confirmButtonText: "OK",
             });
 
-            if (result.isConfirmed) handleCloseAndReset();
+            handleCloseAndReset();
         } catch (err) {
             console.error("Error saving scholarship:", err);
             Swal.fire({ text: "Error saving scholarship!", icon: "error" });
         }
     };
+
 
     const handleCloseAndReset = () => {
         setFormData(initialData);
@@ -347,7 +348,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                 >
                                     <option value="">Select Type</option>
                                     <option value="Merit Based">Merit-Based</option>
-                                    <option value="Need Based">Need-Based</option>
+                                    <option value="Need Based">Neet-Based</option>
                                     <option value="Research Grant">Research Grant</option>
                                     <option value="Government">Government</option>
                                 </select>
@@ -355,11 +356,11 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                             </div>
 
                             <div className="form-group col-6">
-                                <label>Benefits</label>
+                                <label>Scholarship Amount</label>
                                 <input
                                     type="text"
-                                    name="scholarshipAmount"
-                                    value={formData.scholarshipAmount}
+                                    name="benefits"
+                                    value={formData.benefits}
                                     onChange={handleChange}
                                     placeholder="10000"
                                 />
@@ -606,16 +607,14 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                             </div>
                             <div className="row">
                                 <div className="form-group col-6">
-                                    <label>Eligibility</label>
-                                    <input
-                                        type="text"
-                                        name="eligibility"
-                                        value={formData.eligibility || ""}
+                                    <label>Can Apply</label>
+                                    <textarea
+                                        name="canApply"
+                                        value={formData.canApply || ""}
                                         onChange={handleChange}
-                                        placeholder="Enter eligibility details"
+                                        placeholder="Who can apply for this scholarship?"
                                     />
                                 </div>
-
                                 <div className="form-group col-6">
                                     <label>Web Portal to Apply</label>
                                     <input
@@ -626,19 +625,6 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                         placeholder="Enter application website link"
                                     />
                                 </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="form-group col-6">
-                                    <label>Can Apply</label>
-                                    <textarea
-                                        name="canApply"
-                                        value={formData.canApply || ""}
-                                        onChange={handleChange}
-                                        placeholder="Who can apply for this scholarship?"
-                                    />
-                                </div>
-
                                 <div className="form-group col-6">
                                     <label>Contact Details</label>
                                     <textarea
