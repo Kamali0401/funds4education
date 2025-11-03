@@ -74,23 +74,15 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     // ✅ Allow up to 10 digits with optional decimal up to 2 places (e.g., 25000.70)
     const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
 
-    useEffect(() => {
+   useEffect(() => {
+    if (show) {
         if (scholarship) {
             setFormData({
                 ...initialData,
-                ...scholarship, // ✅ API response values will override initial empty values
-
-                startDate: scholarship.startDate
-                    ? scholarship.startDate.split("T")[0]
-                    : "",
-
-                endDate: scholarship.endDate
-                    ? scholarship.endDate.split("T")[0]
-                    : "",
-
+                ...scholarship,
+                startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
+                endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
                 modifiedBy: localStorage.getItem("name"),
-
-                // ✅ Ensure new fields fill correctly in edit mode
                 eligibility: scholarship.eligibility ?? "",
                 eligibilityCriteria: scholarship.eligibilityCriteria ?? "",
                 webportaltoApply: scholarship.webportaltoApply ?? "",
@@ -103,8 +95,16 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 sponsorId: localStorage.getItem("userId"),
                 createdBy: localStorage.getItem("name"),
             });
+            setErrors({});
+            setSelectedFiles([]);
+            setFilesList([]);
+            setFileSelected(false);
+            setNewFileSelected(false);
+            if (fileInputRef.current) fileInputRef.current.value = null;
         }
-    }, [scholarship, show]);
+    }
+}, [scholarship, show]);
+
 
     // --- Clear function ---
     const handleClear = () => {
@@ -200,28 +200,94 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         setErrors({ ...errors, [name]: "" });
     };
 
+    const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w- ./?%&=]*)?$/i;
+
     const validateForm = () => {
         const newErrors = {};
-        if (!formData.scholarshipCode) newErrors.scholarshipCode = "Scholarship Code is required.";
-        if (!formData.scholarshipName) newErrors.scholarshipName = "Scholarship Name is required.";
-        if (!formData.scholarshipType) newErrors.scholarshipType = "Scholarship Type is required.";
-        if (!formData.startDate) newErrors.startDate = "Start Date is required.";
-        if (!formData.endDate) newErrors.endDate = "End Date is required.";
+
+        // Required fields
+        if (!formData.scholarshipCode?.trim())
+            newErrors.scholarshipCode = "Scholarship Code is required.";
+        if (!formData.scholarshipName?.trim())
+            newErrors.scholarshipName = "Scholarship Name is required.";
+        if (!formData.scholarshipType?.trim())
+            newErrors.scholarshipType = "Scholarship Type is required.";
+        if (!formData.startDate)
+            newErrors.startDate = "Start Date is required.";
+        if (!formData.endDate)
+            newErrors.endDate = "End Date is required.";
+        else if (formData.startDate && formData.endDate < formData.startDate)
+            newErrors.endDate = "End Date must be after Start Date.";
+
+        // Scholarship amount validation
+        if (formData.benefits && !amountRegex.test(formData.benefits))
+            newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
+
+        // Percentage / CGPA validation
+        if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA))
+            newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
+
+        // Family income validation
+        if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome))
+            newErrors.maxFamilyIncome = "Enter valid family income.";
+
+        // Scholarship limit
+        if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit))
+            newErrors.scholarshipLimit = "Scholarship limit must be a number.";
+
+        // Web Portal validation — must be a proper link
+        if (!formData.webportaltoApply) {
+            newErrors.webportaltoApply = "Web Portal to Apply is required.";
+        } else {
+            const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
+            if (!urlPattern.test(formData.webportaltoApply)) {
+                newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
+            }
+        }
+
+        if (!formData.eligibility?.trim()) {
+            newErrors.eligibility = "Eligibility is required.";
+        }
+
+        if (!formData.eligibilityCriteria?.trim()) {
+            newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
+        }
+
+        if (!formData.webportaltoApply?.trim()) {
+            newErrors.webportaltoApply = "Web Portal link is required.";
+        } else if (!urlRegex.test(formData.webportaltoApply.trim())) {
+            newErrors.webportaltoApply = "Please enter a valid URL (e.g. https://example.com).";
+        }
+
+
+        // Optional text length validations
+        if (formData.description && formData.description.length > 500)
+            newErrors.description = "Description cannot exceed 500 characters.";
+        if (formData.eligibility && formData.eligibility.length > 250)
+            newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
+        if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500)
+            newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
+        if (formData.renewalCriteria && formData.renewalCriteria.length > 300)
+            newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+
     const handleSubmit = async (e) => {
-        debugger;
         e.preventDefault();
         if (!validateForm()) return;
 
         const payload = {
             ...formData,
-            minPercentageOrCGPA: formData.minPercentageOrCGPA ? parseFloat(formData.minPercentageOrCGPA) : null,
-            maxFamilyIncome: formData.maxFamilyIncome ? parseFloat(formData.maxFamilyIncome) : null,
-            benefits: formData.benefits ? formData.benefits : null,
+            minPercentageOrCGPA: formData.minPercentageOrCGPA
+                ? parseFloat(formData.minPercentageOrCGPA)
+                : null,
+            maxFamilyIncome: formData.maxFamilyIncome
+                ? parseFloat(formData.maxFamilyIncome)
+                : null,
+            benefits: formData.benefits || null,
             documents: null,
             id: scholarship ? scholarship.id : 0,
         };
@@ -231,29 +297,32 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
             let scholarshipId;
 
             if (scholarship) {
-                res = await dispatch(updateScholarship(payload));
+                // ✅ Update existing scholarship
+                await updateScholarship(payload, dispatch);
                 scholarshipId = scholarship.id;
             } else {
-                res = await dispatch(addNewScholarship(payload));
+                // ✅ Add new scholarship
+                res = await addNewScholarship(payload, dispatch);
                 scholarshipId = res?.id;
             }
 
-
-            // upload files (if any)
-            if (scholarshipId && selectedFiles && selectedFiles.length > 0) {
+            // ✅ Upload files if any
+            if (scholarshipId && selectedFiles.length > 0) {
                 await uploadFiles(scholarshipId);
             }
 
-            // refresh list BEFORE success popup
+            // ✅ Refresh list
             const UserId = localStorage.getItem("userId");
             const role = localStorage.getItem("roleName");
             if (UserId && role) {
-                await dispatch(fetchScholarshipBySponsor(UserId, role));
+                dispatch(fetchScholarshipBySponsor(UserId, role));
             }
 
-            // success popup
+            // ✅ Success message
             await Swal.fire({
-                text: scholarship ? "Scholarship updated successfully!" : "Scholarship added successfully!",
+                text: scholarship
+                    ? "Scholarship updated successfully!"
+                    : "Scholarship added successfully!",
                 icon: "success",
                 confirmButtonText: "OK",
             });
@@ -352,6 +421,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     <option value="Research Grant">Research Grant</option>
                                     <option value="Government">Government</option>
                                 </select>
+
                                 {errors.scholarshipType && <p className="error-text">{errors.scholarshipType}</p>}
                             </div>
 
@@ -383,8 +453,11 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     name="eligibility"
                                     value={formData.eligibility || ""}
                                     onChange={handleChange}
+                                    className={errors.eligibility ? "input-error" : ""}
 
                                 />
+                                {errors.eligibility && <p className="error-text">{errors.eligibility}</p>}
+
                             </div>
                             <div className="form-group col-6">
                                 <label>Eligibility Criteria</label>
@@ -392,7 +465,11 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     name="eligibilityCriteria"
                                     value={formData.eligibilityCriteria}
                                     onChange={handleChange}
+                                    className={errors.eligibilityCriteria ? "input-error" : ""}
                                 />
+                                {errors.eligibilityCriteria && (
+                                    <p className="error-text">{errors.eligibilityCriteria}</p>
+                                )}
                             </div>
                         </div>
                         <div className="row">
@@ -620,11 +697,13 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     <input
                                         type="text"
                                         name="webportaltoApply"
-                                        value={formData.webportaltoApply || ""}
+                                        value={formData.webportaltoApply}
                                         onChange={handleChange}
-                                        placeholder="Enter application website link"
+                                        placeholder="https://example.com"
                                     />
+                                    {errors.webportaltoApply && <p className="error-text">{errors.webportaltoApply}</p>}
                                 </div>
+
                                 <div className="form-group col-6">
                                     <label>Contact Details</label>
                                     <textarea

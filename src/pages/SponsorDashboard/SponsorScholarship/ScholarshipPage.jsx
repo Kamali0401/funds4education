@@ -36,15 +36,11 @@ const ScholarshipPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedScholarship, setSelectedScholarship] = useState(null);
 
-  useEffect(() => {
-    debugger;
-    if (UserId && role) {
-      dispatch(fetchScholarshipBySponsor(UserId, role));
-    } else {
-      console.log("❌ Missing UserId or role!");
-    }
-  }, [dispatch, UserId, role]);
-
+ useEffect(() => {
+  if (UserId && role) {
+    dispatch(fetchScholarshipBySponsor(UserId, role))
+  }
+}, [UserId, role, dispatch]);
   // ✅ Filter and search logic
   const filteredScholarships =
     filter === "All"
@@ -86,7 +82,7 @@ const ScholarshipPage = () => {
   const handleModalSubmit = () => {
     setShowModal(false);
     setSelectedScholarship(null);
-    dispatch(fetchScholarshipBySponsor(UserId, role));
+    fetchScholarshipBySponsor(UserId, role, dispatch);
   };
 
   return (

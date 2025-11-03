@@ -38,7 +38,7 @@ const ScholarshipViewPage = () => {
     if (!scholarship) return <p>No scholarship found.</p>;
 
     return (
-        <div className="scholarship-page">
+        <div className="scholarshipview-page">
             {/* 🔙 Back Button */}
             <button className="scholarship-view-back-btn" onClick={() => navigate(-1)}>
                 ← Back

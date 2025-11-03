@@ -41,78 +41,76 @@ export default sponsorScholarshipSlice.reducer;
 //
 export const fetchScholarshipBySponsor = (userId, role) => async (dispatch) => {
   try {
-    if (!userId || !role) {
-      Swal.fire("Warning", "Missing user or role info.", "warning");
-      return;
-    }
+    dispatch(setLoading()); // Set loading before API call
 
-    dispatch(setLoading());
-    const { error, data, errorMsg } = await fetchScholarshipBySponsorReq(
-      userId,
-      role
-    );
+    const res = await fetchScholarshipBySponsorReq(userId, role); // Call API
 
-    if (error) {
-      dispatch(setError());
-      Swal.fire("Error", errorMsg, "error");
-    } else {
-      dispatch(setData(data));
-    }
-  } catch {
-    dispatch(setError());
-    Swal.fire("Error", "Failed to load sponsor scholarships.", "error");
+    dispatch(setData(res.data)); // Dispatch the data
+  } catch (error) {
+    dispatch(setError()); // Dispatch error action
+    Swal.fire({
+      text: "Failed to load sponsor scholarships",
+      icon: "error",
+    });
   }
 };
-
 //
 // 📘 Add new scholarship
 //
-export const addNewScholarship = (formData) => async (dispatch) => {
+export const addNewScholarship = async (formData, dispatch) => {
   try {
     dispatch(setLoading());
-
-    const response = await addScholarshipReq(formData);
-
-    if (response.error) {
-      dispatch(setError());
-      return Swal.fire("Error", response.errorMsg, "error");
-    }
-
-    Swal.fire("Success", "Scholarship added successfully!", "success");
 
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("roleName");
 
+    // API call to add new scholarship
+    const res = await addScholarshipReq(formData);
+
+    // Refresh scholarship list after adding
     await dispatch(fetchScholarshipBySponsor(userId, role));
-  } catch (err) {
+
+    // Optional success message
+    Swal.fire({
+      text: "Scholarship added successfully!",
+      icon: "success",
+    });
+
+    return res.data; // Return response data
+  } catch (error) {
     dispatch(setError());
-    Swal.fire("Error", "Error adding scholarship.", "error");
+    Swal.fire({
+      text: "Error! Try Again!",
+      icon: "error",
+    });
+    throw error; // Rethrow error if needed elsewhere
   }
 };
 
-//
 // ✅ Update scholarship
 //
-export const updateScholarship = (formData) => async (dispatch) => {
+export const updateScholarship = async (formData, dispatch) => {
   try {
-    dispatch(setLoading());
+    dispatch(setLoading()); // Set loading before making the API request
 
-    const response = await updateScholarshipReq(formData);
+    await updateScholarshipReq(formData); // Call API to update scholarship
 
-    if (response.error) {
-      dispatch(setError());
-      return Swal.fire("Error", response.errorMsg, "error");
-    }
-
-    Swal.fire("Success", "Scholarship updated successfully!", "success");
-
+    // Fetch updated scholarship list after updating
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("roleName");
-
     await dispatch(fetchScholarshipBySponsor(userId, role));
-  } catch (err) {
-    dispatch(setError());
-    Swal.fire("Error", "Error updating scholarship.", "error");
+
+    /*Swal.fire({
+      text: "Scholarship updated successfully!",
+      icon: "success",
+    });*/
+  } catch (error) {
+    dispatch(setError()); // Handle error if API fails
+    Swal.fire({
+      text: "Error! Try Again!",
+      icon: "error",
+    });
+    throw error; // Re-throw error if needed elsewhere
   }
 };
 
