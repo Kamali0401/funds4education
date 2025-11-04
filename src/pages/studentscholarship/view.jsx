@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { fetchScholarshipById } from "../../app/redux/slices/ScholarshipSlice";
-import AddApplicationModal from "../../pages/student/scholarshipapplication/addApplication.jsx";
 
 const ScholarshipViewPage = () => {
     const dispatch = useDispatch();
@@ -18,16 +17,21 @@ const ScholarshipViewPage = () => {
         (state) => state.scholarship
     );
 
-    const [showModal, setShowModal] = useState(false);
 
-    const handleApplyNowClick = () => {
-        if (isLoggedIn) {
-            setShowModal(true);
+   const handleApplyNowClick = () => {
+    if (isLoggedIn) {
+        if (scholarship.webportaltoApply) {
+            const url = scholarship.webportaltoApply.startsWith("http")
+                ? scholarship.webportaltoApply
+                : `https://${scholarship.webportaltoApply}`;
+            window.open(url, "_blank"); // opens in new browser tab
         } else {
-            navigate("/login");
+            alert("Application link not available.");
         }
-    };
-
+    } else {
+        navigate("/login");
+    }
+};
     useEffect(() => {
         if (id) {
             dispatch(fetchScholarshipById(id));
@@ -206,12 +210,7 @@ const ScholarshipViewPage = () => {
                 </p>
             </div>
 
-            <AddApplicationModal
-                show={showModal}
-                handleClose={() => setShowModal(false)}
-                onSubmit={() => setShowModal(false)}
-                application={null}
-            />
+            
         </div>
     );
 };
