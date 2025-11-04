@@ -27,9 +27,61 @@ export default function LoginPage() {
 
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.auth);
+// ✅ Update API base URL to match your backend
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "https://localhost:44315/api/Auth";
+
 const handleOAuthLogin = (provider) => {
-  window.location.href = `https://yourapi.com/api/auth/${provider}/login`;
+  if (!userType) {
+    alert("Please select or provide user type before login.");
+    return;
+  }
+
+  // Redirect to backend OAuth endpoint
+  //window.location.href = `${API_BASE_URL}/${provider}/login?role=${userType}`;
+  window.location.href = `https://localhost:44315/api/Auth/${provider}/${userType}/login`;
 };
+/*const handleOAuthLogin = async (provider) => {
+  if (!userType) {
+    alert("Please select or provide user type before login.");
+    return;
+  }
+debugger;
+  const loginUrl = `https://localhost:44315/api/Auth/${provider}/${userType}/login`;
+
+  // Open OAuth login popup
+  const popup = window.open(loginUrl, "_blank", "width=500,height=600");
+
+  // Listen for backend message (token info)
+  const handleMessage = (event) => {
+    // Validate message origin
+    if (!event.origin.includes("localhost")) return;
+
+    const data = event.data;
+    if (data?.token) {
+      // ✅ Save token data to localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("roleId", data.roleId);
+      localStorage.setItem("roleName", data.roleName);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.username);
+
+      // ✅ Close popup
+      popup.close();
+
+      // ✅ Navigate based on role
+      if (data.roleName === "Student") navigate("/student-dashboard");
+      else if (data.roleName === "Sponsor") navigate("/sponsor-dashboard");
+      else if (data.roleName === "Institution") navigate("/institution-dashboard");
+    }
+
+    // Cleanup listener
+    window.removeEventListener("message", handleMessage);
+  };
+
+  window.addEventListener("message", handleMessage);
+};*/
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     let newErrors = { identifier: "", password: "" };
