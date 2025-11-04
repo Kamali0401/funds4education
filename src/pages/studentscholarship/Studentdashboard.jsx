@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Header from "../../app/components/header/header";
 import { logout } from "../../app/redux/slices/authSlice";
-import { fetchScholarshipList } from "../../app/redux/slices/ScholarshipSlice";
+import {
+  fetchScholarshipList,
+  fetchFeaturedScholarships,
+} from "../../app/redux/slices/ScholarshipSlice";
 import Swal from "sweetalert2";
 import "../../pages/studentscholarship/studentdashboard.css";
 import logoUrl from "../../app/assests/kotak.png";
@@ -13,8 +16,10 @@ const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { data: scholarships = [], loading = false } =
-    useSelector((state) => state.scholarship || {});
+  const { data = {}, loading = false } = useSelector(
+    (state) => state.scholarship || {}
+  );
+  const { live = [], upcoming = [], featured = [] } = data;
 
   const roleId =
     useSelector((state) => state.auth.roleId) ||
@@ -22,19 +27,39 @@ const StudentDashboard = () => {
   const userId =
     useSelector((state) => state.auth.userId) ||
     Number(localStorage.getItem("userId"));
+  const name =
+    useSelector((state) => state.auth.name) || localStorage.getItem("name");
 
   const [activeTab, setActiveTab] = useState("live");
+  const [filters, setFilters] = useState({
+    class: "All",
+    country: "All",
+    gender: "All",
+    religion: "All",
+    state: "All",
+    course: "All",
+  });
 
-  /*useEffect(() => {
-    if (!roleId) navigate("/login");
-    else if (roleId !== 1) navigate("/unauthorized");
-  }, [roleId, navigate]);*/
+  const isLoggedIn = Boolean(userId && roleId);
+  const sanitizeValue = (v) =>
+    v && v !== "null" && v !== "undefined" ? v : null;
+
+  const allScholarships = useMemo(() => {
+    const merged = [...(live || []), ...(upcoming || []), ...(featured || [])];
+    return merged.map((s) => ({
+      ...s,
+      eligibility: sanitizeValue(s.eligibility),
+      documents: sanitizeValue(s.documents),
+      webportaltoApply: sanitizeValue(s.webportaltoApply),
+      canApply: sanitizeValue(s.canApply),
+      contactDetails: sanitizeValue(s.contactDetails),
+    }));
+  }, [live, upcoming, featured]);
 
   useEffect(() => {
-    if (userId && roleId) {
-      dispatch(fetchScholarshipList(userId, roleId));
-    }
-  }, [dispatch, userId, roleId]);
+    dispatch(fetchScholarshipList());
+    dispatch(fetchFeaturedScholarships());
+  }, [dispatch]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -48,78 +73,207 @@ const StudentDashboard = () => {
     navigate("/login");
   };
 
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
 
-  // 🧠 Days left logic
   const getDaysLeftText = (endDate) => {
     if (!endDate) return null;
     const end = new Date(endDate);
-    const diffDays = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return null;
-    if (diffDays === 0) return "Last day to go";
+    const diffDays = Math.ceil((end - today) / 86400000);
+    if (diffDays <= 0) return null;
+    if (diffDays === 1) return "Last day to go";
     if (diffDays <= 15) return `${diffDays} days to go`;
     return null;
   };
 
-  const liveScholarships = useMemo(
-    () => scholarships.filter((s) => s.endDate && new Date(s.endDate) >= today),
-    [scholarships]
-  );
-
-  const upcomingScholarships = useMemo(() => {
-    const nextTenDays = new Date();
-    nextTenDays.setDate(today.getDate() + 10);
-    return scholarships.filter((s) => {
-      if (!s.startDate) return false;
-      const startDate = new Date(s.startDate);
-      return startDate > today && startDate <= nextTenDays;
-    });
-  }, [scholarships]);
-
-  const featuredScholarships = useMemo(() => {
-    return scholarships
-      .filter((s) => !!s.scholarshipAmount && !isNaN(Number(s.scholarshipAmount)))
-      .sort((a, b) => Number(b.scholarshipAmount) - Number(a.scholarshipAmount))
-      .slice(0, 5);
-  }, [scholarships]);
+  const liveScholarships = useMemo(() => live || [], [live]);
+  const upcomingScholarships = useMemo(() => upcoming || [], [upcoming]);
+  const featuredScholarships = useMemo(() => featured || [], [featured]);
 
   const featuredIds = useMemo(
     () => featuredScholarships.map((s) => s.id || s.scholarshipId),
     [featuredScholarships]
   );
 
-  const displayedScholarships =
-    activeTab === "upcoming" ? upcomingScholarships : liveScholarships;
+  const displayedScholarships = useMemo(() => {
+    const baseList =
+      activeTab === "upcoming" ? upcomingScholarships : liveScholarships;
+
+    return baseList.filter((s) => {
+      const classMatch =
+        filters.class === "All" ||
+        (s.className &&
+          s.className.toLowerCase().includes(filters.class.toLowerCase()));
+      const countryMatch =
+        filters.country === "All" ||
+        (s.country &&
+          s.country.toLowerCase().includes(filters.country.toLowerCase()));
+      const genderMatch =
+        filters.gender === "All" ||
+        (s.gender &&
+          s.gender.toLowerCase().includes(filters.gender.toLowerCase()));
+      const religionMatch =
+        filters.religion === "All" ||
+        (s.religion &&
+          s.religion.toLowerCase().includes(filters.religion.toLowerCase()));
+      const stateMatch =
+        filters.state === "All" ||
+        (s.state &&
+          s.state.toLowerCase().includes(filters.state.toLowerCase()));
+      const courseMatch =
+        filters.course === "All" ||
+        (s.course &&
+          s.course.toLowerCase().includes(filters.course.toLowerCase()));
+
+      return (
+        classMatch &&
+        countryMatch &&
+        genderMatch &&
+        religionMatch &&
+        stateMatch &&
+        courseMatch
+      );
+    });
+  }, [filters, liveScholarships, upcomingScholarships, activeTab]);
+
+  const trimText = (text, maxLength = 100) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      class: "All",
+      country: "All",
+      gender: "All",
+      religion: "All",
+      state: "All",
+      course: "All",
+    });
+  };
 
   return (
     <div>
       <Header variant="student-profile" />
+
+      {isLoggedIn && (
+        <div className="student-navbar">
+          <div className="user-info">
+            <h2>{name ?? "Student"}</h2>
+          </div>
+          <nav>
+            <Link to="/student-dashboard" className="active">
+              Dashboard
+            </Link>
+            <Link to="/applications">Applications</Link>
+            <Link to="/scholarship-match">Matches</Link>
+            <Link to={RP.studentmessages}>Messages</Link>
+            <Link to={RP.ViewStudentProfile}>Profile</Link>
+            <Link to={RP.studentwallet}>Wallet</Link>
+          </nav>
+        </div>
+      )}
+
       <div className="dashboard-container">
         {/* Sidebar */}
-        {/*<aside className="sidebar">
+        <aside className="sidebar">
           <div>
             <div className="filter-title">Filters</div>
+
             <div className="filter-group">
-              {["Class", "Country", "Gender", "Religion", "State", "Course"].map(
-                (label) => (
-                  <div key={label}>
-                    <label>Select {label}</label>
-                    <select>
-                      <option>All</option>
-                    </select>
-                  </div>
-                )
-              )}
+              {[
+                {
+                  key: "class",
+                  label: "Class",
+                  options: [
+                    "10th",
+                    "11th",
+                    "12th",
+                    "Undergraduate",
+                    "Postgraduate",
+                    "PhD",
+                  ],
+                },
+                {
+                  key: "country",
+                  label: "Country",
+                  options: ["India", "USA", "UK", "Canada", "Australia", "Germany"],
+                },
+                {
+                  key: "gender",
+                  label: "Gender",
+                  options: ["Male", "Female", "Other"],
+                },
+                {
+                  key: "religion",
+                  label: "Religion",
+                  options: [
+                    "Hindu",
+                    "Muslim",
+                    "Christian",
+                    "Sikh",
+                    "Buddhist",
+                    "Jain",
+                    "Other",
+                  ],
+                },
+                {
+                  key: "state",
+                  label: "State",
+                  options: [
+                    "Maharashtra",
+                    "Karnataka",
+                    "Tamil Nadu",
+                    "Delhi",
+                    "Uttar Pradesh",
+                    "Gujarat",
+                    "West Bengal",
+                  ],
+                },
+                {
+                  key: "course",
+                  label: "Course",
+                  options: [
+                    "Engineering",
+                    "Medical",
+                    "Science",
+                    "Arts",
+                    "Commerce",
+                    "Law",
+                    "Management",
+                  ],
+                },
+              ].map(({ key, label, options }) => (
+                <div key={key}>
+                  <label>Select {label}</label>
+                  <select
+                    value={filters[key]}
+                    onChange={(e) =>
+                      setFilters({ ...filters, [key]: e.target.value })
+                    }
+                  >
+                    <option>All</option>
+                    {options.map((opt) => (
+                      <option key={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
             </div>
+
+            <button className="clear-filters-btn" onClick={clearAllFilters}>
+              Clear All Filters
+            </button>
+
+            {isLoggedIn && (
+              <button className="logout-btn" onClick={handleLogout}>
+                Logout
+              </button>
+            )}
           </div>
-          <button className="logout-btn" onClick={handleLogout}>
-            Logout
-          </button>
-        </aside>*/}
+        </aside>
 
         {/* Main Content */}
         <main className="main-content">
-          {/* Tabs */}
           <div className="tab-container">
             <div className="tab-group">
               <button
@@ -137,102 +291,95 @@ const StudentDashboard = () => {
             </div>
           </div>
 
-          {/* Scholarships Grid + Featured Sidebar */}
           <div className="content-layout">
+            {/* Scholarships Grid */}
             <div className="scholarship-grid">
               {loading ? (
                 <p>Loading scholarships...</p>
               ) : displayedScholarships.length === 0 ? (
-                <p>No scholarships found.</p>
+                <p>
+                  {activeTab === "live"
+                    ? "No live scholarships are currently available."
+                    : "No upcoming scholarships available yet."}
+                </p>
               ) : (
                 displayedScholarships.map((s, i) => {
-                  const startDate = s.startDate ? new Date(s.startDate) : null;
-                  const endDate = s.endDate ? new Date(s.endDaste) : null;
+                  const endDate = s.endDate ? new Date(s.endDate) : null;
                   const daysLeftText = getDaysLeftText(s.endDate);
                   const diffDays = endDate
-                    ? Math.ceil((endDate - today) / (1000 * 60 * 60 * 24))
+                    ? Math.ceil((endDate - today) / 86400000)
                     : null;
-                  const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
+                  const isFeatured = featuredIds.includes(
+                    s.id || s.scholarshipId
+                  );
 
                   return (
                     <div
                       className="scholarship-card"
                       key={i}
                       onClick={() =>
-                        navigate(RP.scholarshipViewPage, {
-                          state: { id: s.id || s.scholarshipId },
-                        })
-                      }                 >
-
-                      {/* Featured Tag */}
+                        navigate(
+                          `${RP.scholarshipViewPage}?id=${
+                            s.id || s.scholarshipId
+                          }`
+                        )
+                      }
+                    >
                       {!activeTab.includes("upcoming") && isFeatured && (
                         <div className="featured-tag">Featured</div>
                       )}
-
                       {activeTab === "live" && daysLeftText && (
                         <div
-                          className={`deadline-badge ${diffDays <= 1 ? "urgent" : "warning"
-                            }`}
+                          className={`deadline-badge ${
+                            diffDays <= 1 ? "urgent" : "warning"
+                          }`}
                         >
                           {daysLeftText}
                         </div>
                       )}
 
-                      {/* Header */}
                       <div className="card-header-flex">
                         <div className="logo-wrapper">
                           <img
                             src={logoUrl}
-                            alt={s.scholarshipName}
+                            alt={s.name ?? "Scholarship Logo"}
                             className="card-logo"
                           />
                         </div>
                       </div>
 
-                      {/* Scholarship Info */}
                       <div className="card-body">
-                        <h3 className="card-title">{s.scholarshipName}</h3>
-
+                        <h3 className="card-title">
+                          {s.name ?? "Untitled Scholarship"}
+                        </h3>
                         <p>
-                          <strong>🏆 Award:</strong> {s.scholarshipAmount || "N/A"}
+                          <strong>🏆 Award:</strong>{" "}
+                          {s.amount ?? "Not specified"}
                         </p>
-
                         <p>
                           <strong>🎓 Eligibility:</strong>{" "}
-                          {s.renewalCriteria || "Not specified"}
+                          {s.eligibility ?? "Not specified"}
                         </p>
 
-                        {/* ✅ Show Start Date for Upcoming, OR Deadline if no "days to go" badge */}
-                        {activeTab === "upcoming" ? (
-                          <p className="start-line">
-                            <strong>🚀 Start Date:</strong>{" "}
-                            {startDate
-                              ? startDate.toLocaleDateString("en-GB", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })
-                              : "N/A"}
-                          </p>
-                        ) : !daysLeftText ? ( // ✅ only show deadline if no "days to go" text
+                        {!daysLeftText && (
                           <p className="deadline-line">
                             <strong>📅 Deadline:</strong>{" "}
                             {endDate
                               ? endDate.toLocaleDateString("en-GB", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                })
                               : "N/A"}
                           </p>
-                        ) : null}
+                        )}
 
-
-                        {/* ✅ Fixed Footer */}
                         <div className="card-footer-updated">
                           Last Updated On{" "}
-                          {s.modifiedDate
-                            ? new Date(s.modifiedDate).toISOString().split("T")[0]
+                          {s.lastUpdatedDate
+                            ? new Date(s.lastUpdatedDate)
+                                .toISOString()
+                                .split("T")[0]
                             : "N/A"}
                         </div>
                       </div>
@@ -252,15 +399,17 @@ const StudentDashboard = () => {
                   <div className="featured-item" key={i}>
                     <img
                       src={logoUrl}
-                      alt={s.scholarshipName}
+                      alt={s.scholarshipName ?? "Scholarship Logo"}
                       className="featured-logo"
                     />
                     <div>
-                      <p className="featured-title">{s.scholarshipName}</p>
-                      {s.endDate ? (
+                      <p className="featured-title">
+                        {s.scholarshipName ?? "Unnamed Scholarship"}
+                      </p>
+                      {s.deadline ? (
                         <p className="featured-deadline">
                           Deadline Date:{" "}
-                          {new Date(s.endDate).toLocaleDateString("en-GB", {
+                          {new Date(s.deadline).toLocaleDateString("en-GB", {
                             day: "numeric",
                             month: "short",
                             year: "numeric",

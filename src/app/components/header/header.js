@@ -20,6 +20,7 @@ const Header = ({ variant = "public" }) => {
       <nav className="header-right">
         {variant === "student-profile" && (
           <div className="header-actions">
+             <Link to="/login">Login</Link>
             <FiBell size={22} className="cursor-pointer" />
             <div className="icon-circle">
               <span className="icon-text">?</span>

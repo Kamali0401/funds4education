@@ -1,10 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Swal from "sweetalert2";
-import { publicAxios } from "../../../api/config";
-import { ApiKey } from "../../../api/endpoint";
+import {
+  fetchScholarshipBySponsorReq,
+  addScholarshipReq,
+  updateScholarshipReq,
+  deleteScholarshipReq,
+} from "../../../api/Scholarship/SponsorScholarship";
 
-const scholarshipSlice = createSlice({
-  name: "scholarshipList",
+const sponsorScholarshipSlice = createSlice({
+  name: "sponsorScholarship",
   initialState: {
     loading: false,
     error: false,
@@ -13,135 +17,125 @@ const scholarshipSlice = createSlice({
   reducers: {
     setLoading: (state) => {
       state.loading = true;
-    },
-    addData: (state, { payload }) => {
-      state.loading = false;
       state.error = false;
-      state.data = payload;
     },
     setError: (state) => {
-      state.error = true;
       state.loading = false;
+      state.error = true;
+    },
+    setData: (state, { payload }) => {
+      state.loading = false;
+      state.error = false;
+      state.data = Array.isArray(payload) ? payload : [];
     },
   },
 });
 
-export const { setLoading, addData, setError } = scholarshipSlice.actions;
+export const { setLoading, setError, setData } =
+  sponsorScholarshipSlice.actions;
 
-// ✅ Export only the reducer
-export default scholarshipSlice.reducer;
+export default sponsorScholarshipSlice.reducer;
 
-// ---------------------------------------------------------
-// 📘 Fetch Scholarship List
-// ---------------------------------------------------------
-/*export const fetchScholarshipList = () => async (dispatch) => {
+//
+// 📘 Fetch scholarships for sponsor
+//
+export const fetchScholarshipBySponsor = (userId, role) => async (dispatch) => {
   try {
-    dispatch(setLoading());
-    const res = await publicAxios.get(ApiKey.SponsorScholarship/role?"");
-    dispatch(addData(res.data));
+    dispatch(setLoading()); // Set loading before API call
+
+    const res = await fetchScholarshipBySponsorReq(userId, role); // Call API
+
+    dispatch(setData(res.data)); // Dispatch the data
   } catch (error) {
-    dispatch(setError());
+    dispatch(setError()); // Dispatch error action
     Swal.fire({
-      text: "Failed to load scholarships",
+      text: "Failed to load sponsor scholarships",
       icon: "error",
     });
   }
 };
-*/
-export const fetchScholarshipList = (UserId,role) => async (dispatch) => {
+//
+// 📘 Add new scholarship
+//
+export const addNewScholarship = async (formData, dispatch) => {
   try {
     dispatch(setLoading());
 
-    // Build the URL with the role parameter
-    const url = `${ApiKey.SponsorScholarship}?id=${UserId}&role=${role}`;
+    const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("roleName");
 
-    const res = await publicAxios.get(url);
-    dispatch(addData(res.data));
-  } catch (error) {
-    dispatch(setError());
+    // API call to add new scholarship
+    const res = await addScholarshipReq(formData);
+
+    // Refresh scholarship list after adding
+    await dispatch(fetchScholarshipBySponsor(userId, role));
+
+    // Optional success message
     Swal.fire({
-      text: "Failed to load scholarships",
-      icon: "error",
-    });
-  }
-};
-
-// ---------------------------------------------------------
-// 📘 Add New Scholarship
-// ---------------------------------------------------------
-export const addNewScholarship = async (data, dispatch) => {
-  try {
-    const userId=localStorage.getItem("userId");
-     const role=localStorage.getItem("roleName");
-    dispatch(setLoading());
-    const res = await publicAxios.post(ApiKey.SponsorScholarship, data);
-
-    await dispatch(fetchScholarshipList(userId,role));
-
-    /*Swal.fire({
       text: "Scholarship added successfully!",
       icon: "success",
-    });*/
+    });
 
-    return res.data;
+    return res.data; // Return response data
   } catch (error) {
     dispatch(setError());
     Swal.fire({
-      text: "Error adding scholarship! Try again.",
+      text: "Error! Try Again!",
       icon: "error",
     });
-    throw error;
+    throw error; // Rethrow error if needed elsewhere
   }
 };
 
-// ---------------------------------------------------------
-// 📘 Update Scholarship
-// ---------------------------------------------------------
-export const updateScholarship = async (data, dispatch) => {
+// ✅ Update scholarship
+//
+export const updateScholarship = async (formData, dispatch) => {
   try {
-    const userId=localStorage.getItem("userId");
-     const role=localStorage.getItem("roleName");
-    dispatch(setLoading());
-    await publicAxios.put(ApiKey.SponsorScholarship, data);
+    dispatch(setLoading()); // Set loading before making the API request
 
-    await dispatch(fetchScholarshipList(userId,role));
+    await updateScholarshipReq(formData); // Call API to update scholarship
+
+    // Fetch updated scholarship list after updating
+    const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("roleName");
+    await dispatch(fetchScholarshipBySponsor(userId, role));
 
     /*Swal.fire({
       text: "Scholarship updated successfully!",
       icon: "success",
     });*/
   } catch (error) {
-    dispatch(setError());
+    dispatch(setError()); // Handle error if API fails
     Swal.fire({
-      text: "Error updating scholarship! Try again.",
+      text: "Error! Try Again!",
       icon: "error",
     });
-    throw error;
+    throw error; // Re-throw error if needed elsewhere
   }
 };
 
-// ---------------------------------------------------------
-// 📘 Delete Scholarship (optional if API supports it)
-// ---------------------------------------------------------
-export const deleteScholarship = async (id, UserName ,dispatch) => {
+//
+// ✅ Delete scholarship
+//
+export const deleteScholarship = (id, modifiedBy) => async (dispatch) => {
   try {
-    const userId=localStorage.getItem("userId");
-     const role=localStorage.getItem("roleName");
     dispatch(setLoading());
-    await publicAxios.delete(`${ApiKey.SponsorScholarship}/${id}?modifiedBy=${UserName}`);
 
-    await dispatch(fetchScholarshipList(userId,role));
+    const response = await deleteScholarshipReq(id, modifiedBy);
 
-    Swal.fire({
-      text: "Scholarship deleted successfully!",
-      icon: "success",
-    });
-  } catch (error) {
+    if (response.error) {
+      dispatch(setError());
+      return Swal.fire("Error", response.errorMsg, "error");
+    }
+
+    Swal.fire("Success", "Scholarship deleted successfully!", "success");
+
+    const userId = localStorage.getItem("userId");
+    const role = localStorage.getItem("roleName");
+
+    await dispatch(fetchScholarshipBySponsor(userId, role));
+  } catch (err) {
     dispatch(setError());
-    Swal.fire({
-      text: "Error deleting scholarship! Try again.",
-      icon: "error",
-    });
-    throw error;
+    Swal.fire("Error", "Error deleting scholarship.", "error");
   }
 };

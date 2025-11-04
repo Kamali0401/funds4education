@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { fetchScholarshipById } from "../../app/redux/slices/ScholarshipSlice";
-import AddApplicationModal from "../../pages/student/scholarshipapplication/addApplication.jsx";
 
 const ScholarshipViewPage = () => {
     const dispatch = useDispatch();
@@ -18,16 +17,21 @@ const ScholarshipViewPage = () => {
         (state) => state.scholarship
     );
 
-    const [showModal, setShowModal] = useState(false);
 
-    const handleApplyNowClick = () => {
-        if (isLoggedIn) {
-            setShowModal(true);
+   const handleApplyNowClick = () => {
+    if (isLoggedIn) {
+        if (scholarship.webportaltoApply) {
+            const url = scholarship.webportaltoApply.startsWith("http")
+                ? scholarship.webportaltoApply
+                : `https://${scholarship.webportaltoApply}`;
+            window.open(url, "_blank"); // opens in new browser tab
         } else {
-            navigate("/login");
+            alert("Application link not available.");
         }
-    };
-
+    } else {
+        navigate("/login");
+    }
+};
     useEffect(() => {
         if (id) {
             dispatch(fetchScholarshipById(id));
@@ -38,7 +42,7 @@ const ScholarshipViewPage = () => {
     if (!scholarship) return <p>No scholarship found.</p>;
 
     return (
-        <div className="scholarship-page">
+        <div className="scholarshipview-page">
             {/* 🔙 Back Button */}
             <button className="scholarship-view-back-btn" onClick={() => navigate(-1)}>
                 ← Back
@@ -46,12 +50,17 @@ const ScholarshipViewPage = () => {
 
             {/* 🎓 Title & About Section */}
             <div className="page-content">
-                <h2 className="scholarship-view-title">{scholarship.scholarshipName}</h2>
+               <h2
+                    className="scholarship-view-title"
+                   
+                    >
+                    {scholarship.scholarshipName}
+                </h2>
 
                 <h3 className="scholarship-subtitle">
                     About The <span className="highlight-word">Program</span>
                 </h3>
-                <p className="scholarship-view-text">{scholarship.description}</p>
+                <p className="scholarship-view-text schololarship-viwe-pad">{scholarship.description}</p>
             </div>
 
             {/* Eligibility Section */}
@@ -96,7 +105,7 @@ const ScholarshipViewPage = () => {
             </div>
 
             <div className="scholarship-detail-container">
-                <p className="scholarship-view-text">₹{scholarship.benefits}</p>
+                <p className="scholarship-view-text">₹{scholarship.scholarshipAmount}</p>
             </div>
 
             {/* Documents Section */}
@@ -108,7 +117,7 @@ const ScholarshipViewPage = () => {
                 {scholarship.documents && scholarship.documents.trim().length > 0 ? (
                     <ul className="scholarship-view-text">
                         {scholarship.documents
-                            .split(/\r?\n/)
+                              .split(/\. |\r?\n/)
                             .map((line) => line.trim())
                             .filter((line) => line.length > 0)
                             .map((line, index) => (
@@ -201,12 +210,7 @@ const ScholarshipViewPage = () => {
                 </p>
             </div>
 
-            <AddApplicationModal
-                show={showModal}
-                handleClose={() => setShowModal(false)}
-                onSubmit={() => setShowModal(false)}
-                application={null}
-            />
+            
         </div>
     );
 };
