@@ -77,7 +77,7 @@ export default sponsorScholarshipSlice.reducer;
 //
 export const fetchScholarshipBySponsor = (userId, role) => async (dispatch) => {
   try {
-    dispatch(setLoading()); // Set loading before API call
+    
 
     const res = await fetchScholarshipBySponsorReq(userId, role); // Call API
 
@@ -95,7 +95,7 @@ export const fetchScholarshipBySponsor = (userId, role) => async (dispatch) => {
 //
 export const addNewScholarship = async (formData, dispatch) => {
   try {
-    dispatch(setLoading());
+   
 
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("roleName");
@@ -127,7 +127,6 @@ export const addNewScholarship = async (formData, dispatch) => {
 //
 export const updateScholarship = async (formData, dispatch) => {
   try {
-    dispatch(setLoading()); // Set loading before making the API request
 
     await updateScholarshipReq(formData); // Call API to update scholarship
 
@@ -155,7 +154,7 @@ export const updateScholarship = async (formData, dispatch) => {
 //
 export const deleteScholarship = (id, modifiedBy) => async (dispatch) => {
   try {
-    dispatch(setLoading());
+   
 
     const response = await deleteScholarshipReq(id, modifiedBy);
 
@@ -177,7 +176,7 @@ export const deleteScholarship = (id, modifiedBy) => async (dispatch) => {
 };
 export const fetchReligions = () => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchReligionsReq();
     dispatch(setReligions(res.data));
   } catch (err) {
@@ -187,7 +186,7 @@ export const fetchReligions = () => async (dispatch) => {
 
 export const fetchCountries = () => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchCountriesReq();
     dispatch(setCountries(res.data));
   } catch (err) {
@@ -197,7 +196,7 @@ export const fetchCountries = () => async (dispatch) => {
 
 export const fetchStates = () => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchStatesReq();
     dispatch(setStates(res.data));
   } catch (err) {
@@ -207,7 +206,7 @@ export const fetchStates = () => async (dispatch) => {
 
 export const fetchGenders = () => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchGendersReq();
     dispatch(setGenders(res.data));
   } catch (err) {
@@ -218,7 +217,7 @@ export const fetchGenders = () => async (dispatch) => {
 // ================= Class & Course =================
 export const fetchClasses = () => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchClassesReq();
     dispatch(setClasses(res.data));
   } catch (err) {
@@ -229,7 +228,7 @@ export const fetchClasses = () => async (dispatch) => {
 // fetch courses by selected class
 export const fetchCoursesByClass = (className) => async (dispatch) => {
   try {
-    dispatch(setLoading());
+    
     const res = await fetchCoursesByClassReq(className);
     dispatch(setCourses(res.data));
   } catch (err) {
