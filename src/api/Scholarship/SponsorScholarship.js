@@ -97,3 +97,67 @@ export const deleteScholarshipReq = async (id, modifiedBy) => {
     return { error: true, data: [], message: "", errorMsg };
   }
 };
+export const fetchReligionsReq = async () => {
+  try {
+    const res = await publicAxios.get(ApiKey.FilterReligions);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching religions" };
+  }
+};
+export const fetchCountriesReq = async () => {
+  try {
+    const res = await publicAxios.get(ApiKey.FilterCountries);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching countries" };
+  }
+};
+
+//
+// ✅ State
+//
+export const fetchStatesReq = async () => {
+  try {
+    const res = await publicAxios.get(ApiKey.FilterStates);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching states" };
+  }
+};
+
+//
+// ✅ Gender
+//
+export const fetchGendersReq = async () => {
+  try {
+    const res = await publicAxios.get(ApiKey.FilterGenders);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching genders" };
+  }
+};
+
+//
+// ✅ Class
+//
+export const fetchClassesReq = async () => {
+  try {
+    const res = await publicAxios.get(ApiKey.Class);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching classes" };
+  }
+};
+
+//
+// ✅ Course by class
+//
+export const fetchCoursesByClassReq = async (className) => {
+  try {
+    const res = await publicAxios.get(`${ApiKey.CourseByClass}?classname=${className}`);
+    return { error: false, data: Array.isArray(res.data) ? res.data : [] };
+  } catch (err) {
+    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching courses" };
+  }
+};

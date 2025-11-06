@@ -16,6 +16,12 @@ export const ApiKey = {
    Scholarship: "/Scholarship",
    SponsorScholarship: "/Scholarship",
    Sponsor: "/SponsorDto",
+   FilterReligions: "/Filter/religions",
+  FilterCountries: "/Filter/countries",
+  FilterStates: "/Filter/states",
+  FilterGenders: "/Filter/genders",
+   Class: "/Class",
+   CourseByClass: "/Course/by-classname",
 
 
 };

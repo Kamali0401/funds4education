@@ -5,7 +5,14 @@ import {
   addScholarshipReq,
   updateScholarshipReq,
   deleteScholarshipReq,
+  fetchReligionsReq,
+  fetchCountriesReq,
+  fetchStatesReq,
+  fetchGendersReq,
+  fetchClassesReq,
+  fetchCoursesByClassReq,
 } from "../../../api/Scholarship/SponsorScholarship";
+
 
 const sponsorScholarshipSlice = createSlice({
   name: "sponsorScholarship",
@@ -13,6 +20,12 @@ const sponsorScholarshipSlice = createSlice({
     loading: false,
     error: false,
     data: [],
+   religions: [],
+    countries: [],
+    states: [],
+    genders: [],
+    classes: [],
+    courses: [],
   },
   reducers: {
     setLoading: (state) => {
@@ -28,10 +41,33 @@ const sponsorScholarshipSlice = createSlice({
       state.error = false;
       state.data = Array.isArray(payload) ? payload : [];
     },
+     setReligions: (state, { payload }) => {
+      state.religions = Array.isArray(payload) ? payload : [];
+    },
+    setCountries: (state, { payload }) => {
+      state.countries = Array.isArray(payload) ? payload : [];
+    },
+    setStates: (state, { payload }) => {
+      state.states = Array.isArray(payload) ? payload : [];
+    },
+    setGenders: (state, { payload }) => {
+      state.genders = Array.isArray(payload) ? payload : [];
+    },
+    setClasses: (state, { payload }) => {
+      state.classes = Array.isArray(payload) ? payload : [];
+    },
+    setCourses: (state, { payload }) => {
+      state.courses = Array.isArray(payload) ? payload : [];
+    },
   },
 });
 
-export const { setLoading, setError, setData } =
+export const { setLoading, setError, setData,setReligions,
+  setCountries,
+  setStates,
+  setGenders,
+  setClasses,
+  setCourses } =
   sponsorScholarshipSlice.actions;
 
 export default sponsorScholarshipSlice.reducer;
@@ -137,5 +173,66 @@ export const deleteScholarship = (id, modifiedBy) => async (dispatch) => {
   } catch (err) {
     dispatch(setError());
     Swal.fire("Error", "Error deleting scholarship.", "error");
+  }
+};
+export const fetchReligions = () => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchReligionsReq();
+    dispatch(setReligions(res.data));
+  } catch (err) {
+    dispatch(setError());
+  }
+};
+
+export const fetchCountries = () => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchCountriesReq();
+    dispatch(setCountries(res.data));
+  } catch (err) {
+    dispatch(setError());
+  }
+};
+
+export const fetchStates = () => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchStatesReq();
+    dispatch(setStates(res.data));
+  } catch (err) {
+    dispatch(setError());
+  }
+};
+
+export const fetchGenders = () => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchGendersReq();
+    dispatch(setGenders(res.data));
+  } catch (err) {
+    dispatch(setError());
+  }
+};
+
+// ================= Class & Course =================
+export const fetchClasses = () => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchClassesReq();
+    dispatch(setClasses(res.data));
+  } catch (err) {
+    dispatch(setError());
+  }
+};
+
+// fetch courses by selected class
+export const fetchCoursesByClass = (className) => async (dispatch) => {
+  try {
+    dispatch(setLoading());
+    const res = await fetchCoursesByClassReq(className);
+    dispatch(setCourses(res.data));
+  } catch (err) {
+    dispatch(setError());
   }
 };
