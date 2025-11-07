@@ -95,50 +95,60 @@ export const fetchScholarshipBySponsor = (userId, role) => async (dispatch) => {
 //
 export const addNewScholarship = async (formData, dispatch) => {
   try {
-   
-
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("roleName");
 
-    // API call to add new scholarship
     const res = await addScholarshipReq(formData);
 
-    // Refresh scholarship list after adding
+    // 🟠 Handle backend duplicate or validation error
+    if (res.error) {
+      Swal.fire({
+        text: res.message || "Something went wrong.",
+        icon: "warning",
+      });
+      return { success: false, data: null, message: res.message };
+    }
+
+    // 🟢 Success case
     await dispatch(fetchScholarshipBySponsor(userId, role));
 
-    // Optional success message
-    Swal.fire({
-      text: "Scholarship added successfully!",
-      icon: "success",
-    });
-
-    return res.data; // Return response data
+    return { success: true, data: res.data };
   } catch (error) {
     dispatch(setError());
     Swal.fire({
       text: "Error! Try Again!",
       icon: "error",
     });
-    throw error; // Rethrow error if needed elsewhere
+    return { success: false, data: null, message: error.message };
   }
 };
+
 
 // ✅ Update scholarship
 //
 export const updateScholarship = async (formData, dispatch) => {
   try {
 
-    await updateScholarshipReq(formData); // Call API to update scholarship
+   const res= await updateScholarshipReq(formData); // Call API to update scholarship
 
     // Fetch updated scholarship list after updating
     const userId = localStorage.getItem("userId");
     const role = localStorage.getItem("roleName");
+     // 🟠 Handle backend duplicate or validation error
+    if (res.error) {
+      Swal.fire({
+        text: res.message || "Something went wrong.",
+        icon: "warning",
+      });
+      return { success: false, data: null, message: res.message };
+    }
     await dispatch(fetchScholarshipBySponsor(userId, role));
 
     /*Swal.fire({
       text: "Scholarship updated successfully!",
       icon: "success",
     });*/
+    return { success: true, data: res.data };
   } catch (error) {
     dispatch(setError()); // Handle error if API fails
     Swal.fire({

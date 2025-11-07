@@ -259,79 +259,109 @@ useEffect(() => {
     const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w- ./?%&=]*)?$/i;
 
     const validateForm = () => {
-        const newErrors = {};
+    debugger;
+    const newErrors = {};
 
-        // Required fields
-        if (!formData.scholarshipCode?.trim())
-            newErrors.scholarshipCode = "Scholarship Code is required.";
-        if (!formData.scholarshipName?.trim())
-            newErrors.scholarshipName = "Scholarship Name is required.";
-        if (!formData.scholarshipType?.trim())
-            newErrors.scholarshipType = "Scholarship Type is required.";
-        if (!formData.startDate)
-            newErrors.startDate = "Start Date is required.";
-        if (!formData.endDate)
-            newErrors.endDate = "End Date is required.";
-        else if (formData.startDate && formData.endDate < formData.startDate)
-            newErrors.endDate = "End Date must be after Start Date.";
+    console.log("🔍 Validating form data:", formData);
 
-        // Scholarship amount validation
-        if (formData.benefits && !amountRegex.test(formData.benefits))
-            newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
+    // Required fields
+    if (!formData.scholarshipCode?.trim()) {
+        newErrors.scholarshipCode = "Scholarship Code is required.";
+        console.log("❌ scholarshipCode missing");
+    }
+    if (!formData.scholarshipName?.trim()) {
+        newErrors.scholarshipName = "Scholarship Name is required.";
+        console.log("❌ scholarshipName missing");
+    }
+    if (!formData.scholarshipType?.trim()) {
+        newErrors.scholarshipType = "Scholarship Type is required.";
+        console.log("❌ scholarshipType missing");
+    }
+    if (!formData.startDate) {
+        newErrors.startDate = "Start Date is required.";
+        console.log("❌ startDate missing");
+    }
+    if (!formData.endDate) {
+        newErrors.endDate = "End Date is required.";
+        console.log("❌ endDate missing");
+    } else if (formData.startDate && formData.endDate < formData.startDate) {
+        newErrors.endDate = "End Date must be after Start Date.";
+        console.log("❌ endDate < startDate");
+    }
 
-        // Percentage / CGPA validation
-        if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA))
-            newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
+    // Scholarship amount validation
+    if (formData.benefits && !amountRegex.test(formData.benefits)) {
+        newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
+        console.log("❌ Invalid benefits format:", formData.benefits);
+    }
 
-        // Family income validation
-        if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome))
-            newErrors.maxFamilyIncome = "Enter valid family income.";
+    // Percentage / CGPA validation
+    if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
+        newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
+        console.log("❌ Invalid minPercentageOrCGPA:", formData.minPercentageOrCGPA);
+    }
 
-        // Scholarship limit
-        if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit))
-            newErrors.scholarshipLimit = "Scholarship limit must be a number.";
+    // Family income validation
+    if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome)) {
+        newErrors.maxFamilyIncome = "Enter valid family income.";
+        console.log("❌ Invalid maxFamilyIncome:", formData.maxFamilyIncome);
+    }
 
-        // Web Portal validation — must be a proper link
-        if (!formData.webportaltoApply) {
-            newErrors.webportaltoApply = "Web Portal to Apply is required.";
-        } else {
-            const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
-            if (!urlPattern.test(formData.webportaltoApply)) {
-                newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
-            }
+    // Scholarship limit
+    if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
+        newErrors.scholarshipLimit = "Scholarship limit must be a number.";
+        console.log("❌ Invalid scholarshipLimit:", formData.scholarshipLimit);
+    }
+
+    // Web Portal validation
+    if (!formData.webportaltoApply) {
+        newErrors.webportaltoApply = "Web Portal to Apply is required.";
+        console.log("❌ webportaltoApply missing");
+    } else {
+        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
+        if (!urlPattern.test(formData.webportaltoApply)) {
+            newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
+            console.log("❌ Invalid webportaltoApply:", formData.webportaltoApply);
         }
+    }
 
-        if (!formData.eligibility?.trim()) {
-            newErrors.eligibility = "Eligibility is required.";
-        }
+    if (!formData.eligibility?.trim()) {
+        newErrors.eligibility = "Eligibility is required.";
+        console.log("❌ eligibility missing");
+    }
 
-        if (!formData.eligibilityCriteria?.trim()) {
-            newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
-        }
+    if (!formData.eligibilityCriteria?.trim()) {
+        newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
+        console.log("❌ eligibilityCriteria missing");
+    }
 
-        if (!formData.webportaltoApply?.trim()) {
-            newErrors.webportaltoApply = "Web Portal link is required.";
-        } else if (!urlRegex.test(formData.webportaltoApply.trim())) {
-            newErrors.webportaltoApply = "Please enter a valid URL (e.g. https://example.com).";
-        }
+    // Optional text length validations
+    if (formData.description && formData.description.length > 500) {
+        newErrors.description = "Description cannot exceed 500 characters.";
+        console.log("❌ description too long:", formData.description.length);
+    }
+    if (formData.eligibility && formData.eligibility.length > 250) {
+        newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
+        console.log("❌ eligibility too long:", formData.eligibility.length);
+    }
+    if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500) {
+        newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
+        console.log("❌ eligibilityCriteria too long:", formData.eligibilityCriteria.length);
+    }
+    if (formData.renewalCriteria && formData.renewalCriteria.length > 300) {
+        newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
+        console.log("❌ renewalCriteria too long:", formData.renewalCriteria.length);
+    }
 
+    setErrors(newErrors);
 
-        // Optional text length validations
-        if (formData.description && formData.description.length > 500)
-            newErrors.description = "Description cannot exceed 500 characters.";
-        if (formData.eligibility && formData.eligibility.length > 250)
-            newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
-        if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500)
-            newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
-        if (formData.renewalCriteria && formData.renewalCriteria.length > 300)
-            newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    console.log("✅ Validation complete. Errors:", newErrors);
+    return Object.keys(newErrors).length === 0;
+};
 
 
     const handleSubmit = async (e) => {
+        debugger;
         e.preventDefault();
         if (!validateForm()) return;
 
@@ -356,17 +386,29 @@ useEffect(() => {
         };
 
         try {
+            debugger;
             let res;
             let scholarshipId;
 
             if (scholarship) {
                 
-                await updateScholarship(payload, dispatch);
+              const res=  await updateScholarship(payload, dispatch);
+                 if (!res?.success) {
+    handleCloseAndReset(); // ✅ close the modal and reset form
+    return;
+  }
                 scholarshipId = scholarship.id;
             } else {
                 console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
-                scholarshipId = res?.id;
+                // ⛔ Stop if insert failed or duplicate
+             if (!res?.success) {
+    handleCloseAndReset(); // ✅ close the modal and reset form
+    return;
+  }
+
+ scholarshipId = res.data?.id;
+              //  scholarshipId = res?.id;
             }
 
             // ✅ Upload files if any
