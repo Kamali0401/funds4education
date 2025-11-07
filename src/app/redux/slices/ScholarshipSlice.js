@@ -1,11 +1,11 @@
-// src/app/redux/slices/ScholarshipSlice.js
 import { createSlice } from "@reduxjs/toolkit";
 import Swal from "sweetalert2";
 import {
-  fetchScholarshipListReq,
-  fetchScholarshipByStatusReq,
-  fetchScholarshipByIdReq,
-  fetchFeaturedScholarshipsReq,
+  fetchScholarshipByStatusReq,   // ✅ existing API (live/upcoming)
+  fetchScholarshipByIdReq,        // ✅ existing API (by ID)
+  fetchFeaturedScholarshipsReq, 
+  fetchApplicationsBySponsorReq,
+  updateApplicationStatusReq   // ✅ NEW API for featured
 } from "../../../api/Scholarship/Scholarship";
 
 const scholarshipSlice = createSlice({
@@ -16,8 +16,9 @@ const scholarshipSlice = createSlice({
     data: {
       live: [],
       upcoming: [],
-      featured: [],
-      sponsor: [],
+      featured: [], // ✅ new field
+      applications: [], // ✅ add this field
+
     },
     selectedScholarship: null,
   },
@@ -29,23 +30,18 @@ const scholarshipSlice = createSlice({
     addData: (state, { payload }) => {
       state.loading = false;
       state.error = false;
+
+      // ✅ Merge live/upcoming with existing featured
       state.data = {
-        ...state.data,
-        live: Array.isArray(payload.live) ? payload.live : state.data.live,
-        upcoming: Array.isArray(payload.upcoming)
-          ? payload.upcoming
-          : state.data.upcoming,
+        live: payload.live || [],
+        upcoming: payload.upcoming || [],
+        featured: state.data.featured || [],
       };
     },
     addFeatured: (state, { payload }) => {
       state.loading = false;
       state.error = false;
       state.data.featured = Array.isArray(payload) ? payload : [];
-    },
-    addSponsorScholarship: (state, { payload }) => {
-      state.loading = false;
-      state.error = false;
-      state.data.sponsor = Array.isArray(payload) ? payload : [];
     },
     setError: (state) => {
       state.loading = false;
@@ -59,23 +55,44 @@ const scholarshipSlice = createSlice({
     clearSelectedScholarship: (state) => {
       state.selectedScholarship = null;
     },
+        setApplications: (state, { payload }) => {
+      state.loading = false;
+      state.error = false;
+      state.data.applications = Array.isArray(payload) ? payload : [];
+    },
+     updateApplicationStatusInState: (state, { payload }) => {
+      const { applicationId, status, modifiedBy } = payload;
+
+      const index = state.data.applications.findIndex(
+        (app) => app.applicationId === applicationId
+      );
+
+      if (index !== -1) {
+        state.data.applications[index] = {
+          ...state.data.applications[index],
+          status,
+          modifiedBy,
+        };
+      }
+    },
   },
 });
-
 export const {
   setLoading,
   addData,
   addFeatured,
-  addSponsorScholarship,
   setError,
   setSelectedScholarship,
   clearSelectedScholarship,
+  setApplications, // ✅ new export
+  updateApplicationStatusInState,
+
 } = scholarshipSlice.actions;
 
 export default scholarshipSlice.reducer;
 
 //
-// ✅ 1️⃣ Fetch both “live” and “upcoming” scholarships
+// ✅ Fetch both “live” and “upcoming” scholarships
 //
 export const fetchScholarshipList = () => async (dispatch) => {
   try {
@@ -86,10 +103,12 @@ export const fetchScholarshipList = () => async (dispatch) => {
       fetchScholarshipByStatusReq("upcoming"),
     ]);
 
-    const liveList = Array.isArray(liveRes?.data) ? liveRes.data : [];
-    const upcomingList = Array.isArray(upcomingRes?.data)
-      ? upcomingRes.data
-      : [];
+    const liveList =
+      liveRes.errorMsg?.includes("No scholarships found") ? [] : liveRes.data;
+    const upcomingList =
+      upcomingRes.errorMsg?.includes("No scholarships found")
+        ? []
+        : upcomingRes.data;
 
     dispatch(addData({ live: liveList, upcoming: upcomingList }));
   } catch (error) {
@@ -106,11 +125,12 @@ export const fetchScholarshipList = () => async (dispatch) => {
 };
 
 //
-// ✅ 2️⃣ Fetch featured scholarships
+// ✅ Fetch featured scholarships (green tag + right sidebar)
 //
 export const fetchFeaturedScholarships = () => async (dispatch) => {
   try {
     dispatch(setLoading());
+
     const res = await fetchFeaturedScholarshipsReq();
 
     if (!res.error && Array.isArray(res.data)) {
@@ -138,7 +158,7 @@ export const fetchFeaturedScholarships = () => async (dispatch) => {
 };
 
 //
-// ✅ 3️⃣ Fetch single scholarship by ID
+// ✅ Fetch single scholarship by ID
 //
 export const fetchScholarshipById = (id) => async (dispatch) => {
   try {
@@ -154,7 +174,7 @@ export const fetchScholarshipById = (id) => async (dispatch) => {
     dispatch(setLoading());
     const res = await fetchScholarshipByIdReq(id);
 
-    if (!res.error && res.data) {
+    if (!res.error) {
       dispatch(setSelectedScholarship(res.data));
     } else {
       dispatch(setError());
@@ -176,4 +196,87 @@ export const fetchScholarshipById = (id) => async (dispatch) => {
     });
   }
 };
+//
+// ✅ Fetch applications by sponsor
+//
+export const fetchApplicationsBySponsor =
+  (sponsorId, status = "") =>
+  async (dispatch) => {
+    try {
+      if (!sponsorId) {
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Sponsor ID",
+          text: "Sponsor ID is required to fetch applications.",
+        });
+        return;
+      }
 
+      dispatch(setLoading());
+
+      const res = await fetchApplicationsBySponsorReq(sponsorId, status);
+
+      if (!res.error) {
+        dispatch(setApplications(res.data));
+      } else {
+        dispatch(setError());
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: res.errorMsg || "Failed to load applications.",
+        });
+      }
+    } catch (error) {
+      dispatch(setError());
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          error?.errorMsg ||
+          error?.message ||
+          "Something went wrong while fetching applications.",
+      });
+    }
+  };
+export const updateApplicationStatus =
+  (applicationId, status, modifiedBy) =>
+  async (dispatch) => {
+    try {
+      dispatch(setLoading());
+      const res = await updateApplicationStatusReq(
+        applicationId,
+        status,
+        modifiedBy
+      );
+
+      if (!res.error) {
+        dispatch(
+          updateApplicationStatusInState({
+            applicationId,
+            status,
+            modifiedBy,
+          })
+        );
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Status updated successfully",
+          timer: 1500,
+        });
+      } else {
+        dispatch(setError());
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: res.errorMsg,
+        });
+      }
+    } catch (err) {
+      dispatch(setError());
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err?.message || "Failed to update application status",
+      });
+    }
+  };
