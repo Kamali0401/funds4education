@@ -3873,3 +3873,70 @@ h2, h3, p {
     padding: 1rem;
   }
 }
+/*vision and Mission style*/
+
+
+.vision-mission-section {
+  margin: 50px auto;
+  width: 90%;
+  text-align: left;
+}
+
+.vision-mission-slide {
+  padding: 20px 0;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.slide-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  position: relative;
+  display: inline-block;
+}
+
+.slide-title::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 3px;
+  left: 0;
+  bottom: -5px;
+  background-color: currentColor;
+  transition: width 0.5s;
+}
+
+.slide-title:hover::after {
+  width: 100%;
+}
+
+.slide-text {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #555;
+  max-width: 800px;
+}
+
+.slick-dots li button:before {
+  color: #396D70; /* dot color */
+  opacity: 0.6;
+}
+
+.slick-dots li.slick-active button:before {
+  opacity: 1;
+  color: #0D47A1; /* active dot color */
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0; transform: translateY(10px);}
+  100% {opacity: 1; transform: translateY(0);}
+}
+
+@media (max-width: 768px) {
+  .slide-title {
+    font-size: 1.8rem;
+  }
+  .slide-text {
+    font-size: 1rem;
+  }
+}

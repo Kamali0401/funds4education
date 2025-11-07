@@ -3,7 +3,7 @@ import "../../pages/styles.css";
 import logo from "../../app/assests/Logo.png"
 import Header from "../../app/components/header/header";
 import student1 from "../../app/assests/Img1.jpg";
-import { useDispatch } from "react-redux";
+import { useDispatch , useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import student2 from "../../app/assests/img2.jpg";
@@ -15,6 +15,9 @@ export default function SponsorDashboard() {
 
  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+   const name =
+      useSelector((state) => state.auth.name) || localStorage.getItem("name");
   const handleLogout = () => {
     dispatch(logout());
     
@@ -27,19 +30,21 @@ export default function SponsorDashboard() {
         <div className="profile">
           <div className="avatar">👤</div>
           <div>
-            <p className="profile-name">Mike Sharma</p>
+            <p className="profile-name">{name}</p>
           </div>
         </div>
 
         <nav className="sidebar-nav">
           <button className="active">Dashboard</button>
           <Link to="/sponsor-dashboard/sponsorapplication" className="nav-link">
-            Sponsored Students
-          </Link>
-          <Link to="/sponsor-dashboard/scholarshipPage" className="nav-link">
             Applications
           </Link>
-
+          <Link to="/sponsor-dashboard/scholarshipPage" className="nav-link">
+            Sponsored Students
+          </Link>
+           <Link to="/Sponsored-Scholarship" className="nav-link">
+            ApprovedApplications
+          </Link>         
           <Link to="/sponsor-dashboard/report" className="nav-link">
             Reports
           </Link>

@@ -1,73 +1,105 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchApplicationsBySponsor , updateApplicationStatus} from "../../app/redux/slices/ScholarshipSlice"; // adjust path if needed
 import "../styles.css";
-
+import Swal from "sweetalert2";
 export default function SponsorApplications() {
-  const [applications, setApplications] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      course: "B.Sc CS",
-      university: "Harvard",
-      gpa: 3.9,
-      status: "pending",
-      messages: [
-        { sender: "Student", text: "Hello sponsor, I am applying for this scholarship.", time: "2025-09-20 10:15" },
-        { sender: "Student", text: "Please let me know if you need more details.", time: "2025-09-21 14:30" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Alice Johnson",
-      course: "MBA",
-      university: "Stanford",
-      gpa: 3.7,
-      status: "approved",
-      messages: [
-        { sender: "Student", text: "Thank you for reviewing my application.", time: "2025-09-22 09:45" },
-      ],
-    },
-  ]);
+  const dispatch = useDispatch();
+  const { data, loading, error } = useSelector((state) => state.scholarship);
+  const applications = data.applications || [];
 
   const [filter, setFilter] = useState("All");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
+  useEffect(() => {
+    const sponsorId = localStorage.getItem("userId");
+    dispatch(fetchApplicationsBySponsor(sponsorId));
+  }, [dispatch]);
+
   const normalize = (s) => (s || "").toLowerCase();
 
-  const updateStatus = (id, newStatus) => {
-    setApplications((prev) =>
-      prev.map((app) =>
-        app.id === id ? { ...app, status: newStatus.toLowerCase() } : app
-      )
-    );
-  };
+const handleUpdateStatus = (id, newStatus) => {
+  const modifiedBy = localStorage.getItem("name") || "SponsorUser";
+  const sponsorId = localStorage.getItem("userId");
 
+  const actionText =
+    newStatus === "Approved"
+      ? "approve"
+      : newStatus === "Rejected"
+      ? "reject"
+      : newStatus === "Funded"
+      ? "fund"
+      : "update";
+
+  Swal.fire({
+    title: `Are you sure you want to ${actionText} this application?`,
+    text:
+      newStatus === "Approved"
+        ? "Once approved, this student will be eligible for funding."
+        : newStatus === "Rejected"
+        ? "Once rejected, this student cannot reapply for this scholarship."
+        : "Confirm your action.",
+    icon:
+      newStatus === "Approved"
+        ? "success"
+        : newStatus === "Rejected"
+        ? "warning"
+        : "info",
+    showCancelButton: true,
+    confirmButtonText: `Yes, ${actionText}`,
+    cancelButtonText: "Cancel",
+    confirmButtonColor:
+      newStatus === "Approved"
+        ? "#4CAF50"
+        : newStatus === "Rejected"
+        ? "#e74c3c"
+        : "#3498db",
+    cancelButtonColor: "#999",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      // ✅ Dispatch API call
+      await dispatch(updateApplicationStatus(id, newStatus, modifiedBy));
+
+      setTimeout(() => {
+        dispatch(fetchApplicationsBySponsor(sponsorId));
+      }, 800);
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: `Application has been ${newStatus.toLowerCase()} successfully.`,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
+  });
+};
+
+
+  // 💬 Handle local messaging UI (not stored in backend)
   const sendMessage = () => {
     if (!newMessage.trim() || !selectedStudent) return;
-
-    setApplications((prev) =>
-      prev.map((app) =>
-        app.id === selectedStudent.id
-          ? {
-              ...app,
-              messages: [
-                ...app.messages,
-                { sender: "Sponsor", text: newMessage, time: new Date().toLocaleString() },
-              ],
-            }
-          : app
-      )
-    );
-
+    setSelectedStudent({
+      ...selectedStudent,
+      messages: [
+        ...selectedStudent.messages,
+        { sender: "Sponsor", text: newMessage, time: new Date().toLocaleString() },
+      ],
+    });
     setNewMessage("");
   };
 
+  // 🧠 Filter logic
   const filteredApplications = useMemo(() => {
     if (filter === "All") return applications;
     return applications.filter((app) => normalize(app.status) === normalize(filter));
   }, [applications, filter]);
 
   const displayStatus = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+  if (loading) return <p className="loading">Loading applications...</p>;
+  if (error) return <p className="error">Error loading applications.</p>;
 
   return (
     <div className="page">
@@ -86,49 +118,75 @@ export default function SponsorApplications() {
           </select>
         </div>
 
-        {/* Applications Lists */}
+        {/* Applications List */}
         <div className="application-list">
-          {filteredApplications.map((app) => (
-            <div key={app.id} className="application-card">
-              <div className="application-info">
-                <h3 className="student-name">{app.name}</h3>
-                <p>{app.course} • {app.university}</p>
-                <p>GPA: {app.gpa}</p>
-                <span className={`status ${normalize(app.status)}`}>
-                  {displayStatus(app.status)}
-                </span>
+          {filteredApplications.length > 0 ? (
+            filteredApplications.map((app) => (
+              <div key={app.applicationId} className="application-card">
+                <div className="application-info">
+                  <h3 className="student-name">
+                    {app.firstName} {app.lastName}
+                  </h3>
+                  <p>{app.scholarshipName || "Course not specified"}</p>
+                  <p>School: {app.schoolName}</p>
+                  <span className={`status ${normalize(app.status)}`}>
+                    {displayStatus(app.status)}
+                  </span>
+                </div>
+
+<div className="application-actions">
+  {["pending", "submitted", "under review"].includes(normalize(app.status)) && (
+    <>
+      <button
+        className="btn btn-approve"
+        onClick={() => handleUpdateStatus(app.applicationId, "Approved")}
+      >
+        Approve
+      </button>
+      <button
+        className="btn btn-reject"
+        onClick={() => handleUpdateStatus(app.applicationId, "Rejected")}
+      >
+        Reject
+      </button>
+    </>
+  )}
+
+  {normalize(app.status) === "approved" && (
+    <button
+      className="btn btn-fund"
+      onClick={() => handleUpdateStatus(app.applicationId, "Funded")}
+    >
+      Fund Student
+    </button>
+  )}
+
+  <button
+    className="btn btn-message"
+    onClick={() =>
+      setSelectedStudent({
+        ...app,
+        messages: app.messages || [],
+      })
+    }
+  >
+    Messages ({(app.messages || []).length})
+  </button>
+</div>
+
               </div>
-
-              <div className="application-actions">
-                {normalize(app.status) === "pending" && (
-                  <>
-                    <button className="btn btn-approve" onClick={() => updateStatus(app.id, "approved")}>Approve</button>
-                    <button className="btn btn-reject" onClick={() => updateStatus(app.id, "rejected")}>Reject</button>
-                  </>
-                )}
-                {normalize(app.status) === "approved" && (
-                  <button className="btn btn-fund" onClick={() => updateStatus(app.id, "funded")}>Fund Student</button>
-                )}
-
-                <button className="btn btn-message" onClick={() => setSelectedStudent(app)}>
-                  Messages ({app.messages.length})
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {filteredApplications.length === 0 && (
+            ))
+          ) : (
             <p className="empty">No applications found.</p>
           )}
         </div>
       </div>
 
-      {/* Modal for Messages */}
+      {/* 💬 Modal for Messages */}
       {selectedStudent && (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Messages with {selectedStudent.name}</h2>
-
+            <h2>Messages with {selectedStudent.firstName}</h2>
             <div className="messages-box">
               {selectedStudent.messages.length === 0 ? (
                 <p className="empty">No messages yet.</p>
@@ -142,7 +200,7 @@ export default function SponsorApplications() {
               )}
             </div>
 
-            {/* Send message box */}
+            {/* Send Message Box */}
             <div className="send-box">
               <textarea
                 rows="3"

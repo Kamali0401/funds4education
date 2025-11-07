@@ -205,3 +205,81 @@ export const fetchDropdownDataReq = async () => {
     return { error: true, data: { countries: [], states: [], genders: [], religions: [] ,classList:[],courses:[]}, message: "", errorMsg };
   }
 };
+export const fetchApplicationsBySponsorReq = async (sponsorId, status = "") => {
+  try {
+    if (!sponsorId) {
+      return {
+        error: true,
+        data: [],
+        message: "",
+        errorMsg: "Invalid sponsorId",
+      };
+    }
+
+    const url = `${ApiKey.ScholarshipApplicationsBySponsor}/${sponsorId}${
+      status ? `?status=${status}` : ""
+    }`;
+
+    const res = await publicAxios.get(url);
+
+    const _data = Array.isArray(res.data)
+      ? res.data
+      : res.data?.data || [];
+
+    return { error: false, data: _data, message: "", errorMsg: "" };
+  } catch (err) {
+    const errorMsg = err.response
+      ? err.response.data.detail ||
+        err.response.data.message ||
+        "Response error"
+      : err.request
+      ? "Request error"
+      : "Something went wrong, please try again later";
+
+    return { error: true, data: [], message: "", errorMsg };
+  }
+};
+
+//
+// ✅ 5️⃣ Update Application Status (Approve / Reject)
+//
+export const updateApplicationStatusReq = async (
+  applicationId,
+  status,
+  modifiedBy
+) => {
+  try {
+    if (!applicationId || !status) {
+      return {
+        error: true,
+        data: [],
+        message: "",
+        errorMsg: "Invalid ApplicationId or Status",
+      };
+    }
+
+    // ✅ Backend endpoint for updating application status
+    const url = `${ApiKey.ApplicationStatus}/Update?applicationId=${applicationId}&status=${status}&modifiedBy=${modifiedBy || "Sponsor"}`;
+
+    const res = await publicAxios.put(url);
+
+    const _data = res.data?.data || res.data || {};
+
+    return {
+      error: false,
+      data: _data,
+      message: "Application status updated successfully",
+      errorMsg: "",
+    };
+  } catch (err) {
+    const errorMsg = err.response
+      ? err.response.data.detail ||
+        err.response.data.message ||
+        "Response error"
+      : err.request
+      ? "Request error"
+      : "Something went wrong, please try again later";
+
+    return { error: true, data: [], message: "", errorMsg };
+  }
+};

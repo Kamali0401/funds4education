@@ -1,15 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import "../../../pages/styles.css";
 import {
 
-    fetchScholarshipBySponsor,
-} from "../../../app/redux/slices/sponsorscholarshipSlice";
-import {
-    addNewScholarship,
+    fetchScholarshipBySponsor, addNewScholarship,
     updateScholarship,
+    fetchReligions,
+    fetchCountries,
+    fetchStates,
+    fetchGenders,
+    fetchClasses,
+    fetchCoursesByClass,
+
 } from "../../../app/redux/slices/sponsorscholarshipSlice";
+
 
 import { uploadFormFilesReq } from "../../../api/scholarshipapplication/scholarshipapplication"
 import { publicAxios } from "../../../api/config";
@@ -28,6 +33,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const role = localStorage.getItem("roleName");
     const UserId = localStorage.getItem("userId");
 
+
     const initialData = {
         scholarshipCode: "",
         scholarshipName: "",
@@ -35,7 +41,8 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         description: "",
         eligibility: "",
         eligibilityCriteria: "",
-        applicableCourses: "",
+        className: "",
+        course: "",
         applicableDepartments: "",
         minPercentageOrCGPA: "",
         maxFamilyIncome: "",
@@ -73,37 +80,76 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
     // ✅ Allow up to 10 digits with optional decimal up to 2 places (e.g., 25000.70)
     const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
-
+    const {
+        religions,
+        countries,
+        states,
+        genders,
+        classes,
+        courses,
+    } = useSelector((state) => state.sponsorScholarship);
+    const [filters, setFilters] = useState({
+        religion: "",
+        country: "",
+        state: "",
+        gender: "",
+        className: "",
+        course: "",
+    });
    useEffect(() => {
     if (show) {
         if (scholarship) {
+            // Set form data
             setFormData({
                 ...initialData,
                 ...scholarship,
                 startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
                 endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
-                modifiedBy: localStorage.getItem("name"),
-                eligibility: scholarship.eligibility ?? "",
-                eligibilityCriteria: scholarship.eligibilityCriteria ?? "",
-                webportaltoApply: scholarship.webportaltoApply ?? "",
-                canApply: scholarship.canApply ?? "",
-                contactDetails: scholarship.contactDetails ?? "",
             });
+
+            // Set filters for dropdowns
+            setFilters({
+                religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
+                country: scholarship.country_ID ? String(scholarship.country_ID) : "",
+                state: scholarship.state_ID ? String(scholarship.state_ID) : "",
+                gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
+                className: scholarship.class_ID ? String(scholarship.class_ID) : "",
+                course: "", // will set after courses fetch
+            });
+
+            // Fetch courses for saved class
+            if (scholarship.class_ID) {
+                dispatch(fetchCoursesByClass(scholarship.class_ID));
+            }
         } else {
-            setFormData({
-                ...initialData,
-                sponsorId: localStorage.getItem("userId"),
-                createdBy: localStorage.getItem("name"),
+            // Add mode
+            setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
+            setFilters({
+                religion: "",
+                country: "",
+                state: "",
+                gender: "",
+                className: "",
+                course: "",
             });
-            setErrors({});
-            setSelectedFiles([]);
-            setFilesList([]);
-            setFileSelected(false);
-            setNewFileSelected(false);
-            if (fileInputRef.current) fileInputRef.current.value = null;
         }
     }
-}, [scholarship, show]);
+
+    // Fetch dropdown data
+    dispatch(fetchReligions());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchGenders());
+    dispatch(fetchClasses());
+}, [show, scholarship, dispatch]);
+useEffect(() => {
+    if (scholarship && scholarship.class_ID && courses.length > 0) {
+        setFilters(prev => ({
+            ...prev,
+            course: scholarship.course_ID ? String(scholarship.course_ID) : ""
+        }));
+    }
+}, [courses, scholarship]);
 
 
     // --- Clear function ---
@@ -122,7 +168,17 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         // Reset documents field in formData
         setFormData({ ...formData, documents: null });
     };
+    const handleFilterChange = (e) => {
+        debugger;
+        const { name, value } = e.target;
+        const parsedValue = value === "" ? null : parseInt(value);
+        setFilters({ ...filters, [name]: value });
 
+        if (name === "className" && parsedValue) {
+            dispatch(fetchCoursesByClass(parsedValue));
+            setFilters((prev) => ({ ...prev, course: "" }));
+        }
+    };
     // --- File change handler ---
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
@@ -289,6 +345,13 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 : null,
             benefits: formData.benefits || null,
             documents: null,
+            religion_ID: filters.religion,
+            religion_ID: filters.religion ? parseInt(filters.religion) : null,
+            country_ID: filters.country ? parseInt(filters.country) : null,
+            state_ID: filters.state ? parseInt(filters.state) : null,
+            gender_ID: filters.gender ? parseInt(filters.gender) : null,
+            class_ID: filters.className || null,
+            course_ID: filters.course || null,
             id: scholarship ? scholarship.id : 0,
         };
 
@@ -302,6 +365,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 scholarshipId = scholarship.id;
             } else {
                 // ✅ Add new scholarship
+                console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
                 scholarshipId = res?.id;
             }
@@ -472,124 +536,69 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                 )}
                             </div>
                         </div>
-                        <div className="row">
-                            <div className="form-group col-6">
-                                <label>Applicable Courses</label>
-                                {/* <input
-                  type="text"
-                  name="applicableCourses"
-                  value={formData.applicableCourses}
-                  onChange={handleChange}
-                />
-                */}
-                                <select
-                                    name="applicableCourses"
-                                    value={formData.applicableCourses}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Course</option>
-                                    <option value="BE">B.E</option>
-                                    <option value="BTech">B.Tech</option>
-                                    <option value="BSc">B.Sc</option>
-                                    <option value="MSc">M.Sc</option>
-                                    <option value="BCom">B.Com</option>
-                                    <option value="MCom">M.Com</option>
-                                    <option value="BBA">BBA</option>
-                                    <option value="MBA">MBA</option>
-                                    <option value="BA">B.A</option>
-                                    <option value="MA">M.A</option>
-                                    <option value="BCA">BCA</option>
-                                    <option value="MCA">MCA</option>
-                                    <option value="BEd">B.Ed</option>
-                                    <option value="MEd">M.Ed</option>
-                                    <option value="BArch">B.Arch</option>
-                                    <option value="BDes">B.Des</option>
-                                    <option value="MDes">M.Des</option>
-                                    <option value="LLB">LLB</option>
-                                    <option value="LLM">LLM</option>
-                                    <option value="MBBS">MBBS</option>
-                                    <option value="BDS">BDS</option>
-                                    <option value="BPT">BPT</option>
-                                    <option value="BPharm">B.Pharm</option>
-                                    <option value="MPharm">M.Pharm</option>
-                                    <option value="BScNursing">B.Sc Nursing</option>
-                                    <option value="MScNursing">M.Sc Nursing</option>
-                                    <option value="BScAgriculture">B.Sc Agriculture</option>
-                                    <option value="MScAgriculture">M.Sc Agriculture</option>
-                                </select>
 
-
+                        {/* --- Filters Section --- */}
+                        <div className="filters-section mb-4">
+                            <div className="row">
+                                <div className="form-group col-4">
+                                    <label>Religion</label>
+                                    <select name="religion" value={filters.religion} onChange={handleFilterChange}>
+                                        <option value="">Select Religion</option>
+                                        {religions.map(r => (
+                                            <option key={r.id} value={r.id}>{r.religion_Name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group col-4">
+                                    <label>Country</label>
+                                    <select name="country" value={filters.country} onChange={handleFilterChange}>
+                                        <option value="">Select Country</option>
+                                        {countries.map(c => (
+                                            <option key={c.id} value={c.id}>{c.country_Name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group col-4">
+                                    <label>State</label>
+                                    <select name="state" value={filters.state || ""} onChange={handleFilterChange}>
+                                        <option value="">Select State</option>
+                                        {states.map((s) => (
+                                            <option key={s.id} value={s.id}>{s.state_Name}</option>  // ✅ send ID
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
-                            <div className="form-group col-6">
-                                <label>Applicable Departments</label>
-                                {/*<input
-                  type="text"
-                  name="applicableDepartments"
-                  value={formData.applicableDepartments}
-                  onChange={handleChange}
-                />*/}
-                                <select
-                                    name="applicableDepartments"
-                                    value={formData.applicableDepartments}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Department</option>
 
-                                    {/* Engineering Departments */}
-                                    <option value="CSE">CSE - Computer Science & Engineering</option>
-                                    <option value="IT">IT - Information Technology</option>
-                                    <option value="ECE">ECE - Electronics & Communication Engineering</option>
-                                    <option value="EEE">EEE - Electrical & Electronics Engineering</option>
-                                    <option value="Mechanical">Mechanical Engineering</option>
-                                    <option value="Civil">Civil Engineering</option>
-                                    <option value="AI & ML">AI & ML - Artificial Intelligence & Machine Learning</option>
-                                    <option value="Data Science">Data Science</option>
-                                    <option value="Biotechnology">Biotechnology</option>
-                                    <option value="Chemical">Chemical Engineering</option>
-
-                                    {/* Science Departments */}
-                                    <option value="Physics">Physics</option>
-                                    <option value="Chemistry">Chemistry</option>
-                                    <option value="Mathematics">Mathematics</option>
-                                    <option value="Zoology">Zoology</option>
-                                    <option value="Botany">Botany</option>
-                                    <option value="Environmental Science">Environmental Science</option>
-                                    <option value="Computer Science">Computer Science</option>
-
-                                    {/* Commerce & Management */}
-                                    <option value="Commerce">Commerce</option>
-                                    <option value="Management">Management</option>
-                                    <option value="Finance">Finance</option>
-                                    <option value="Marketing">Marketing</option>
-                                    <option value="Human Resource">Human Resource</option>
-
-                                    {/* Arts & Humanities */}
-                                    <option value="English">English</option>
-                                    <option value="Economics">Economics</option>
-                                    <option value="History">History</option>
-                                    <option value="Sociology">Sociology</option>
-                                    <option value="Political Science">Political Science</option>
-                                    <option value="Psychology">Psychology</option>
-                                    <option value="Fine Arts">Fine Arts</option>
-                                    <option value="Journalism">Journalism</option>
-
-                                    {/* Design & Architecture */}
-                                    <option value="Fashion Design">Fashion Design</option>
-                                    <option value="Graphic Design">Graphic Design</option>
-                                    <option value="Interior Design">Interior Design</option>
-                                    <option value="Industrial Design">Industrial Design</option>
-                                    <option value="UX/UI Design">UX/UI Design</option>
-
-                                    {/* Agriculture & Allied */}
-                                    <option value="Agriculture">Agriculture</option>
-                                    <option value="Forestry">Forestry</option>
-                                    <option value="Horticulture">Horticulture</option>
-                                    <option value="Dairy Science">Dairy Science</option>
-                                    <option value="Fisheries">Fisheries</option>
-                                </select>
+                            <div className="row mt-2">
+                                <div className="form-group col-4">
+                                    <label>Gender</label>
+                                    <select name="gender" value={filters.gender} onChange={handleFilterChange}>
+                                        <option value="">Select Gender</option>
+                                        {genders.map(g => (
+                                            <option key={g.gender_ID} value={g.gender_ID}>{g.gender_Name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group col-4">
+                                    <label>Class</label>
+                                    <select name="className" value={filters.className} onChange={handleFilterChange}>
+                                        <option value="">Select Class</option>
+                                        {classes.map(cls => (
+                                            <option key={cls.classId} value={cls.classId}>{cls.className}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group col-4">
+                                    <label>Course</label>
+                                    <select name="course" value={filters.course} onChange={handleFilterChange} disabled={!filters.className}>
+                                        <option value="">Select Course</option>
+                                        {courses.map(c => (
+                                            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
+                                        ))}
+                                    </select>
+                                </div>
                             </div>
                         </div>
-
                         <div className="row">
                             <div className="form-group col-4">
                                 <label>Min % / CGPA</label>
