@@ -35,7 +35,8 @@ const Header = ({ variant = "public" }) => {
         {variant === "public" && (
           <div className="nav-links">
             <Link to="/about">About</Link>
-            <Link to={RP.scholarshipdiscovery}>Scholarships</Link>
+           {/* <Link to={RP.scholarshipdiscovery}>Scholarships</Link>*/}
+           <Link to={RP.studentdashboard}>Scholarships</Link>
             <Link to="/login">Login</Link>
             <Link to="/signup">Sign Up</Link>
             <Link to={RP.resetPassword} >ResetPassword</Link>

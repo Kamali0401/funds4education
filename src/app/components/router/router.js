@@ -34,6 +34,7 @@ import InstitutionSignUpPage from "../../../pages/login/Institutionsignup.jsx";
 import ResetPassword from "../../../pages/Resetpassword/Resetpassword.jsx";
 import ScholarshipViewPage from "../../../pages/studentscholarship/view.jsx";
 import LoginSuccess from "../../../pages/login/loginsuccess.jsx";
+import SponsoredScholarship from "../../../pages/SponsorDashboard/SponsoredScholarship.jsx";
 // 🔹 Map routes to header variants
 const routeToVariant = {
   [RP.home]: "public",
@@ -109,6 +110,7 @@ function App() {
         <Route path={RP.resetPassword} element={<ResetPassword/>} />
        <Route path={RP.scholarshipViewPage} element={< ScholarshipViewPage/>} />
     <Route path={RP.loginSuccess} element={< LoginSuccess/>} />
+    <Route path={RP.SponsoredScholarship} element={<SponsoredScholarship/>} />
  </Routes>
       </Layout>
     </Router>

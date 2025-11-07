@@ -8,6 +8,9 @@ export const ApiKey = {
    userDto: "/UserDto",
    downloadscholarshipFiles: "/scholarshipApplicationForm/downloadFiles",
    downloadsponsorscholarshipFiles: "/Scholarship/downloadFiles",
+   ScholarshipApplicationsBySponsor: "/Scholarship/bySponsor", 
+   ApplicationStatus: "/Scholarship", 
+
 
    signup: "/student",
    SponsorLogin: "/auth/sponsor",
@@ -16,12 +19,10 @@ export const ApiKey = {
    Scholarship: "/Scholarship",
    SponsorScholarship: "/Scholarship",
    Sponsor: "/SponsorDto",
-   FilterReligions: "/Filter/religions",
-  FilterCountries: "/Filter/countries",
-  FilterStates: "/Filter/states",
-  FilterGenders: "/Filter/genders",
-   Class: "/Class",
-CourseByClass: "/Course",
-
-
+   Country:"/Filter/countries",
+   Gender:"/Filter/genders",
+   State:"/Filter/states",
+   Religion:"/Filter/religions",
+   Class:"/Class",
+   Course:"/Course"
 };
