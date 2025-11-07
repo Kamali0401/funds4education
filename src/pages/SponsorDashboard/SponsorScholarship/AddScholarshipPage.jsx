@@ -252,7 +252,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 regex = anyText350;
                 break;
             case "scholarshipAmount":
-                regex = amountRegex; // numeric only, max length 6
+                regex = text350; // numeric only, max length 6
                 break;
             case "scholarshipLimit":
                 regex = number5Regex;
@@ -308,23 +308,15 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
              newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
              console.log("❌ Invalid benefits format:", formData.benefits);
          }*/
-        if (formData.benefits && !amountRegex.test(formData.benefits)) {
-            newErrors.benefits =
-                "Enter a valid amount (e.g., 1,20,000 or ₹50,000 or 1.5 lakh).";
-            console.log("❌ Invalid benefits format:", formData.benefits);
-        }
-
-        // Percentage / CGPA validation
-        if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
-            newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
-            console.log("❌ Invalid minPercentageOrCGPA:", formData.minPercentageOrCGPA);
-        }
-
-        // Family income validation
-        if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome)) {
-            newErrors.maxFamilyIncome = "Enter valid family income.";
-            console.log("❌ Invalid maxFamilyIncome:", formData.maxFamilyIncome);
-        }
+        if (formData.benefits && formData.benefits.length > 350) {
+    newErrors.benefits = "Scholarship Amount cannot exceed 350 characters.";
+}
+if (formData.minPercentageOrCGPA && formData.minPercentageOrCGPA.length > 350) {
+    newErrors.minPercentageOrCGPA = "Min % / CGPA cannot exceed 350 characters.";
+}
+if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
+    newErrors.maxFamilyIncome = "Max Family Income cannot exceed 350 characters.";
+}
 
         // Scholarship limit
         if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
@@ -386,13 +378,9 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
 
         const payload = {
             ...formData,
-            minPercentageOrCGPA: formData.minPercentageOrCGPA
-                ? parseFloat(formData.minPercentageOrCGPA)
-                : null,
-            maxFamilyIncome: formData.maxFamilyIncome
-                ? parseFloat(formData.maxFamilyIncome)
-                : null,
-            benefits: formData.benefits || null,
+           minPercentageOrCGPA: formData.minPercentageOrCGPA || null,
+    maxFamilyIncome: formData.maxFamilyIncome || null,
+    scholarshipAmount: formData.benefits || null,
             documents: formData.documents || null,
             uploadedFiles: null,
             religion_ID: filters.religion,
