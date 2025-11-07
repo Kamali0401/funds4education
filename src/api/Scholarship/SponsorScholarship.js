@@ -153,11 +153,18 @@ export const fetchClassesReq = async () => {
 //
 // ✅ Course by class
 //
-export const fetchCoursesByClassReq = async (className) => {
+export const fetchCoursesByClassReq = async (classId) => {
   try {
-    const res = await publicAxios.get(`${ApiKey.CourseByClass}?classname=${className}`);
+    console.log("Fetching course list for classId:", classId);
+    const res = await publicAxios.get(`${ApiKey.CourseByClass}/by-classid?classId=${classId}`);
+    console.log("API Response:", res.data);
     return { error: false, data: Array.isArray(res.data) ? res.data : [] };
   } catch (err) {
-    return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching courses" };
+    console.log("API Error:", err);
+    return {
+      error: true,
+      data: [],
+      errorMsg: err.response?.data?.message || "Error fetching courses",
+    };
   }
 };

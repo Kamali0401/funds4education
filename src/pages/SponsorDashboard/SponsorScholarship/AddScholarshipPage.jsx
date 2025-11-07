@@ -42,6 +42,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         eligibility: "",
         eligibilityCriteria: "",
         className: "",
+        course: "",
         applicableDepartments: "",
         minPercentageOrCGPA: "",
         maxFamilyIncome: "",
@@ -95,42 +96,60 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         className: "",
         course: "",
     });
-    useEffect(() => {
-        if (show) {
-            if (scholarship) {
-                setFormData({
-                    ...initialData,
-                    ...scholarship,
-                    startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
-                    endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
-                    modifiedBy: localStorage.getItem("name"),
-                    eligibility: scholarship.eligibility ?? "",
-                    eligibilityCriteria: scholarship.eligibilityCriteria ?? "",
-                    webportaltoApply: scholarship.webportaltoApply ?? "",
-                    canApply: scholarship.canApply ?? "",
-                    contactDetails: scholarship.contactDetails ?? "",
-                });
-            } else {
-                setFormData({
-                    ...initialData,
-                    sponsorId: localStorage.getItem("userId"),
-                    createdBy: localStorage.getItem("name"),
-                });
-                setErrors({});
-                setSelectedFiles([]);
-                setFilesList([]);
-                setFileSelected(false);
-                setNewFileSelected(false);
-                if (fileInputRef.current) fileInputRef.current.value = null;
-            }
-        }
-        dispatch(fetchReligions());
-        dispatch(fetchCountries());
-        dispatch(fetchStates());
-        dispatch(fetchGenders());
-        dispatch(fetchClasses());
+   useEffect(() => {
+    if (show) {
+        if (scholarship) {
+            // Set form data
+            setFormData({
+                ...initialData,
+                ...scholarship,
+                startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
+                endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
+            });
 
-    }, [scholarship, show, dispatch]);
+            // Set filters for dropdowns
+            setFilters({
+                religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
+                country: scholarship.country_ID ? String(scholarship.country_ID) : "",
+                state: scholarship.state_ID ? String(scholarship.state_ID) : "",
+                gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
+                className: scholarship.class_ID ? String(scholarship.class_ID) : "",
+                course: "", // will set after courses fetch
+            });
+
+            // Fetch courses for saved class
+            if (scholarship.class_ID) {
+                dispatch(fetchCoursesByClass(scholarship.class_ID));
+            }
+        } else {
+            // Add mode
+            setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
+            setFilters({
+                religion: "",
+                country: "",
+                state: "",
+                gender: "",
+                className: "",
+                course: "",
+            });
+        }
+    }
+
+    // Fetch dropdown data
+    dispatch(fetchReligions());
+    dispatch(fetchCountries());
+    dispatch(fetchStates());
+    dispatch(fetchGenders());
+    dispatch(fetchClasses());
+}, [show, scholarship, dispatch]);
+useEffect(() => {
+    if (scholarship && scholarship.class_ID && courses.length > 0) {
+        setFilters(prev => ({
+            ...prev,
+            course: scholarship.course_ID ? String(scholarship.course_ID) : ""
+        }));
+    }
+}, [courses, scholarship]);
 
 
     // --- Clear function ---
@@ -152,10 +171,11 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const handleFilterChange = (e) => {
         debugger;
         const { name, value } = e.target;
+        const parsedValue = value === "" ? null : parseInt(value);
         setFilters({ ...filters, [name]: value });
 
-        if (name === "className") {
-            dispatch(fetchCoursesByClass(value));
+        if (name === "className" && parsedValue) {
+            dispatch(fetchCoursesByClass(parsedValue));
             setFilters((prev) => ({ ...prev, course: "" }));
         }
     };
@@ -325,6 +345,13 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 : null,
             benefits: formData.benefits || null,
             documents: null,
+            religion_ID: filters.religion,
+            religion_ID: filters.religion ? parseInt(filters.religion) : null,
+            country_ID: filters.country ? parseInt(filters.country) : null,
+            state_ID: filters.state ? parseInt(filters.state) : null,
+            gender_ID: filters.gender ? parseInt(filters.gender) : null,
+            class_ID: filters.className || null,
+            course_ID: filters.course || null,
             id: scholarship ? scholarship.id : 0,
         };
 
@@ -338,6 +365,7 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                 scholarshipId = scholarship.id;
             } else {
                 // ✅ Add new scholarship
+                console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
                 scholarshipId = res?.id;
             }
@@ -516,21 +544,27 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     <label>Religion</label>
                                     <select name="religion" value={filters.religion} onChange={handleFilterChange}>
                                         <option value="">Select Religion</option>
-                                        {religions.map((r) => <option key={r.id} value={r.religion_Name}>{r.religion_Name}</option>)}
+                                        {religions.map(r => (
+                                            <option key={r.id} value={r.id}>{r.religion_Name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group col-4">
                                     <label>Country</label>
                                     <select name="country" value={filters.country} onChange={handleFilterChange}>
                                         <option value="">Select Country</option>
-                                        {countries.map((c) => <option key={c.id} value={c.country_Name}>{c.country_Name}</option>)}
+                                        {countries.map(c => (
+                                            <option key={c.id} value={c.id}>{c.country_Name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group col-4">
                                     <label>State</label>
-                                    <select name="state" value={filters.state} onChange={handleFilterChange}>
+                                    <select name="state" value={filters.state || ""} onChange={handleFilterChange}>
                                         <option value="">Select State</option>
-                                        {states.map((s) => <option key={s.id} value={s.state_Name}>{s.state_Name}</option>)}
+                                        {states.map((s) => (
+                                            <option key={s.id} value={s.id}>{s.state_Name}</option>  // ✅ send ID
+                                        ))}
                                     </select>
                                 </div>
                             </div>
@@ -540,17 +574,17 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     <label>Gender</label>
                                     <select name="gender" value={filters.gender} onChange={handleFilterChange}>
                                         <option value="">Select Gender</option>
-                                        {genders.map((g) => <option key={g.id} value={g.gender_Name}>{g.gender_Name}</option>)}
+                                        {genders.map(g => (
+                                            <option key={g.gender_ID} value={g.gender_ID}>{g.gender_Name}</option>
+                                        ))}
                                     </select>
                                 </div>
                                 <div className="form-group col-4">
                                     <label>Class</label>
                                     <select name="className" value={filters.className} onChange={handleFilterChange}>
                                         <option value="">Select Class</option>
-                                        {classes.map((cls) => (
-                                            <option key={cls.classId} value={cls.classId}>
-                                                {cls.className}
-                                            </option>
+                                        {classes.map(cls => (
+                                            <option key={cls.classId} value={cls.classId}>{cls.className}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -558,7 +592,9 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
                                     <label>Course</label>
                                     <select name="course" value={filters.course} onChange={handleFilterChange} disabled={!filters.className}>
                                         <option value="">Select Course</option>
-                                        {courses.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                        {courses.map(c => (
+                                            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>

@@ -24,7 +24,7 @@ export const ApiKey = {
   FilterStates: "/Filter/states",
   FilterGenders: "/Filter/genders",
    Class: "/Class",
-   CourseByClass: "/Course/by-classname",
+CourseByClass: "/Course",
 
 
 };

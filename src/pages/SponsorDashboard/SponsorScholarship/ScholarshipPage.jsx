@@ -79,11 +79,15 @@ const ScholarshipPage = () => {
     });
   };
 
-  const handleModalSubmit = () => {
-    setShowModal(false);
-    setSelectedScholarship(null);
-    fetchScholarshipBySponsor(UserId, role, dispatch);
-  };
+ const handleModalSubmit = () => {
+  setShowModal(false);
+  setSelectedScholarship(null);
+
+  // Dispatch the fetch action to reload scholarships
+  if (UserId && role) {
+    dispatch(fetchScholarshipBySponsor(UserId, role));
+  }
+};
 
   return (
     <>
