@@ -6,9 +6,9 @@ import {
   fetchScholarshipByIdReq,
   fetchFeaturedScholarshipsReq,
   fetchDropdownDataReq, // ✅ added import
-  fetchScholarshipByStatusReq,   // ✅ existing API (live/upcoming)
-  fetchScholarshipByIdReq,        // ✅ existing API (by ID)
-  fetchFeaturedScholarshipsReq, 
+  //fetchScholarshipByStatusReq,   // ✅ existing API (live/upcoming)
+  //fetchScholarshipByIdReq,        // ✅ existing API (by ID)
+  //fetchFeaturedScholarshipsReq, 
   fetchApplicationsBySponsorReq,
   updateApplicationStatusReq   // ✅ NEW API for featured
 } from "../../../api/Scholarship/Scholarship";
