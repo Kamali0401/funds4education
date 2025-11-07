@@ -1622,7 +1622,9 @@ input:not([type="radio"]) {
 
 
 .input-error {
-  border-color: red;
+    border: 2px solid red;       /* Red border */
+    background-color: #ffe6e6;   /* Optional: light red background */
+    outline: none;               /* Remove default outline */
 }
 
 .error-text {
@@ -3551,7 +3553,9 @@ padding: 8px;
 }
 
 .input-error {
-  border-color: red;
+    border: 2px solid red;       /* Red border */
+    background-color: #ffe6e6;   /* Optional: light red background */
+    outline: none;               /* Remove default outline */
 }
 
 .error-text {
@@ -3976,3 +3980,5 @@ h2, h3, p {
     font-size: 1rem;
   }
 }
+
+/*Add Scholarship */
