@@ -24,5 +24,6 @@ export const ApiKey = {
    State:"/Filter/states",
    Religion:"/Filter/religions",
    Class:"/Class",
-   Course:"/Course"
+   Course:"/Course",
+   CourseByClass:"/Course"
 };
