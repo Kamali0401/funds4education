@@ -360,11 +360,10 @@ useEffect(() => {
             let scholarshipId;
 
             if (scholarship) {
-                // ✅ Update existing scholarship
+                
                 await updateScholarship(payload, dispatch);
                 scholarshipId = scholarship.id;
             } else {
-                // ✅ Add new scholarship
                 console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
                 scholarshipId = res?.id;

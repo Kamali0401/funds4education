@@ -21,6 +21,37 @@ html, body {
   justify-content: center;
   align-items: center;
 }
+/* ===== Carousel Text Slides ===== */
+/* ===== Carousel Text Slides Without Container ===== */
+.carousel-text-slide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 430px; /* same height as hero-left */
+  text-align: center;
+  color: #0E4C5C;
+  padding: 0; /* remove extra padding */
+  background: transparent; /* remove background container */
+  border-radius: 0; /* no border radius */
+}
+
+.carousel-text-slide h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #1A237E, #004D40, #E65100); /* gradient color */
+  -webkit-background-clip: text; /* clip gradient to text */
+  -webkit-text-fill-color: transparent; /* make text show gradient */
+}
+
+.carousel-text-slide p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+
 .carousel.carousel-slider .control-arrow:hover {
     /* background: rgba(0, 0, 0, 0.2); */
 }

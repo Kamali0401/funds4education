@@ -192,68 +192,69 @@ const handleClickInstitution = () => checkAndNavigate("4", "institution");
       {/* Hero Section */}
     <section className="hero">
   <div className="hero-left">
-    <Carousel
-      autoPlay
-      infiniteLoop
-      showThumbs={false}
-      showStatus={false}
-      interval={3000}
-    >
-      <div>
-        <img src={Image1} alt="Student illustration" />
-      </div>
-      <div>
-        <img src={Image2} alt="Image 1" />
-      </div>
-      <div>
-        <img src={Image3} alt="Image 2" />
-      </div>
-      <div>
-        <img src={Image4} alt="Image 3" />
-      </div>
-      <div>
-        <img src={Image5} alt="Image 4" />
-      </div>
-    </Carousel>
-  </div>
+  <Carousel
+    autoPlay
+    infiniteLoop
+    showThumbs={false}
+    showStatus={false}
+    interval={3000} // 3 seconds per slide
+  >
+    {/* ===== Image Slides ===== */}
+    <div className="carousel-image-slide">
+      <img src={Image1} alt="Student illustration" />
+    </div>
+    <div className="carousel-image-slide">
+      <img src={Image2} alt="Image 2" />
+    </div>
+    <div className="carousel-image-slide">
+      <img src={Image3} alt="Image 3" />
+    </div>
+    <div className="carousel-image-slide">
+      <img src={Image4} alt="Image 4" />
+    </div>
+    <div className="carousel-image-slide">
+      <img src={Image5} alt="Image 5" />
+    </div>
 
-  <div className="hero-right" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", gap: "30px" }}>
-  {/* Vision / Mission Carousel */}
-  <section className="vision-mission-section" style={{ width: "100%" }}>
-    <Slider {...sliderSettings}>
-      <div className="vision-mission-slide">
-        <h2 className="slide-title" style={{ color: "#1A237E" }}>About VIDYĀSETU</h2>
-        <p className="slide-text">
-          VidyāSetu is a digital platform designed to connect deserving students with sponsors and institutions. It simplifies scholarship management, making education accessible to all through transparency and trust.
-        </p>
-      </div>
-      <div className="vision-mission-slide">
-        <h2 className="slide-title" style={{ color: "#004D40" }}>Our Vision</h2>
-        <p className="slide-text">
-          To empower every learner by ensuring equal access to quality education, eliminating financial barriers, and building a nation where knowledge bridges every gap.
-        </p>
-      </div>
-      <div className="vision-mission-slide">
-        <h2 className="slide-title" style={{ color: "#E65100" }}>Our Mission</h2>
-        <p className="slide-text">
-          To create a transparent and inclusive ecosystem that connects students, sponsors, and institutions — transforming dreams into academic success through reliable scholarship support.
-        </p>
-      </div>
-    </Slider>
-  </section>
+    {/* ===== Text Slides ===== */}
+    <div className="carousel-text-slide">
+      <h2>About VIDYĀSETU</h2>
+      <p>
+        VidyāSetu is a digital platform designed to connect deserving students with
+        sponsors and institutions. It simplifies scholarship management, making
+        education accessible to all through transparency and trust.
+      </p>
+    </div>
 
-  {/* Bridging Students Section */}
-  <div>
-    <h1>
-      <span>
-        Bridging Students with <br /> Scholarship Opportunities
-      </span>
-    </h1>
-    <p>Discover and apply for scholarships or support aspiring scholars.</p>
-    <button className="btn-primary">Find Your Path</button>
-  </div>
+    <div className="carousel-text-slide">
+      <h2>Our Vision</h2>
+      <p>
+        To empower every learner by ensuring equal access to quality education,
+        eliminating financial barriers, and building a nation where knowledge bridges every gap.
+      </p>
+    </div>
+
+    <div className="carousel-text-slide">
+      <h2>Our Mission</h2>
+      <p>
+        To create a transparent and inclusive ecosystem that connects students,
+        sponsors, and institutions — transforming dreams into academic success through reliable scholarship support.
+      </p>
+    </div>
+  </Carousel>
 </div>
 
+
+  {/* Right side content */}
+  <div className="hero-right" style={{ display: "flex", flexDirection: "column", justifyContent: "flex-start", gap: "30px" }}>
+    <div>
+      <h1>
+        <span>Bridging Students with <br /> Scholarship Opportunities</span>
+      </h1>
+      <p>Discover and apply for scholarships or support aspiring scholars.</p>
+      <button className="btn-primary">Find Your Path</button>
+    </div>
+  </div>
 </section>
 
       {/* Role Cards */}
