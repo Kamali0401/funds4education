@@ -6,20 +6,25 @@ import { logout } from "../../app/redux/slices/authSlice";
 import {
   fetchScholarshipList,
   fetchFeaturedScholarships,
+  fetchDropdownData,
 } from "../../app/redux/slices/ScholarshipSlice";
 import Swal from "sweetalert2";
 import "../../pages/studentscholarship/studentdashboard.css";
 import logoUrl from "../../app/assests/kotak.png";
 import { routePath as RP } from "../../app/components/router/routepath";
+import { FaSearch } from "react-icons/fa";
+import { publicAxios } from "../../api/config";
 
 const StudentDashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+const baseUrl = publicAxios.defaults.baseURL.replace(/\/api$/, "");
+ //const logoUrl1 = `https://localhost:44315/Scholarship/Scholarship-1/${s.logoName}`;
   const { data = {}, loading = false } = useSelector(
     (state) => state.scholarship || {}
   );
   const { live = [], upcoming = [], featured = [] } = data;
+const [imgError, setImgError] = useState(false);
 
   const roleId =
     useSelector((state) => state.auth.roleId) ||
@@ -31,6 +36,7 @@ const StudentDashboard = () => {
     useSelector((state) => state.auth.name) || localStorage.getItem("name");
 
   const [activeTab, setActiveTab] = useState("live");
+  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     class: "All",
     country: "All",
@@ -40,26 +46,56 @@ const StudentDashboard = () => {
     course: "All",
   });
 
-  const isLoggedIn = Boolean(userId && roleId);
-  const sanitizeValue = (v) =>
-    v && v !== "null" && v !== "undefined" ? v : null;
+  const [dropdownData, setDropdownData] = useState({
+    countries: [],
+    classList: [],
+    courses: [],
+    states: [],
+    genders: [],
+    religions: [],
+  });
 
-  const allScholarships = useMemo(() => {
-    const merged = [...(live || []), ...(upcoming || []), ...(featured || [])];
-    return merged.map((s) => ({
-      ...s,
-      eligibility: sanitizeValue(s.eligibility),
-      documents: sanitizeValue(s.documents),
-      webportaltoApply: sanitizeValue(s.webportaltoApply),
-      canApply: sanitizeValue(s.canApply),
-      contactDetails: sanitizeValue(s.contactDetails),
-    }));
-  }, [live, upcoming, featured]);
-
+  // ✅ Load dropdowns once
   useEffect(() => {
-    dispatch(fetchScholarshipList());
-    dispatch(fetchFeaturedScholarships());
+    const loadDropdowns = async () => {
+      const res = await dispatch(fetchDropdownData());
+      if (res && !res.error) {
+        setDropdownData(res.data);
+      } else {
+        console.error(res?.errorMsg);
+      }
+    };
+    loadDropdowns();
   }, [dispatch]);
+
+  // ✅ Fetch scholarships whenever filters or tab change
+  useEffect(() => {
+    const fetchData = async () => {
+      const activeFilters = {
+        statusType: activeTab, // live/upcoming
+        classId: filters.class !== "All" ? filters.class : null,
+        countryId: filters.country !== "All" ? filters.country : null,
+        genderId: filters.gender !== "All" ? filters.gender : null,
+        religionId: filters.religion !== "All" ? filters.religion : null,
+        stateId: filters.state !== "All" ? filters.state : null,
+        courseId: filters.course !== "All" ? filters.course : null,
+      };
+
+      await dispatch(fetchScholarshipList(activeFilters));
+      await dispatch(fetchFeaturedScholarships());
+    };
+
+    fetchData();
+  }, [
+    dispatch,
+    activeTab,
+    filters.class,
+    filters.country,
+    filters.gender,
+    filters.religion,
+    filters.state,
+    filters.course,
+  ]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -74,7 +110,6 @@ const StudentDashboard = () => {
   };
 
   const today = useMemo(() => new Date(), []);
-
   const getDaysLeftText = (endDate) => {
     if (!endDate) return null;
     const end = new Date(endDate);
@@ -88,57 +123,49 @@ const StudentDashboard = () => {
   const liveScholarships = useMemo(() => live || [], [live]);
   const upcomingScholarships = useMemo(() => upcoming || [], [upcoming]);
   const featuredScholarships = useMemo(() => featured || [], [featured]);
-
   const featuredIds = useMemo(
     () => featuredScholarships.map((s) => s.id || s.scholarshipId),
     [featuredScholarships]
   );
 
+  // ✅ Apply filters + search on loaded data
   const displayedScholarships = useMemo(() => {
     const baseList =
       activeTab === "upcoming" ? upcomingScholarships : liveScholarships;
 
     return baseList.filter((s) => {
-      const classMatch =
-        filters.class === "All" ||
-        (s.className &&
-          s.className.toLowerCase().includes(filters.class.toLowerCase()));
-      const countryMatch =
-        filters.country === "All" ||
-        (s.country &&
-          s.country.toLowerCase().includes(filters.country.toLowerCase()));
-      const genderMatch =
-        filters.gender === "All" ||
-        (s.gender &&
-          s.gender.toLowerCase().includes(filters.gender.toLowerCase()));
-      const religionMatch =
-        filters.religion === "All" ||
-        (s.religion &&
-          s.religion.toLowerCase().includes(filters.religion.toLowerCase()));
-      const stateMatch =
-        filters.state === "All" ||
-        (s.state &&
-          s.state.toLowerCase().includes(filters.state.toLowerCase()));
-      const courseMatch =
-        filters.course === "All" ||
-        (s.course &&
-          s.course.toLowerCase().includes(filters.course.toLowerCase()));
+      const search = searchQuery.toLowerCase();
+      const matchesSearch =
+        s.name?.toLowerCase().includes(search) ||
+        s.eligibility?.toLowerCase().includes(search) ||
+        s.amount?.toLowerCase().includes(search);
 
-      return (
-        classMatch &&
-        countryMatch &&
-        genderMatch &&
-        religionMatch &&
-        stateMatch &&
-        courseMatch
-      );
+      return matchesSearch;
     });
-  }, [filters, liveScholarships, upcomingScholarships, activeTab]);
+  }, [
+    filters,
+    liveScholarships,
+    upcomingScholarships,
+    activeTab,
+    searchQuery,
+  ]);
 
-  const trimText = (text, maxLength = 100) => {
-    if (!text) return "";
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const scholarshipsPerPage = 6;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, activeTab, searchQuery]);
+
+  const indexOfLastScholarship = currentPage * scholarshipsPerPage;
+  const indexOfFirstScholarship = indexOfLastScholarship - scholarshipsPerPage;
+  const currentScholarships = displayedScholarships.slice(
+    indexOfFirstScholarship,
+    indexOfLastScholarship
+  );
+  const totalPages = Math.ceil(
+    displayedScholarships.length / scholarshipsPerPage
+  );
 
   const clearAllFilters = () => {
     setFilters({
@@ -155,7 +182,7 @@ const StudentDashboard = () => {
     <div>
       <Header variant="student-profile" />
 
-      {isLoggedIn && (
+      {userId && roleId && (
         <div className="student-navbar">
           <div className="user-info">
             <h2>{name ?? "Student"}</h2>
@@ -174,74 +201,19 @@ const StudentDashboard = () => {
       )}
 
       <div className="dashboard-container">
-        {/* Sidebar */}
+        {/* Sidebar Filters */}
         <aside className="sidebar">
           <div>
-            <div className="filter-title">Filters</div>
+            <div className="filter-title">Category</div>
 
             <div className="filter-group">
               {[
-                {
-                  key: "class",
-                  label: "Class",
-                  options: [
-                    "10th",
-                    "11th",
-                    "12th",
-                    "Undergraduate",
-                    "Postgraduate",
-                    "PhD",
-                  ],
-                },
-                {
-                  key: "country",
-                  label: "Country",
-                  options: ["India", "USA", "UK", "Canada", "Australia", "Germany"],
-                },
-                {
-                  key: "gender",
-                  label: "Gender",
-                  options: ["Male", "Female", "Other"],
-                },
-                {
-                  key: "religion",
-                  label: "Religion",
-                  options: [
-                    "Hindu",
-                    "Muslim",
-                    "Christian",
-                    "Sikh",
-                    "Buddhist",
-                    "Jain",
-                    "Other",
-                  ],
-                },
-                {
-                  key: "state",
-                  label: "State",
-                  options: [
-                    "Maharashtra",
-                    "Karnataka",
-                    "Tamil Nadu",
-                    "Delhi",
-                    "Uttar Pradesh",
-                    "Gujarat",
-                    "West Bengal",
-                  ],
-                },
-                {
-                  key: "course",
-                  label: "Course",
-                  options: [
-                    "Engineering",
-                    "Medical",
-                    "Science",
-                    "Arts",
-                    "Commerce",
-                    "Law",
-                    "Management",
-                  ],
-                },
+                { key: "class", label: "Class", options: dropdownData.classList },
+                { key: "country", label: "Country", options: dropdownData.countries },
+                { key: "gender", label: "Gender", options: dropdownData.genders },
+                { key: "religion", label: "Religion", options: dropdownData.religions },
+                { key: "state", label: "State", options: dropdownData.states },
+                { key: "course", label: "Course", options: dropdownData.courses },
               ].map(({ key, label, options }) => (
                 <div key={key}>
                   <label>Select {label}</label>
@@ -251,9 +223,11 @@ const StudentDashboard = () => {
                       setFilters({ ...filters, [key]: e.target.value })
                     }
                   >
-                    <option>All</option>
+                    <option value="All">All</option>
                     {options.map((opt) => (
-                      <option key={opt}>{opt}</option>
+                      <option key={opt.id} value={opt.id}>
+                        {opt.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -264,16 +238,29 @@ const StudentDashboard = () => {
               Clear All Filters
             </button>
 
-            {isLoggedIn && (
-              <button className="logout-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            )}
+            {userId ? (
+  <button className="logout-btn" onClick={handleLogout}>
+    Logout
+  </button>
+) : null}
           </div>
         </aside>
 
         {/* Main Content */}
         <main className="main-content">
+          <span style={{fontSize:"34px"}}> Scholarships for Indian Students</span>
+
+          {/* Search Box */}
+          <div className="search-box mb-3">
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search by name, eligibility or award..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
           <div className="tab-container">
             <div className="tab-group">
               <button
@@ -291,19 +278,19 @@ const StudentDashboard = () => {
             </div>
           </div>
 
+          {/* Scholarships Grid */}
           <div className="content-layout">
-            {/* Scholarships Grid */}
             <div className="scholarship-grid">
               {loading ? (
                 <p>Loading scholarships...</p>
-              ) : displayedScholarships.length === 0 ? (
+              ) : currentScholarships.length === 0 ? (
                 <p>
                   {activeTab === "live"
-                    ? "No live scholarships are currently available."
-                    : "No upcoming scholarships available yet."}
+                    ? "No live scholarships currently available."
+                    : "No upcoming scholarships yet."}
                 </p>
               ) : (
-                displayedScholarships.map((s, i) => {
+                currentScholarships.map((s, i) => {
                   const endDate = s.endDate ? new Date(s.endDate) : null;
                   const daysLeftText = getDaysLeftText(s.endDate);
                   const diffDays = endDate
@@ -312,7 +299,26 @@ const StudentDashboard = () => {
                   const isFeatured = featuredIds.includes(
                     s.id || s.scholarshipId
                   );
+ // ✅ Clean logo name (remove trailing | and spaces)
+  const cleanLogoName = s.logoName?.split("|")[0]?.trim() || "";
 
+  // ✅ Encode spaces and special chars in file name
+  const encodedLogoName = encodeURIComponent(cleanLogoName);
+
+  // ✅ Build proper image URL
+ const imageUrl =
+    s.logoPath && cleanLogoName
+      ? `${baseUrl}/${s.logoPath
+          .replace(/^.*Scholarship[\\/]/, "Scholarship/")
+          .replace(/\\/g, "/")}/${encodedLogoName}`
+      : "/images/before.png";
+
+  // ✅ Create alt text without extension
+  const altText = cleanLogoName.replace(/\.[^/.]+$/, "") || "Scholarship Logo";
+
+  // ✅ Detect if file is an image
+  const isImage = /\.(png|jpg|jpeg|gif)$/i.test(cleanLogoName);
+    console.log("image",imageUrl);
                   return (
                     <div
                       className="scholarship-card"
@@ -340,11 +346,22 @@ const StudentDashboard = () => {
 
                       <div className="card-header-flex">
                         <div className="logo-wrapper">
-                          <img
-                            src={logoUrl}
-                            alt={s.name ?? "Scholarship Logo"}
+                          {/*<img
+                            src={s.logopath}
+                            alt={s.logoName ?? "Scholarship Logo"}
                             className="card-logo"
-                          />
+                          />*/}
+                          {isImage ? (
+            <img
+              src={imageUrl}
+              alt={altText}
+              className="card-logo"
+             onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="alt-logo-text">{}</div>
+          )}
+          
                         </div>
                       </div>
 
@@ -388,41 +405,193 @@ const StudentDashboard = () => {
                 })
               )}
             </div>
+           {/*<div className="scholarship-grid">
+  {loading ? (
+    <p>Loading scholarships...</p>
+  ) : currentScholarships.length === 0 ? (
+    <p>
+      {activeTab === "live"
+        ? "No live scholarships currently available."
+        : "No upcoming scholarships yet."}
+    </p>
+  ) : (
+    currentScholarships.map((s, i) => {
+      const endDate = s.endDate ? new Date(s.endDate) : null;
+      const daysLeftText = getDaysLeftText(s.endDate);
+      const diffDays = endDate
+        ? Math.ceil((endDate - today) / 86400000)
+        : null;
+      const isFeatured = featuredIds.includes(s.id || s.scholarshipId);
+
+      // ✅ Construct image URL from backend path and name
+      const imageUrl =
+        s.logoPath && s.logoName
+          ? `${baseUrl}/Scholarship/${s.logoName.split("|")[0]}`
+          : "/images/before.png";
+
+      return (
+        <div
+          className="scholarship-card"
+          key={i}
+          onClick={() =>
+            navigate(
+              `${RP.scholarshipViewPage}?id=${s.id || s.scholarshipId}`
+            )
+          }
+        >
+          {!activeTab.includes("upcoming") && isFeatured && (
+            <div className="featured-tag">Featured</div>
+          )}
+
+          {activeTab === "live" && daysLeftText && (
+            <div
+              className={`deadline-badge ${
+                diffDays <= 1 ? "urgent" : "warning"
+              }`}
+            >
+              {daysLeftText}
+            </div>
+          )}
+
+          <div className="card-header-flex">
+            <div className="logo-wrapper">
+              <img
+                src={imageUrl}
+                alt={s.logoName?.split("|")[0] || "Scholarship Logo"}
+                className="card-logo"
+                onError={(e) => (e.target.src = "/images/before.png")}
+              />
+            </div>
+          </div>
+
+          <div className="card-body">
+            <h3 className="card-title">{s.name ?? "Untitled Scholarship"}</h3>
+            <p>
+              <strong>🏆 Award:</strong> {s.amount ?? "Not specified"}
+            </p>
+            <p>
+              <strong>🎓 Eligibility:</strong> {s.eligibility ?? "Not specified"}
+            </p>
+
+            {!daysLeftText && (
+              <p className="deadline-line">
+                <strong>📅 Deadline:</strong>{" "}
+                {endDate
+                  ? endDate.toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })
+                  : "N/A"}
+              </p>
+            )}
+
+            <div className="card-footer-updated">
+              Last Updated On{" "}
+              {s.lastUpdatedDate
+                ? new Date(s.lastUpdatedDate).toISOString().split("T")[0]
+                : "N/A"}
+            </div>
+          </div>
+        </div>
+      );
+    })
+  )}
+</div>;*/}
 
             {/* Featured Sidebar */}
             <aside className="featured-sidebar">
-              <div className="featured-header">Featured Scholarships</div>
-              {featuredScholarships.length === 0 ? (
-                <p style={{ padding: "12px" }}>No featured scholarships found.</p>
-              ) : (
-                featuredScholarships.map((s, i) => (
-                  <div className="featured-item" key={i}>
-                    <img
-                      src={logoUrl}
-                      alt={s.scholarshipName ?? "Scholarship Logo"}
-                      className="featured-logo"
-                    />
-                    <div>
-                      <p className="featured-title">
-                        {s.scholarshipName ?? "Unnamed Scholarship"}
-                      </p>
-                      {s.deadline ? (
-                        <p className="featured-deadline">
-                          Deadline Date:{" "}
-                          {new Date(s.deadline).toLocaleDateString("en-GB", {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                      ) : (
-                        <p className="featured-deadline">No Deadline</p>
-                      )}
-                    </div>
-                  </div>
-                ))
-              )}
-            </aside>
+  <div className="featured-header">Featured Scholarships</div>
+
+  {featuredScholarships.length === 0 ? (
+    <p style={{ padding: "12px" }}>No featured scholarships found.</p>
+  ) : (
+    featuredScholarships.map((s, i) => {
+     // const baseUrl = "https://localhost:44315";
+
+      // ✅ Clean logo name (remove trailing | and spaces)
+      const cleanLogoName = s.logoName?.split("|")[0]?.trim() || "";
+
+      // ✅ Encode spaces and special chars in file name
+      const encodedLogoName = encodeURIComponent(cleanLogoName);
+
+      // ✅ Build proper image URL (handles Scholarship, SchAppForm, etc.)
+     const imageUrl =
+    s.logoPath && cleanLogoName
+      ? `${baseUrl}/${s.logoPath
+          .replace(/^.*Scholarship[\\/]/, "Scholarship/")
+          .replace(/\\/g, "/")}/${encodedLogoName}`
+      : "/images/before.png";
+
+  // ✅ Create alt text without extension
+  const altText = cleanLogoName.replace(/\.[^/.]+$/, "") || "Scholarship Logo";
+
+  // ✅ Detect if file is an image
+  const isImage = /\.(png|jpg|jpeg|gif)$/i.test(cleanLogoName);
+
+      console.log("image", imageUrl);
+
+      return (
+        <div className="featured-item" key={i}>
+          {isImage ? (
+            <img
+              src={imageUrl}
+              alt={altText}
+              className="featured-logo"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+             <div className="alt-logo-text">{}</div>
+          )}
+
+          <div>
+            <p className="featured-title">
+              {s.scholarshipName ?? "Unnamed Scholarship"}
+            </p>
+            {s.deadline ? (
+              <p className="featured-deadline">
+                Deadline Date:{" "}
+                {new Date(s.deadline).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
+              </p>
+            ) : (
+              <p className="featured-deadline">No Deadline</p>
+            )}
+          </div>
+        </div>
+      );
+    })
+  )}
+</aside>
+
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination-controls">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="pagination-btn"
+                >
+                  ← Previous
+                </button>
+
+                <span className="page-info">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="pagination-btn"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </div>
         </main>
       </div>
