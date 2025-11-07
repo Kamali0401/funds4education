@@ -722,8 +722,7 @@ useEffect(() => {
                                     />
                                 </div>
                             </div>
-error
-                            <div className="form-group col-4">
+                  <div className="form-group col-4">
                                 <label>Upload Documents</label>
                                 <input
                                     type="file"
