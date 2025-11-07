@@ -45,16 +45,20 @@ export const addScholarshipReq = async (data) => {
     const res = await publicAxios.post(ApiKey.SponsorScholarship, data);
     return { error: false, data: res.data, message: "Added successfully" };
   } catch (err) {
-    const errorMsg = err.response
-      ? err.response.data.detail ||
-        err.response.data.message ||
-        "Response error"
-      : err.request
-      ? "Request error"
-      : "Something went wrong, please try again later";
+  
 
-    return { error: true, data: [], message: "", errorMsg };
-  }
+  const errorMsg = err.response?.data?.message
+    || err.response?.data?.detail
+    || (typeof err.response?.data === "string" ? err.response.data : null)
+    || err.message
+    || "Something went wrong, please try again later";
+
+  return {
+    error: true,
+    data: [],
+    message: errorMsg,  // ✅ show actual message from backend
+  };
+}
 };
 
 //
@@ -65,16 +69,20 @@ export const updateScholarshipReq = async (data) => {
     const res = await publicAxios.put(ApiKey.SponsorScholarship, data);
     return { error: false, data: res.data, message: "Updated successfully" };
   } catch (err) {
-    const errorMsg = err.response
-      ? err.response.data.detail ||
-        err.response.data.message ||
-        "Response error"
-      : err.request
-      ? "Request error"
-      : "Something went wrong, please try again later";
+  
 
-    return { error: true, data: [], message: "", errorMsg };
-  }
+  const errorMsg = err.response?.data?.message
+    || err.response?.data?.detail
+    || (typeof err.response?.data === "string" ? err.response.data : null)
+    || err.message
+    || "Something went wrong, please try again later";
+
+  return {
+    error: true,
+    data: [],
+    message: errorMsg,  // ✅ show actual message from backend
+  };
+}
 };
 
 //
