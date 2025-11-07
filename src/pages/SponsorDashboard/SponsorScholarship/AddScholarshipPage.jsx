@@ -493,7 +493,7 @@ useEffect(() => {
                                     value={formData.scholarshipCode}
                                     onChange={handleChange}
                                     placeholder="SCH-001"
-                                    className={errors.scholarshipCode ? "input-error" : ""}
+                                    className={errors.scholarshipCode ? "form-field-error" : ""}
                                 />
                                 {errors.scholarshipCode && <p className="error-text">{errors.scholarshipCode}</p>}
                             </div>
@@ -506,7 +506,7 @@ useEffect(() => {
                                     value={formData.scholarshipName}
                                     onChange={handleChange}
                                     placeholder="Merit Scholarship"
-                                    className={errors.scholarshipName ? "input-error" : ""}
+                                    className={errors.scholarshipName ? "form-field-error" : ""}
                                 />
                                 {errors.scholarshipName && <p className="error-text">{errors.scholarshipName}</p>}
                             </div>
@@ -522,7 +522,7 @@ useEffect(() => {
                                 >
                                     <option value="">Select Type</option>
                                     <option value="Merit Based">Merit-Based</option>
-                                    <option value="Need Based">Neet-Based</option>
+                                    <option value="Neet Based">Neet-Based</option>
                                     <option value="Research Grant">Research Grant</option>
                                     <option value="Government">Government</option>
                                 </select>
@@ -552,25 +552,25 @@ useEffect(() => {
                                 />
                             </div>
                             <div className="form-group col-6">
-                                <label>Eligibility</label>
+                                <label>Eligibility<Required /></label>
                                 <input
                                     type="text"
                                     name="eligibility"
                                     value={formData.eligibility || ""}
                                     onChange={handleChange}
-                                    className={errors.eligibility ? "input-error" : ""}
+                                    className={errors.eligibility ? "form-field-error" : ""}
 
                                 />
                                 {errors.eligibility && <p className="error-text">{errors.eligibility}</p>}
 
                             </div>
                             <div className="form-group col-6">
-                                <label>Eligibility Criteria</label>
+                                <label>Eligibility Criteria<Required /></label>
                                 <textarea
                                     name="eligibilityCriteria"
                                     value={formData.eligibilityCriteria}
                                     onChange={handleChange}
-                                    className={errors.eligibilityCriteria ? "input-error" : ""}
+                                    className={errors.eligibilityCriteria ? "form-field-error" : ""}
                                 />
                                 {errors.eligibilityCriteria && (
                                     <p className="error-text">{errors.eligibilityCriteria}</p>
@@ -743,7 +743,7 @@ useEffect(() => {
                                     />
                                 </div>
                                 <div className="form-group col-6">
-                                    <label>Web Portal to Apply</label>
+                                    <label>Web Portal to Apply<Required /></label>
                                     <input
                                         type="text"
                                         name="webportaltoApply"
@@ -764,7 +764,7 @@ useEffect(() => {
                                     />
                                 </div>
                             </div>
-
+error
                             <div className="form-group col-4">
                                 <label>Upload Documents</label>
                                 <input

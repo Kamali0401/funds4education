@@ -49,6 +49,11 @@ html, body {
   font-size: 1.1rem;
   line-height: 1.6;
   max-width: 600px;
+  color: #004D40; /* rich teal */
+  /* Optional: add a subtle gradient effect */
+  background: linear-gradient(90deg, #004D40, #1A237E);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 
@@ -1617,7 +1622,9 @@ input:not([type="radio"]) {
 
 
 .input-error {
-  border-color: red;
+    border: 2px solid red;       /* Red border */
+    background-color: #ffe6e6;   /* Optional: light red background */
+    outline: none;               /* Remove default outline */
 }
 
 .error-text {
@@ -3546,7 +3553,9 @@ padding: 8px;
 }
 
 .input-error {
-  border-color: red;
+    border: 2px solid red;       /* Red border */
+    background-color: #ffe6e6;   /* Optional: light red background */
+    outline: none;               /* Remove default outline */
 }
 
 .error-text {
@@ -3971,3 +3980,5 @@ h2, h3, p {
     font-size: 1rem;
   }
 }
+
+/*Add Scholarship */
