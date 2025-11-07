@@ -99,7 +99,7 @@ export const deleteScholarshipReq = async (id, modifiedBy) => {
 };
 export const fetchReligionsReq = async () => {
   try {
-    const res = await publicAxios.get(ApiKey.FilterReligions);
+    const res = await publicAxios.get(ApiKey.Religion);
     return { error: false, data: Array.isArray(res.data) ? res.data : [] };
   } catch (err) {
     return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching religions" };
@@ -107,7 +107,7 @@ export const fetchReligionsReq = async () => {
 };
 export const fetchCountriesReq = async () => {
   try {
-    const res = await publicAxios.get(ApiKey.FilterCountries);
+    const res = await publicAxios.get(ApiKey.Country);
     return { error: false, data: Array.isArray(res.data) ? res.data : [] };
   } catch (err) {
     return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching countries" };
@@ -119,7 +119,7 @@ export const fetchCountriesReq = async () => {
 //
 export const fetchStatesReq = async () => {
   try {
-    const res = await publicAxios.get(ApiKey.FilterStates);
+    const res = await publicAxios.get(ApiKey.State);
     return { error: false, data: Array.isArray(res.data) ? res.data : [] };
   } catch (err) {
     return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching states" };
@@ -131,7 +131,7 @@ export const fetchStatesReq = async () => {
 //
 export const fetchGendersReq = async () => {
   try {
-    const res = await publicAxios.get(ApiKey.FilterGenders);
+    const res = await publicAxios.get(ApiKey.Gender);
     return { error: false, data: Array.isArray(res.data) ? res.data : [] };
   } catch (err) {
     return { error: true, data: [], errorMsg: err.response?.data?.message || "Error fetching genders" };
