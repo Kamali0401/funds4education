@@ -24,8 +24,7 @@ const text150 = /^[A-Za-z0-9\s.,'-]{0,150}$/;
 const text250 = /^[A-Za-z0-9\s.,'-]{0,250}$/;
 const text500 = /^[A-Za-z0-9\s.,'-]{0,500}$/;
 const decimalRegex = /^\d{0,3}(\.\d{1,2})?$/;
-const amountRegex = /^\d{0,10}(\.\d{1,2})?$/;
-
+//const amountRegex = /^\d{0,10}(\.\d{1,2})?$/;
 const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
@@ -68,18 +67,22 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const [newFileSelected, setNewFileSelected] = useState(false);
     // ✅ Regex rules
     const text50 = /^[A-Za-z0-9\s]{0,50}$/; // letters, numbers, spaces only, max 50
-    const text150 = /^[A-Za-z0-9\s]{0,150}$/;
+    const text350 = /^[A-Za-z0-9\s]{0,350}$/;
     const text250 = /^[A-Za-z0-9\s]{0,250}$/;
     const text300 = /^[A-Za-z0-9\s]{0,300}$/;
-    const text500 = /^[A-Za-z0-9\s.,-]{0,500}$/; // allows . , - only
+  //  const text500 = /^[A-Za-z0-9\s.,-]{0,1000}$/; // allows . , - only
+  const text500 = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]{0,1000}$/;
     //const decimalRegex = /^\d{0,2}(\.\d{0,2})?$/; // CGPA/Percentage with decimals
     const number5Regex = /^\d{0,5}$/;
     //const amountRegex = /^\d{0,6}$/; // up to 6 digits (no decimals, only numbers)
     // ✅ Allow up to 10 digits total, optional 2 decimals, and optional % sign
     //const decimalRegex = /^(?:\d{1,8}(?:\.\d{1,2})?|\d{1,2}(?:\.\d{1,2})?%)$/;
-    const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
+   // const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
+   const decimalRegex = /^[A-Za-z₹$,\/\s%-]*\d{1,10}(\.\d{1,2})?%?[A-Za-z₹$,\/\s%-]*$/;
     // ✅ Allow up to 10 digits with optional decimal up to 2 places (e.g., 25000.70)
-    const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
+    //const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
+    const amountRegex = /^[A-Za-z0-9₹$,.\s/%-]{1,350}$/;
+    
     const {
         religions,
         countries,
@@ -166,7 +169,7 @@ useEffect(() => {
         }
 
         // Reset documents field in formData
-        setFormData({ ...formData, documents: null });
+        setFormData({ ...formData, uploadedFiles: null });
     };
     const handleFilterChange = (e) => {
         debugger;
@@ -189,7 +192,7 @@ useEffect(() => {
         setFilesList(files.map(f => f.name));
         setFileSelected(true);
         setNewFileSelected(true);
-        setFormData({ ...formData, documents: files });
+        setFormData({ ...formData, uploadedFiles: files });
     };
     // Upload files function returns uploaded file names
     const uploadFiles = async (applicationId) => {
@@ -219,11 +222,12 @@ useEffect(() => {
                 regex = text50; // max 50, no special chars
                 break;
             case "scholarshipName":
-            case "scholarshipType":
-                regex = text50; // letters/numbers/spaces only, max 50
+            
+                regex = text350; // letters/numbers/spaces only, max 50
                 break;
             case "description":
             case "eligibilityCriteria":
+          
                 regex = text500; // allows ., - , and space
                 break;
             case "applicableCourses":
@@ -290,10 +294,15 @@ useEffect(() => {
     }
 
     // Scholarship amount validation
-    if (formData.benefits && !amountRegex.test(formData.benefits)) {
+   /* if (formData.benefits && !amountRegex.test(formData.benefits)) {
         newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
         console.log("❌ Invalid benefits format:", formData.benefits);
-    }
+    }*/
+   if (formData.benefits && !amountRegex.test(formData.benefits)) {
+  newErrors.benefits =
+    "Enter a valid amount (e.g., 1,20,000 or ₹50,000 or 1.5 lakh).";
+  console.log("❌ Invalid benefits format:", formData.benefits);
+}
 
     // Percentage / CGPA validation
     if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
@@ -374,7 +383,8 @@ useEffect(() => {
                 ? parseFloat(formData.maxFamilyIncome)
                 : null,
             benefits: formData.benefits || null,
-            documents: null,
+            documents: formData.documents ||null,
+              uploadedFiles: null,
             religion_ID: filters.religion,
             religion_ID: filters.religion ? parseInt(filters.religion) : null,
             country_ID: filters.country ? parseInt(filters.country) : null,
@@ -734,6 +744,16 @@ useEffect(() => {
                             </div>
                             <div className="row">
                                 <div className="form-group col-6">
+                                    <label>Documents</label>
+                                    <textarea
+                                        name="documents"
+                                        value={formData.documents || ""}
+                                        onChange={handleChange}
+                                        placeholder=""
+                                         maxLength={3000}
+                                    />
+                                </div>
+                                <div className="form-group col-6">
                                     <label>Can Apply</label>
                                     <textarea
                                         name="canApply"
@@ -764,12 +784,12 @@ useEffect(() => {
                                     />
                                 </div>
                             </div>
-error
+
                             <div className="form-group col-4">
                                 <label>Upload Documents</label>
                                 <input
                                     type="file"
-                                    name="documents"
+                                  //  name="documents"
                                     onChange={handleFileChange}
                                     multiple
                                     ref={fileInputRef}
