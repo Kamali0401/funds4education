@@ -70,19 +70,28 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const text350 = /^[A-Za-z0-9\s]{0,350}$/;
     const text250 = /^[A-Za-z0-9\s]{0,250}$/;
     const text300 = /^[A-Za-z0-9\s]{0,300}$/;
-  //  const text500 = /^[A-Za-z0-9\s.,-]{0,1000}$/; // allows . , - only
-  const text500 = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]{0,1000}$/;
+    //  const text500 = /^[A-Za-z0-9\s.,-]{0,1000}$/; // allows . , - only
+    const text500 = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]{0,1000}$/;
     //const decimalRegex = /^\d{0,2}(\.\d{0,2})?$/; // CGPA/Percentage with decimals
     const number5Regex = /^\d{0,5}$/;
     //const amountRegex = /^\d{0,6}$/; // up to 6 digits (no decimals, only numbers)
     // ✅ Allow up to 10 digits total, optional 2 decimals, and optional % sign
     //const decimalRegex = /^(?:\d{1,8}(?:\.\d{1,2})?|\d{1,2}(?:\.\d{1,2})?%)$/;
-   // const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
-   const decimalRegex = /^[A-Za-z₹$,\/\s%-]*\d{1,10}(\.\d{1,2})?%?[A-Za-z₹$,\/\s%-]*$/;
+    // const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
+    const decimalRegex = /^[A-Za-z₹$,\/\s%-]*\d{1,10}(\.\d{1,2})?%?[A-Za-z₹$,\/\s%-]*$/;
     // ✅ Allow up to 10 digits with optional decimal up to 2 places (e.g., 25000.70)
     //const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
     const amountRegex = /^[A-Za-z0-9₹$,.\s/%-]{1,350}$/;
-    
+
+
+    const scholarshipCodeRegex = /^[A-Za-z0-9-]{0,50}$/;
+
+    // Scholarship name allows all characters, max 350
+    const scholarshipNameRegex = /^.{0,350}$/;
+
+    // minPercentageOrCGPA and maxFamilyIncome accept any text up to 350 chars
+    const anyText350 = /^.{0,350}$/;
+
     const {
         religions,
         countries,
@@ -99,60 +108,60 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         className: "",
         course: "",
     });
-   useEffect(() => {
-    if (show) {
-        if (scholarship) {
-            // Set form data
-            setFormData({
-                ...initialData,
-                ...scholarship,
-                startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
-                endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
-            });
+    useEffect(() => {
+        if (show) {
+            if (scholarship) {
+                // Set form data
+                setFormData({
+                    ...initialData,
+                    ...scholarship,
+                    startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
+                    endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
+                });
 
-            // Set filters for dropdowns
-            setFilters({
-                religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
-                country: scholarship.country_ID ? String(scholarship.country_ID) : "",
-                state: scholarship.state_ID ? String(scholarship.state_ID) : "",
-                gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
-                className: scholarship.class_ID ? String(scholarship.class_ID) : "",
-                course: "", // will set after courses fetch
-            });
+                // Set filters for dropdowns
+                setFilters({
+                    religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
+                    country: scholarship.country_ID ? String(scholarship.country_ID) : "",
+                    state: scholarship.state_ID ? String(scholarship.state_ID) : "",
+                    gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
+                    className: scholarship.class_ID ? String(scholarship.class_ID) : "",
+                    course: "", // will set after courses fetch
+                });
 
-            // Fetch courses for saved class
-            if (scholarship.class_ID) {
-                dispatch(fetchCoursesByClass(scholarship.class_ID));
+                // Fetch courses for saved class
+                if (scholarship.class_ID) {
+                    dispatch(fetchCoursesByClass(scholarship.class_ID));
+                }
+            } else {
+                // Add mode
+                setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
+                setFilters({
+                    religion: "",
+                    country: "",
+                    state: "",
+                    gender: "",
+                    className: "",
+                    course: "",
+                });
             }
-        } else {
-            // Add mode
-            setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
-            setFilters({
-                religion: "",
-                country: "",
-                state: "",
-                gender: "",
-                className: "",
-                course: "",
-            });
         }
-    }
 
-    // Fetch dropdown data
-    dispatch(fetchReligions());
-    dispatch(fetchCountries());
-    dispatch(fetchStates());
-    dispatch(fetchGenders());
-    dispatch(fetchClasses());
-}, [show, scholarship, dispatch]);
-useEffect(() => {
-    if (scholarship && scholarship.class_ID && courses.length > 0) {
-        setFilters(prev => ({
-            ...prev,
-            course: scholarship.course_ID ? String(scholarship.course_ID) : ""
-        }));
-    }
-}, [courses, scholarship]);
+        // Fetch dropdown data
+        dispatch(fetchReligions());
+        dispatch(fetchCountries());
+        dispatch(fetchStates());
+        dispatch(fetchGenders());
+        dispatch(fetchClasses());
+    }, [show, scholarship, dispatch]);
+    useEffect(() => {
+        if (scholarship && scholarship.class_ID && courses.length > 0) {
+            setFilters(prev => ({
+                ...prev,
+                course: scholarship.course_ID ? String(scholarship.course_ID) : ""
+            }));
+        }
+    }, [courses, scholarship]);
 
 
     // --- Clear function ---
@@ -219,15 +228,14 @@ useEffect(() => {
 
         switch (name) {
             case "scholarshipCode":
-                regex = text50; // max 50, no special chars
+                regex = scholarshipCodeRegex; // max 50, no special chars
                 break;
             case "scholarshipName":
-            
-                regex = text350; // letters/numbers/spaces only, max 50
+                regex = scholarshipNameRegex; // letters/numbers/spaces only, max 350
                 break;
             case "description":
             case "eligibilityCriteria":
-          
+
                 regex = text500; // allows ., - , and space
                 break;
             case "applicableCourses":
@@ -238,9 +246,11 @@ useEffect(() => {
                 regex = text300; // max length 300, no special chars
                 break;
             case "minPercentageOrCGPA":
-                regex = decimalRegex; // decimals allowed
+                regex = anyText350; // decimals allowed
                 break;
             case "maxFamilyIncome":
+                regex = anyText350;
+                break;
             case "scholarshipAmount":
                 regex = amountRegex; // numeric only, max length 6
                 break;
@@ -263,110 +273,110 @@ useEffect(() => {
     const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w- ./?%&=]*)?$/i;
 
     const validateForm = () => {
-    debugger;
-    const newErrors = {};
+        debugger;
+        const newErrors = {};
 
-    console.log("🔍 Validating form data:", formData);
+        console.log("🔍 Validating form data:", formData);
 
-    // Required fields
-    if (!formData.scholarshipCode?.trim()) {
-        newErrors.scholarshipCode = "Scholarship Code is required.";
-        console.log("❌ scholarshipCode missing");
-    }
-    if (!formData.scholarshipName?.trim()) {
-        newErrors.scholarshipName = "Scholarship Name is required.";
-        console.log("❌ scholarshipName missing");
-    }
-    if (!formData.scholarshipType?.trim()) {
-        newErrors.scholarshipType = "Scholarship Type is required.";
-        console.log("❌ scholarshipType missing");
-    }
-    if (!formData.startDate) {
-        newErrors.startDate = "Start Date is required.";
-        console.log("❌ startDate missing");
-    }
-    if (!formData.endDate) {
-        newErrors.endDate = "End Date is required.";
-        console.log("❌ endDate missing");
-    } else if (formData.startDate && formData.endDate < formData.startDate) {
-        newErrors.endDate = "End Date must be after Start Date.";
-        console.log("❌ endDate < startDate");
-    }
-
-    // Scholarship amount validation
-   /* if (formData.benefits && !amountRegex.test(formData.benefits)) {
-        newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
-        console.log("❌ Invalid benefits format:", formData.benefits);
-    }*/
-   if (formData.benefits && !amountRegex.test(formData.benefits)) {
-  newErrors.benefits =
-    "Enter a valid amount (e.g., 1,20,000 or ₹50,000 or 1.5 lakh).";
-  console.log("❌ Invalid benefits format:", formData.benefits);
-}
-
-    // Percentage / CGPA validation
-    if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
-        newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
-        console.log("❌ Invalid minPercentageOrCGPA:", formData.minPercentageOrCGPA);
-    }
-
-    // Family income validation
-    if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome)) {
-        newErrors.maxFamilyIncome = "Enter valid family income.";
-        console.log("❌ Invalid maxFamilyIncome:", formData.maxFamilyIncome);
-    }
-
-    // Scholarship limit
-    if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
-        newErrors.scholarshipLimit = "Scholarship limit must be a number.";
-        console.log("❌ Invalid scholarshipLimit:", formData.scholarshipLimit);
-    }
-
-    // Web Portal validation
-    if (!formData.webportaltoApply) {
-        newErrors.webportaltoApply = "Web Portal to Apply is required.";
-        console.log("❌ webportaltoApply missing");
-    } else {
-        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
-        if (!urlPattern.test(formData.webportaltoApply)) {
-            newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
-            console.log("❌ Invalid webportaltoApply:", formData.webportaltoApply);
+        // Required fields
+        if (!formData.scholarshipCode?.trim()) {
+            newErrors.scholarshipCode = "Scholarship Code is required.";
+            console.log("❌ scholarshipCode missing");
         }
-    }
+        if (!formData.scholarshipName?.trim()) {
+            newErrors.scholarshipName = "Scholarship Name is required.";
+            console.log("❌ scholarshipName missing");
+        }
+        if (!formData.scholarshipType?.trim()) {
+            newErrors.scholarshipType = "Scholarship Type is required.";
+            console.log("❌ scholarshipType missing");
+        }
+        if (!formData.startDate) {
+            newErrors.startDate = "Start Date is required.";
+            console.log("❌ startDate missing");
+        }
+        if (!formData.endDate) {
+            newErrors.endDate = "End Date is required.";
+            console.log("❌ endDate missing");
+        } else if (formData.startDate && formData.endDate < formData.startDate) {
+            newErrors.endDate = "End Date must be after Start Date.";
+            console.log("❌ endDate < startDate");
+        }
 
-    if (!formData.eligibility?.trim()) {
-        newErrors.eligibility = "Eligibility is required.";
-        console.log("❌ eligibility missing");
-    }
+        // Scholarship amount validation
+        /* if (formData.benefits && !amountRegex.test(formData.benefits)) {
+             newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
+             console.log("❌ Invalid benefits format:", formData.benefits);
+         }*/
+        if (formData.benefits && !amountRegex.test(formData.benefits)) {
+            newErrors.benefits =
+                "Enter a valid amount (e.g., 1,20,000 or ₹50,000 or 1.5 lakh).";
+            console.log("❌ Invalid benefits format:", formData.benefits);
+        }
 
-    if (!formData.eligibilityCriteria?.trim()) {
-        newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
-        console.log("❌ eligibilityCriteria missing");
-    }
+        // Percentage / CGPA validation
+        if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
+            newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
+            console.log("❌ Invalid minPercentageOrCGPA:", formData.minPercentageOrCGPA);
+        }
 
-    // Optional text length validations
-    if (formData.description && formData.description.length > 500) {
-        newErrors.description = "Description cannot exceed 500 characters.";
-        console.log("❌ description too long:", formData.description.length);
-    }
-    if (formData.eligibility && formData.eligibility.length > 250) {
-        newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
-        console.log("❌ eligibility too long:", formData.eligibility.length);
-    }
-    if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500) {
-        newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
-        console.log("❌ eligibilityCriteria too long:", formData.eligibilityCriteria.length);
-    }
-    if (formData.renewalCriteria && formData.renewalCriteria.length > 300) {
-        newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
-        console.log("❌ renewalCriteria too long:", formData.renewalCriteria.length);
-    }
+        // Family income validation
+        if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome)) {
+            newErrors.maxFamilyIncome = "Enter valid family income.";
+            console.log("❌ Invalid maxFamilyIncome:", formData.maxFamilyIncome);
+        }
 
-    setErrors(newErrors);
+        // Scholarship limit
+        if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
+            newErrors.scholarshipLimit = "Scholarship limit must be a number.";
+            console.log("❌ Invalid scholarshipLimit:", formData.scholarshipLimit);
+        }
 
-    console.log("✅ Validation complete. Errors:", newErrors);
-    return Object.keys(newErrors).length === 0;
-};
+        // Web Portal validation
+        if (!formData.webportaltoApply) {
+            newErrors.webportaltoApply = "Web Portal to Apply is required.";
+            console.log("❌ webportaltoApply missing");
+        } else {
+            const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
+            if (!urlPattern.test(formData.webportaltoApply)) {
+                newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
+                console.log("❌ Invalid webportaltoApply:", formData.webportaltoApply);
+            }
+        }
+
+        if (!formData.eligibility?.trim()) {
+            newErrors.eligibility = "Eligibility is required.";
+            console.log("❌ eligibility missing");
+        }
+
+        if (!formData.eligibilityCriteria?.trim()) {
+            newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
+            console.log("❌ eligibilityCriteria missing");
+        }
+
+        // Optional text length validations
+        if (formData.description && formData.description.length > 500) {
+            newErrors.description = "Description cannot exceed 500 characters.";
+            console.log("❌ description too long:", formData.description.length);
+        }
+        if (formData.eligibility && formData.eligibility.length > 250) {
+            newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
+            console.log("❌ eligibility too long:", formData.eligibility.length);
+        }
+        if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500) {
+            newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
+            console.log("❌ eligibilityCriteria too long:", formData.eligibilityCriteria.length);
+        }
+        if (formData.renewalCriteria && formData.renewalCriteria.length > 300) {
+            newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
+            console.log("❌ renewalCriteria too long:", formData.renewalCriteria.length);
+        }
+
+        setErrors(newErrors);
+
+        console.log("✅ Validation complete. Errors:", newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
 
     const handleSubmit = async (e) => {
@@ -383,8 +393,8 @@ useEffect(() => {
                 ? parseFloat(formData.maxFamilyIncome)
                 : null,
             benefits: formData.benefits || null,
-            documents: formData.documents ||null,
-              uploadedFiles: null,
+            documents: formData.documents || null,
+            uploadedFiles: null,
             religion_ID: filters.religion,
             religion_ID: filters.religion ? parseInt(filters.religion) : null,
             country_ID: filters.country ? parseInt(filters.country) : null,
@@ -401,24 +411,24 @@ useEffect(() => {
             let scholarshipId;
 
             if (scholarship) {
-                
-              const res=  await updateScholarship(payload, dispatch);
-                 if (!res?.success) {
-    handleCloseAndReset(); // ✅ close the modal and reset form
-    return;
-  }
+
+                const res = await updateScholarship(payload, dispatch);
+                if (!res?.success) {
+                    handleCloseAndReset(); // ✅ close the modal and reset form
+                    return;
+                }
                 scholarshipId = scholarship.id;
             } else {
                 console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
                 // ⛔ Stop if insert failed or duplicate
-             if (!res?.success) {
-    handleCloseAndReset(); // ✅ close the modal and reset form
-    return;
-  }
+                if (!res?.success) {
+                    handleCloseAndReset(); // ✅ close the modal and reset form
+                    return;
+                }
 
- scholarshipId = res.data?.id;
-              //  scholarshipId = res?.id;
+                scholarshipId = res.data?.id;
+                //  scholarshipId = res?.id;
             }
 
             // ✅ Upload files if any
@@ -750,7 +760,7 @@ useEffect(() => {
                                         value={formData.documents || ""}
                                         onChange={handleChange}
                                         placeholder=""
-                                         maxLength={3000}
+                                        maxLength={3000}
                                     />
                                 </div>
                                 <div className="form-group col-6">
@@ -789,7 +799,7 @@ useEffect(() => {
                                 <label>Upload Documents</label>
                                 <input
                                     type="file"
-                                  //  name="documents"
+                                    //  name="documents"
                                     onChange={handleFileChange}
                                     multiple
                                     ref={fileInputRef}
