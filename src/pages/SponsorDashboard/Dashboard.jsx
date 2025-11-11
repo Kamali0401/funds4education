@@ -40,10 +40,11 @@ export default function SponsorDashboard() {
             Applications
           </Link>
           <Link to="/sponsor-dashboard/scholarshipPage" className="nav-link">
-            Sponsored Students
+            Sponsored Scholarship
           </Link>
            <Link to="/Sponsored-Scholarship" className="nav-link">
-            ApprovedApplications
+            Approved
+            Applications
           </Link>         
           <Link to="/sponsor-dashboard/report" className="nav-link">
             Reports

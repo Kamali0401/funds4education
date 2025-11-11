@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import "../../../pages/styles.css";
+import Select from "react-select";
+
 import {
 
     fetchScholarshipBySponsor, addNewScholarship,
@@ -100,14 +102,22 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         classes,
         courses,
     } = useSelector((state) => state.sponsorScholarship);
-    const [filters, setFilters] = useState({
-        religion: "",
-        country: "",
-        state: "",
-        gender: "",
-        className: "",
-        course: "",
-    });
+const [filters, setFilters] = useState({
+  religion: [],
+  country: [],
+  state: [],
+  gender: [],
+  className: [],
+  course: [],
+});
+// ✅ SafeJoin prevents .join() crashes when a field isn't an array
+const safeJoin = (val) => {
+  if (!val) return null;
+  if (Array.isArray(val)) return val.join(",");
+  if (typeof val === "string" || typeof val === "number") return val.toString();
+  return null;
+};
+
     useEffect(() => {
         if (show) {
             if (scholarship) {
@@ -376,22 +386,24 @@ if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
         e.preventDefault();
         if (!validateForm()) return;
 
-        const payload = {
-            ...formData,
-           minPercentageOrCGPA: formData.minPercentageOrCGPA || null,
-    maxFamilyIncome: formData.maxFamilyIncome || null,
-    scholarshipAmount: formData.benefits || null,
-            documents: formData.documents || null,
-            uploadedFiles: null,
-            religion_ID: filters.religion,
-            religion_ID: filters.religion ? parseInt(filters.religion) : null,
-            country_ID: filters.country ? parseInt(filters.country) : null,
-            state_ID: filters.state ? parseInt(filters.state) : null,
-            gender_ID: filters.gender ? parseInt(filters.gender) : null,
-            class_ID: filters.className || null,
-            course_ID: filters.course || null,
-            id: scholarship ? scholarship.id : 0,
-        };
+const payload = {
+  ...formData,
+  minPercentageOrCGPA: formData.minPercentageOrCGPA || null,
+  maxFamilyIncome: formData.maxFamilyIncome || null,
+  scholarshipAmount: formData.benefits || null,
+  documents: formData.documents || null,
+  uploadedFiles: null,
+
+  // ✅ Use safeJoin to avoid "join is not a function" error
+  religion_ID: safeJoin(filters.religion),
+  country_ID: safeJoin(filters.country),
+  state_ID: safeJoin(filters.state),
+  gender_ID: safeJoin(filters.gender),
+  class_ID: safeJoin(filters.className),
+  course_ID: safeJoin(filters.course),
+
+  id: scholarship ? scholarship.id : 0,
+};
 
         try {
             debugger;
@@ -587,17 +599,31 @@ if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
                         </div>
 
                         {/* --- Filters Section --- */}
-                        <div className="filters-section mb-4">
-                            <div className="row">
-                                <div className="form-group col-4">
-                                    <label>Religion</label>
-                                    <select name="religion" value={filters.religion} onChange={handleFilterChange}>
-                                        <option value="">Select Religion</option>
-                                        {religions.map(r => (
-                                            <option key={r.id} value={r.id}>{r.religion_Name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+<div className="filters-section mb-4">
+  <div className="row">
+    {/* Religion Dropdown */}
+    <div className="form-group col-4">
+      <label>Religion</label>
+      <Select
+        isMulti
+        name="religion"
+        options={religions.map((r) => ({
+          value: r.id,
+          label: r.religion_Name,
+        }))}
+        value={religions
+          .filter((r) => filters.religion?.includes(String(r.id)))
+          .map((r) => ({ value: r.id, label: r.religion_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            religion: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Religion(s)"
+        classNamePrefix="select"
+      />
+    </div>
                                 <div className="form-group col-4">
                                     <label>Country</label>
                                     <select name="country" value={filters.country} onChange={handleFilterChange}>
@@ -607,27 +633,54 @@ if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="form-group col-4">
-                                    <label>State</label>
-                                    <select name="state" value={filters.state || ""} onChange={handleFilterChange}>
-                                        <option value="">Select State</option>
-                                        {states.map((s) => (
-                                            <option key={s.id} value={s.id}>{s.state_Name}</option>  // ✅ send ID
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+<div className="form-group col-4">
+      <label>State</label>
+      <Select
+        isMulti
+        name="state"
+        options={states.map((s) => ({
+          value: s.id,
+          label: s.state_Name,
+        }))}
+        value={states
+          .filter((s) => filters.state?.includes(String(s.id)))
+          .map((s) => ({ value: s.id, label: s.state_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            state: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select State(s)"
+        classNamePrefix="select"
+      />
+    </div>
+  </div>
 
-                            <div className="row mt-2">
-                                <div className="form-group col-4">
-                                    <label>Gender</label>
-                                    <select name="gender" value={filters.gender} onChange={handleFilterChange}>
-                                        <option value="">Select Gender</option>
-                                        {genders.map(g => (
-                                            <option key={g.gender_ID} value={g.gender_ID}>{g.gender_Name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+  <div className="row mt-2">
+    {/* Gender Dropdown */}
+    <div className="form-group col-4">
+      <label>Gender</label>
+      <Select
+        isMulti
+        name="gender"
+        options={genders.map((g) => ({
+          value: g.gender_ID,
+          label: g.gender_Name,
+        }))}
+        value={genders
+          .filter((g) => filters.gender?.includes(String(g.gender_ID)))
+          .map((g) => ({ value: g.gender_ID, label: g.gender_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            gender: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Gender(s)"
+        classNamePrefix="select"
+      />
+    </div>
                                 <div className="form-group col-4">
                                     <label>Class</label>
                                     <select name="className" value={filters.className} onChange={handleFilterChange}>
@@ -638,15 +691,29 @@ if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
                                     </select>
                                 </div>
                                 <div className="form-group col-4">
-                                    <label>Course</label>
-                                    <select name="course" value={filters.course} onChange={handleFilterChange} disabled={!filters.className}>
-                                        <option value="">Select Course</option>
-                                        {courses.map(c => (
-                                            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+      <label>Course</label>
+      <Select
+        isMulti
+        name="course"
+        isDisabled={!filters.className?.length}
+        options={courses.map((c) => ({
+          value: c.courseId,
+          label: c.courseName,
+        }))}
+        value={courses
+          .filter((c) => filters.course?.includes(String(c.courseId)))
+          .map((c) => ({ value: c.courseId, label: c.courseName }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            course: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Course(s)"
+        classNamePrefix="select"
+      />
+    </div>
+  </div>
                         </div>
                         <div className="row">
                             <div className="form-group col-4">
