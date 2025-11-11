@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import "../../../pages/styles.css";
+import Select from "react-select";
+
 import {
 
     fetchScholarshipBySponsor, addNewScholarship,
@@ -70,19 +72,28 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
     const text350 = /^[A-Za-z0-9\s]{0,350}$/;
     const text250 = /^[A-Za-z0-9\s]{0,250}$/;
     const text300 = /^[A-Za-z0-9\s]{0,300}$/;
-  //  const text500 = /^[A-Za-z0-9\s.,-]{0,1000}$/; // allows . , - only
-  const text500 = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]{0,1000}$/;
+    //  const text500 = /^[A-Za-z0-9\s.,-]{0,1000}$/; // allows . , - only
+    const text500 = /^[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?`~\s]{0,1000}$/;
     //const decimalRegex = /^\d{0,2}(\.\d{0,2})?$/; // CGPA/Percentage with decimals
     const number5Regex = /^\d{0,5}$/;
     //const amountRegex = /^\d{0,6}$/; // up to 6 digits (no decimals, only numbers)
     // ✅ Allow up to 10 digits total, optional 2 decimals, and optional % sign
     //const decimalRegex = /^(?:\d{1,8}(?:\.\d{1,2})?|\d{1,2}(?:\.\d{1,2})?%)$/;
-   // const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
-   const decimalRegex = /^[A-Za-z₹$,\/\s%-]*\d{1,10}(\.\d{1,2})?%?[A-Za-z₹$,\/\s%-]*$/;
+    // const decimalRegex = /^\d{0,6}(\.\d{0,2})?%?$/;
+    const decimalRegex = /^[A-Za-z₹$,\/\s%-]*\d{1,10}(\.\d{1,2})?%?[A-Za-z₹$,\/\s%-]*$/;
     // ✅ Allow up to 10 digits with optional decimal up to 2 places (e.g., 25000.70)
     //const amountRegex = /^\d{0,10}(\.\d{0,2})?$/;
     const amountRegex = /^[A-Za-z0-9₹$,.\s/%-]{1,350}$/;
-    
+
+
+    const scholarshipCodeRegex = /^[A-Za-z0-9-]{0,50}$/;
+
+    // Scholarship name allows all characters, max 350
+    const scholarshipNameRegex = /^.{0,350}$/;
+
+    // minPercentageOrCGPA and maxFamilyIncome accept any text up to 350 chars
+    const anyText350 = /^.{0,350}$/;
+
     const {
         religions,
         countries,
@@ -91,68 +102,76 @@ const AddScholarshipModal = ({ show, handleClose, scholarship }) => {
         classes,
         courses,
     } = useSelector((state) => state.sponsorScholarship);
-    const [filters, setFilters] = useState({
-        religion: "",
-        country: "",
-        state: "",
-        gender: "",
-        className: "",
-        course: "",
-    });
-   useEffect(() => {
-    if (show) {
-        if (scholarship) {
-            // Set form data
-            setFormData({
-                ...initialData,
-                ...scholarship,
-                startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
-                endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
-            });
+const [filters, setFilters] = useState({
+  religion: [],
+  country: [],
+  state: [],
+  gender: [],
+  className: [],
+  course: [],
+});
+// ✅ SafeJoin prevents .join() crashes when a field isn't an array
+const safeJoin = (val) => {
+  if (!val) return null;
+  if (Array.isArray(val)) return val.join(",");
+  if (typeof val === "string" || typeof val === "number") return val.toString();
+  return null;
+};
 
-            // Set filters for dropdowns
-            setFilters({
-                religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
-                country: scholarship.country_ID ? String(scholarship.country_ID) : "",
-                state: scholarship.state_ID ? String(scholarship.state_ID) : "",
-                gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
-                className: scholarship.class_ID ? String(scholarship.class_ID) : "",
-                course: "", // will set after courses fetch
-            });
+    useEffect(() => {
+        if (show) {
+            if (scholarship) {
+                // Set form data
+                setFormData({
+                    ...initialData,
+                    ...scholarship,
+                    startDate: scholarship.startDate ? scholarship.startDate.split("T")[0] : "",
+                    endDate: scholarship.endDate ? scholarship.endDate.split("T")[0] : "",
+                });
 
-            // Fetch courses for saved class
-            if (scholarship.class_ID) {
-                dispatch(fetchCoursesByClass(scholarship.class_ID));
+                // Set filters for dropdowns
+                setFilters({
+                    religion: scholarship.religion_ID ? String(scholarship.religion_ID) : "",
+                    country: scholarship.country_ID ? String(scholarship.country_ID) : "",
+                    state: scholarship.state_ID ? String(scholarship.state_ID) : "",
+                    gender: scholarship.gender_ID ? String(scholarship.gender_ID) : "",
+                    className: scholarship.class_ID ? String(scholarship.class_ID) : "",
+                    course: "", // will set after courses fetch
+                });
+
+                // Fetch courses for saved class
+                if (scholarship.class_ID) {
+                    dispatch(fetchCoursesByClass(scholarship.class_ID));
+                }
+            } else {
+                // Add mode
+                setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
+                setFilters({
+                    religion: "",
+                    country: "",
+                    state: "",
+                    gender: "",
+                    className: "",
+                    course: "",
+                });
             }
-        } else {
-            // Add mode
-            setFormData({ ...initialData, sponsorId: localStorage.getItem("userId"), createdBy: localStorage.getItem("name") });
-            setFilters({
-                religion: "",
-                country: "",
-                state: "",
-                gender: "",
-                className: "",
-                course: "",
-            });
         }
-    }
 
-    // Fetch dropdown data
-    dispatch(fetchReligions());
-    dispatch(fetchCountries());
-    dispatch(fetchStates());
-    dispatch(fetchGenders());
-    dispatch(fetchClasses());
-}, [show, scholarship, dispatch]);
-useEffect(() => {
-    if (scholarship && scholarship.class_ID && courses.length > 0) {
-        setFilters(prev => ({
-            ...prev,
-            course: scholarship.course_ID ? String(scholarship.course_ID) : ""
-        }));
-    }
-}, [courses, scholarship]);
+        // Fetch dropdown data
+        dispatch(fetchReligions());
+        dispatch(fetchCountries());
+        dispatch(fetchStates());
+        dispatch(fetchGenders());
+        dispatch(fetchClasses());
+    }, [show, scholarship, dispatch]);
+    useEffect(() => {
+        if (scholarship && scholarship.class_ID && courses.length > 0) {
+            setFilters(prev => ({
+                ...prev,
+                course: scholarship.course_ID ? String(scholarship.course_ID) : ""
+            }));
+        }
+    }, [courses, scholarship]);
 
 
     // --- Clear function ---
@@ -219,15 +238,14 @@ useEffect(() => {
 
         switch (name) {
             case "scholarshipCode":
-                regex = text50; // max 50, no special chars
+                regex = scholarshipCodeRegex; // max 50, no special chars
                 break;
             case "scholarshipName":
-            
-                regex = text350; // letters/numbers/spaces only, max 50
+                regex = scholarshipNameRegex; // letters/numbers/spaces only, max 350
                 break;
             case "description":
             case "eligibilityCriteria":
-          
+
                 regex = text500; // allows ., - , and space
                 break;
             case "applicableCourses":
@@ -238,11 +256,13 @@ useEffect(() => {
                 regex = text300; // max length 300, no special chars
                 break;
             case "minPercentageOrCGPA":
-                regex = decimalRegex; // decimals allowed
+                regex = anyText350; // decimals allowed
                 break;
             case "maxFamilyIncome":
+                regex = anyText350;
+                break;
             case "scholarshipAmount":
-                regex = amountRegex; // numeric only, max length 6
+                regex = text350; // numeric only, max length 6
                 break;
             case "scholarshipLimit":
                 regex = number5Regex;
@@ -263,110 +283,102 @@ useEffect(() => {
     const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w- ./?%&=]*)?$/i;
 
     const validateForm = () => {
-    debugger;
-    const newErrors = {};
+        debugger;
+        const newErrors = {};
 
-    console.log("🔍 Validating form data:", formData);
+        console.log("🔍 Validating form data:", formData);
 
-    // Required fields
-    if (!formData.scholarshipCode?.trim()) {
-        newErrors.scholarshipCode = "Scholarship Code is required.";
-        console.log("❌ scholarshipCode missing");
-    }
-    if (!formData.scholarshipName?.trim()) {
-        newErrors.scholarshipName = "Scholarship Name is required.";
-        console.log("❌ scholarshipName missing");
-    }
-    if (!formData.scholarshipType?.trim()) {
-        newErrors.scholarshipType = "Scholarship Type is required.";
-        console.log("❌ scholarshipType missing");
-    }
-    if (!formData.startDate) {
-        newErrors.startDate = "Start Date is required.";
-        console.log("❌ startDate missing");
-    }
-    if (!formData.endDate) {
-        newErrors.endDate = "End Date is required.";
-        console.log("❌ endDate missing");
-    } else if (formData.startDate && formData.endDate < formData.startDate) {
-        newErrors.endDate = "End Date must be after Start Date.";
-        console.log("❌ endDate < startDate");
-    }
+        // Required fields
+        if (!formData.scholarshipCode?.trim()) {
+            newErrors.scholarshipCode = "Scholarship Code is required.";
+            console.log("❌ scholarshipCode missing");
+        }
+        if (!formData.scholarshipName?.trim()) {
+            newErrors.scholarshipName = "Scholarship Name is required.";
+            console.log("❌ scholarshipName missing");
+        }
+        if (!formData.scholarshipType?.trim()) {
+            newErrors.scholarshipType = "Scholarship Type is required.";
+            console.log("❌ scholarshipType missing");
+        }
+        if (!formData.startDate) {
+            newErrors.startDate = "Start Date is required.";
+            console.log("❌ startDate missing");
+        }
+        if (!formData.endDate) {
+            newErrors.endDate = "End Date is required.";
+            console.log("❌ endDate missing");
+        } else if (formData.startDate && formData.endDate < formData.startDate) {
+            newErrors.endDate = "End Date must be after Start Date.";
+            console.log("❌ endDate < startDate");
+        }
 
-    // Scholarship amount validation
-   /* if (formData.benefits && !amountRegex.test(formData.benefits)) {
-        newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
-        console.log("❌ Invalid benefits format:", formData.benefits);
-    }*/
-   if (formData.benefits && !amountRegex.test(formData.benefits)) {
-  newErrors.benefits =
-    "Enter a valid amount (e.g., 1,20,000 or ₹50,000 or 1.5 lakh).";
-  console.log("❌ Invalid benefits format:", formData.benefits);
+        // Scholarship amount validation
+        /* if (formData.benefits && !amountRegex.test(formData.benefits)) {
+             newErrors.benefits = "Enter a valid amount (numbers only, up to 2 decimals).";
+             console.log("❌ Invalid benefits format:", formData.benefits);
+         }*/
+        if (formData.benefits && formData.benefits.length > 350) {
+    newErrors.benefits = "Scholarship Amount cannot exceed 350 characters.";
+}
+if (formData.minPercentageOrCGPA && formData.minPercentageOrCGPA.length > 350) {
+    newErrors.minPercentageOrCGPA = "Min % / CGPA cannot exceed 350 characters.";
+}
+if (formData.maxFamilyIncome && formData.maxFamilyIncome.length > 350) {
+    newErrors.maxFamilyIncome = "Max Family Income cannot exceed 350 characters.";
 }
 
-    // Percentage / CGPA validation
-    if (formData.minPercentageOrCGPA && !decimalRegex.test(formData.minPercentageOrCGPA)) {
-        newErrors.minPercentageOrCGPA = "Enter valid percentage or CGPA (e.g. 85 or 8.5).";
-        console.log("❌ Invalid minPercentageOrCGPA:", formData.minPercentageOrCGPA);
-    }
-
-    // Family income validation
-    if (formData.maxFamilyIncome && !amountRegex.test(formData.maxFamilyIncome)) {
-        newErrors.maxFamilyIncome = "Enter valid family income.";
-        console.log("❌ Invalid maxFamilyIncome:", formData.maxFamilyIncome);
-    }
-
-    // Scholarship limit
-    if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
-        newErrors.scholarshipLimit = "Scholarship limit must be a number.";
-        console.log("❌ Invalid scholarshipLimit:", formData.scholarshipLimit);
-    }
-
-    // Web Portal validation
-    if (!formData.webportaltoApply) {
-        newErrors.webportaltoApply = "Web Portal to Apply is required.";
-        console.log("❌ webportaltoApply missing");
-    } else {
-        const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
-        if (!urlPattern.test(formData.webportaltoApply)) {
-            newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
-            console.log("❌ Invalid webportaltoApply:", formData.webportaltoApply);
+        // Scholarship limit
+        if (formData.scholarshipLimit && isNaN(formData.scholarshipLimit)) {
+            newErrors.scholarshipLimit = "Scholarship limit must be a number.";
+            console.log("❌ Invalid scholarshipLimit:", formData.scholarshipLimit);
         }
-    }
 
-    if (!formData.eligibility?.trim()) {
-        newErrors.eligibility = "Eligibility is required.";
-        console.log("❌ eligibility missing");
-    }
+        // Web Portal validation
+        if (!formData.webportaltoApply) {
+            newErrors.webportaltoApply = "Web Portal to Apply is required.";
+            console.log("❌ webportaltoApply missing");
+        } else {
+            const urlPattern = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-]*)*\/?$/;
+            if (!urlPattern.test(formData.webportaltoApply)) {
+                newErrors.webportaltoApply = "Please enter a valid URL (e.g., https://example.com)";
+                console.log("❌ Invalid webportaltoApply:", formData.webportaltoApply);
+            }
+        }
 
-    if (!formData.eligibilityCriteria?.trim()) {
-        newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
-        console.log("❌ eligibilityCriteria missing");
-    }
+        if (!formData.eligibility?.trim()) {
+            newErrors.eligibility = "Eligibility is required.";
+            console.log("❌ eligibility missing");
+        }
 
-    // Optional text length validations
-    if (formData.description && formData.description.length > 500) {
-        newErrors.description = "Description cannot exceed 500 characters.";
-        console.log("❌ description too long:", formData.description.length);
-    }
-    if (formData.eligibility && formData.eligibility.length > 250) {
-        newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
-        console.log("❌ eligibility too long:", formData.eligibility.length);
-    }
-    if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500) {
-        newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
-        console.log("❌ eligibilityCriteria too long:", formData.eligibilityCriteria.length);
-    }
-    if (formData.renewalCriteria && formData.renewalCriteria.length > 300) {
-        newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
-        console.log("❌ renewalCriteria too long:", formData.renewalCriteria.length);
-    }
+        if (!formData.eligibilityCriteria?.trim()) {
+            newErrors.eligibilityCriteria = "Eligibility Criteria is required.";
+            console.log("❌ eligibilityCriteria missing");
+        }
 
-    setErrors(newErrors);
+        // Optional text length validations
+        if (formData.description && formData.description.length > 500) {
+            newErrors.description = "Description cannot exceed 500 characters.";
+            console.log("❌ description too long:", formData.description.length);
+        }
+        if (formData.eligibility && formData.eligibility.length > 250) {
+            newErrors.eligibility = "Eligibility cannot exceed 250 characters.";
+            console.log("❌ eligibility too long:", formData.eligibility.length);
+        }
+        if (formData.eligibilityCriteria && formData.eligibilityCriteria.length > 500) {
+            newErrors.eligibilityCriteria = "Eligibility Criteria cannot exceed 500 characters.";
+            console.log("❌ eligibilityCriteria too long:", formData.eligibilityCriteria.length);
+        }
+        if (formData.renewalCriteria && formData.renewalCriteria.length > 300) {
+            newErrors.renewalCriteria = "Renewal Criteria cannot exceed 300 characters.";
+            console.log("❌ renewalCriteria too long:", formData.renewalCriteria.length);
+        }
 
-    console.log("✅ Validation complete. Errors:", newErrors);
-    return Object.keys(newErrors).length === 0;
-};
+        setErrors(newErrors);
+
+        console.log("✅ Validation complete. Errors:", newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
 
     const handleSubmit = async (e) => {
@@ -374,26 +386,24 @@ useEffect(() => {
         e.preventDefault();
         if (!validateForm()) return;
 
-        const payload = {
-            ...formData,
-            minPercentageOrCGPA: formData.minPercentageOrCGPA
-                ? parseFloat(formData.minPercentageOrCGPA)
-                : null,
-            maxFamilyIncome: formData.maxFamilyIncome
-                ? parseFloat(formData.maxFamilyIncome)
-                : null,
-            benefits: formData.benefits || null,
-            documents: formData.documents ||null,
-              uploadedFiles: null,
-            religion_ID: filters.religion,
-            religion_ID: filters.religion ? parseInt(filters.religion) : null,
-            country_ID: filters.country ? parseInt(filters.country) : null,
-            state_ID: filters.state ? parseInt(filters.state) : null,
-            gender_ID: filters.gender ? parseInt(filters.gender) : null,
-            class_ID: filters.className || null,
-            course_ID: filters.course || null,
-            id: scholarship ? scholarship.id : 0,
-        };
+const payload = {
+  ...formData,
+  minPercentageOrCGPA: formData.minPercentageOrCGPA || null,
+  maxFamilyIncome: formData.maxFamilyIncome || null,
+  scholarshipAmount: formData.benefits || null,
+  documents: formData.documents || null,
+  uploadedFiles: null,
+
+  // ✅ Use safeJoin to avoid "join is not a function" error
+  religion_ID: safeJoin(filters.religion),
+  country_ID: safeJoin(filters.country),
+  state_ID: safeJoin(filters.state),
+  gender_ID: safeJoin(filters.gender),
+  class_ID: safeJoin(filters.className),
+  course_ID: safeJoin(filters.course),
+
+  id: scholarship ? scholarship.id : 0,
+};
 
         try {
             debugger;
@@ -401,24 +411,24 @@ useEffect(() => {
             let scholarshipId;
 
             if (scholarship) {
-                
-              const res=  await updateScholarship(payload, dispatch);
-                 if (!res?.success) {
-    handleCloseAndReset(); // ✅ close the modal and reset form
-    return;
-  }
+
+                const res = await updateScholarship(payload, dispatch);
+                if (!res?.success) {
+                    handleCloseAndReset(); // ✅ close the modal and reset form
+                    return;
+                }
                 scholarshipId = scholarship.id;
             } else {
                 console.log("Payload to insert:", payload);
                 res = await addNewScholarship(payload, dispatch);
                 // ⛔ Stop if insert failed or duplicate
-             if (!res?.success) {
-    handleCloseAndReset(); // ✅ close the modal and reset form
-    return;
-  }
+                if (!res?.success) {
+                    handleCloseAndReset(); // ✅ close the modal and reset form
+                    return;
+                }
 
- scholarshipId = res.data?.id;
-              //  scholarshipId = res?.id;
+                scholarshipId = res.data?.id;
+                //  scholarshipId = res?.id;
             }
 
             // ✅ Upload files if any
@@ -589,17 +599,31 @@ useEffect(() => {
                         </div>
 
                         {/* --- Filters Section --- */}
-                        <div className="filters-section mb-4">
-                            <div className="row">
-                                <div className="form-group col-4">
-                                    <label>Religion</label>
-                                    <select name="religion" value={filters.religion} onChange={handleFilterChange}>
-                                        <option value="">Select Religion</option>
-                                        {religions.map(r => (
-                                            <option key={r.id} value={r.id}>{r.religion_Name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+<div className="filters-section mb-4">
+  <div className="row">
+    {/* Religion Dropdown */}
+    <div className="form-group col-4">
+      <label>Religion</label>
+      <Select
+        isMulti
+        name="religion"
+        options={religions.map((r) => ({
+          value: r.id,
+          label: r.religion_Name,
+        }))}
+        value={religions
+          .filter((r) => filters.religion?.includes(String(r.id)))
+          .map((r) => ({ value: r.id, label: r.religion_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            religion: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Religion(s)"
+        classNamePrefix="select"
+      />
+    </div>
                                 <div className="form-group col-4">
                                     <label>Country</label>
                                     <select name="country" value={filters.country} onChange={handleFilterChange}>
@@ -609,27 +633,54 @@ useEffect(() => {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="form-group col-4">
-                                    <label>State</label>
-                                    <select name="state" value={filters.state || ""} onChange={handleFilterChange}>
-                                        <option value="">Select State</option>
-                                        {states.map((s) => (
-                                            <option key={s.id} value={s.id}>{s.state_Name}</option>  // ✅ send ID
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+<div className="form-group col-4">
+      <label>State</label>
+      <Select
+        isMulti
+        name="state"
+        options={states.map((s) => ({
+          value: s.id,
+          label: s.state_Name,
+        }))}
+        value={states
+          .filter((s) => filters.state?.includes(String(s.id)))
+          .map((s) => ({ value: s.id, label: s.state_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            state: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select State(s)"
+        classNamePrefix="select"
+      />
+    </div>
+  </div>
 
-                            <div className="row mt-2">
-                                <div className="form-group col-4">
-                                    <label>Gender</label>
-                                    <select name="gender" value={filters.gender} onChange={handleFilterChange}>
-                                        <option value="">Select Gender</option>
-                                        {genders.map(g => (
-                                            <option key={g.gender_ID} value={g.gender_ID}>{g.gender_Name}</option>
-                                        ))}
-                                    </select>
-                                </div>
+  <div className="row mt-2">
+    {/* Gender Dropdown */}
+    <div className="form-group col-4">
+      <label>Gender</label>
+      <Select
+        isMulti
+        name="gender"
+        options={genders.map((g) => ({
+          value: g.gender_ID,
+          label: g.gender_Name,
+        }))}
+        value={genders
+          .filter((g) => filters.gender?.includes(String(g.gender_ID)))
+          .map((g) => ({ value: g.gender_ID, label: g.gender_Name }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            gender: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Gender(s)"
+        classNamePrefix="select"
+      />
+    </div>
                                 <div className="form-group col-4">
                                     <label>Class</label>
                                     <select name="className" value={filters.className} onChange={handleFilterChange}>
@@ -640,15 +691,29 @@ useEffect(() => {
                                     </select>
                                 </div>
                                 <div className="form-group col-4">
-                                    <label>Course</label>
-                                    <select name="course" value={filters.course} onChange={handleFilterChange} disabled={!filters.className}>
-                                        <option value="">Select Course</option>
-                                        {courses.map(c => (
-                                            <option key={c.courseId} value={c.courseId}>{c.courseName}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
+      <label>Course</label>
+      <Select
+        isMulti
+        name="course"
+        isDisabled={!filters.className?.length}
+        options={courses.map((c) => ({
+          value: c.courseId,
+          label: c.courseName,
+        }))}
+        value={courses
+          .filter((c) => filters.course?.includes(String(c.courseId)))
+          .map((c) => ({ value: c.courseId, label: c.courseName }))}
+        onChange={(selected) =>
+          setFilters({
+            ...filters,
+            course: selected.map((s) => s.value.toString()),
+          })
+        }
+        placeholder="Select Course(s)"
+        classNamePrefix="select"
+      />
+    </div>
+  </div>
                         </div>
                         <div className="row">
                             <div className="form-group col-4">
@@ -750,7 +815,7 @@ useEffect(() => {
                                         value={formData.documents || ""}
                                         onChange={handleChange}
                                         placeholder=""
-                                         maxLength={3000}
+                                        maxLength={3000}
                                     />
                                 </div>
                                 <div className="form-group col-6">
@@ -789,7 +854,7 @@ useEffect(() => {
                                 <label>Upload Documents</label>
                                 <input
                                     type="file"
-                                  //  name="documents"
+                                    //  name="documents"
                                     onChange={handleFileChange}
                                     multiple
                                     ref={fileInputRef}
