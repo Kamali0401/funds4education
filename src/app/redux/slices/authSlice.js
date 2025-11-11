@@ -11,7 +11,7 @@ export const loginUser = createAsyncThunk(
 
       // ✅ Choose API based on userType
       if (["student", "sponsor", "institution"].includes(userType)) {
-        response = await loginReq({ username, password });
+        response = await loginReq({ username, password,userType });
       } else {
         throw new Error("Unsupported user type");
       }
@@ -34,7 +34,8 @@ export const loginUser = createAsyncThunk(
       // ✅ Return response data
       return { ...data, userType };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
+      debugger;
+      return rejectWithValue(error.response?.data?.message || error.errorMsg || "Login failed");
     }
   }
 );
