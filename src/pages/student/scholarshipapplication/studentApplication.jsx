@@ -36,7 +36,7 @@ const location = useLocation();
 
   // Filter further by search query
   const displayedApps = filteredApps.filter((app) =>
-    app.firstName?.toLowerCase().includes(searchQuery.toLowerCase())
+    app.scholarshipName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 useEffect(() => {
   // ✅ Open Add Modal automatically when user came from Apply Now
@@ -87,7 +87,8 @@ useEffect(() => {
       <Header variant="application" />
 
     {/*  <main className="applications-dashboard">*/}
-        <h1 className="applications-title">My Scholarship Applications</h1>
+    
+        <h1 className="applications-title pt-5">My Scholarship Applications</h1>
         <p className="applications-subtitle">
           Track your scholarship applications and <br /> filter by status.
         </p>
@@ -126,7 +127,7 @@ useEffect(() => {
             displayedApps.map((app) => (
               <div key={app.id} className="applications-card">
                 <div className="application-info">
-                  <h3>Scholarship ID: {app.scholarshipId}</h3>
+                  <h3>Scholarship:  {app.scholarshipName}</h3>
                   <span>
                     {app.firstName} {app.lastName}
                   </span>

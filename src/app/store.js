@@ -46,5 +46,8 @@ const store = configureStore({
 });
 
 const persistor = persistStore(store);
+if (typeof window !== "undefined") {
+  window.persistor = persistor;
+}
 
 export { store, persistor };
