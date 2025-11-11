@@ -1,4 +1,5 @@
 import { FiBell, FiUpload, FiDownload } from "react-icons/fi";
+import { useEffect } from "react";
 import "../../pages/styles.css";
 import logo from "../../app/assests/Logo.png"
 import Header from "../../app/components/header/header";
@@ -23,6 +24,44 @@ export default function SponsorDashboard() {
     
     navigate("/login");
   };
+ useEffect(() => {
+    // push a dummy state so browser Back triggers popstate reliably
+    window.history.pushState(null, document.title, window.location.href);
+
+    const handleBackButton = async (event) => {
+      try {
+        console.log("Back button detected — purging redux-persist and clearing storage");
+
+        // 1) Purge persisted redux state (wait for it)
+        if (window.persistor && typeof window.persistor.purge === "function") {
+          await window.persistor.purge();
+          console.log("persistor.purge() finished");
+        } else {
+          console.log("window.persistor not found");
+        }
+
+        // 2) Clear storages
+        localStorage.clear();
+        sessionStorage.clear();
+        console.log("localStorage and sessionStorage cleared");
+
+        // 3) Redirect without creating history entry
+        // Use replace so the user can't go forward back into the protected area
+        window.location.replace("http://localhost:3000/");
+      } catch (err) {
+        console.error("Error during back-handler:", err);
+        // fallback redirect
+        window.location.replace("http://localhost:3000/");
+      }
+    };
+
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+  }, []);
+ // ✅ run only once
 
   return (
     <div className="dashboard-container">
@@ -40,10 +79,10 @@ export default function SponsorDashboard() {
             Applications
           </Link>
           <Link to="/sponsor-dashboard/scholarshipPage" className="nav-link">
-            Sponsored Students
+            Schlarship Sponsored 
           </Link>
            <Link to="/Sponsored-Scholarship" className="nav-link">
-            ApprovedApplications
+            Approved Applications
           </Link>         
           <Link to="/sponsor-dashboard/report" className="nav-link">
             Reports

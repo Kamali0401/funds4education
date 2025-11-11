@@ -23,14 +23,44 @@ const gpaRegex = /^\d{0,3}(\.\d{1,2})?$/;
 const scholarshipRegex = /^[A-Za-z0-9\s]{0,250}$/;
 const text250Regex = /^[A-Za-z\s]{0,250}$/;
 
-const scholarshipOptions = [
+/*const scholarshipOptions = [
   { id: 1, name: "National Merit Scholarship" },
   { id: 2, name: "Need-Based Education Grant" },
   { id: 3, name: "STEM Excellence Fellowship" },
   { id: 4, name: "Research Innovation Award" },
-];
+];*/
+ 
+
+ 
 
 const AddApplicationModal = ({ show, handleClose, application }) => {
+const [scholarshipOptions, setScholarshipOptions] = useState([]);
+  const [filteredScholarships, setFilteredScholarships] = useState([]);
+   useEffect(() => {
+    const fetchScholarships = async () => {
+      try {
+        const url = `${ApiKey.Scholarship}/status`;
+        const params = { StatusType: "live" };
+        const res = await publicAxios.get(url, { params });
+
+        // ✅ Adjust mapping depending on API structure
+        if (res.data && Array.isArray(res.data)) {
+          const options = res.data.map((s) => ({
+            id: s.id,
+            name: s.name,
+             type: s.scholarshipType,
+          }));
+          setScholarshipOptions(options);
+        }
+      } catch (error) {
+        console.error("Error fetching scholarships:", error);
+      }
+    };
+
+    fetchScholarships();
+  }, []);
+   // 🔍 Whenever category changes, filter scholarships
+ 
 const fileInputRef = useRef(null);
 const navigation= useNavigate();
    const dispatch = useDispatch();
@@ -62,6 +92,7 @@ const navigation= useNavigate();
   modifiedBy: "",
   };
   const [formData, setFormData] = useState(initialFormData);
+   
   const [errors, setErrors] = useState({});
   const [selectedFiles, setSelectedFiles] = useState([]);
 //const [filesList, setFilesList] = useState([]);
@@ -182,12 +213,32 @@ const [newFileSelected, setNewFileSelected] = useState(false);
     setSelectedFiles(fileArray);
     setFilesList(fileArray.map((f) => f.name));
   } else {
-    if (!regex || regex.test(value)) {
+   /* if (!regex || regex.test(value)) {
       setFormData({
         ...formData,
         [name]: name === "scholarshipId" ? parseInt(value) : value,
       });
-    }
+    }*/
+let updatedFormData = { ...formData };
+
+      if (!regex || regex.test(value)) {
+        updatedFormData[name] =
+          name === "scholarshipId" ? parseInt(value) : value;
+      }
+
+      // ✅ When a scholarship is selected, set the corresponding type in category
+      if (name === "scholarshipId") {
+        const selected = scholarshipOptions.find(
+          (s) => s.id === parseInt(value)
+        );
+        if (selected) {
+          updatedFormData.category = selected.type || "";
+        } else {
+          updatedFormData.category = "";
+        }
+      }
+
+      setFormData(updatedFormData);
   }
   setErrors({ ...errors, [name]: "" });
 };
@@ -339,7 +390,7 @@ const handleSubmit = async (e, statusType) => {
 
     // Navigate after OK
     if (result.isConfirmed) {
-      navigation("/applications"); // useNavigate hook
+      navigation("/application"); // useNavigate hook
     }
 
     handleCloseAndReset();
@@ -564,21 +615,23 @@ const handleSubmit = async (e, statusType) => {
     </div>
 
     <div className="row">
-      <div className="form-group col-6">
-        <label>Category <Required /></label>
-        <select
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-        >
-          <option value="">Select Category</option>
-          <option value="Merit-Based">Merit-Based</option>
-          <option value="Need-Based">Need-Based</option>
-          <option value="Research Grant">Research Grant</option>
-          <option value="Tech Fellowship">Tech Fellowship</option>
-        </select>
-      </div>
-
+       <div className="form-group col-6">
+                <label>Category <Required /></label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  disabled // category is auto-filled, not user-editable
+                >
+                  <option value="">Select Category</option>
+                  {formData.category && (
+                    <option value={formData.category}>
+                      {formData.category}
+                    </option>
+                  )}
+                </select>
+              </div>
+ 
       <div className="form-group col-6">
         <label>Application Date <Required /></label>
         <input

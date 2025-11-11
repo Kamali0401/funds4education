@@ -191,7 +191,7 @@ const [imgError, setImgError] = useState(false);
             <Link to="/student-dashboard" className="active">
               Dashboard
             </Link>
-            <Link to="/applications">Applications</Link>
+            <Link to="/application">Applications</Link>
             <Link to="/scholarship-match">Matches</Link>
             <Link to={RP.studentmessages}>Messages</Link>
             <Link to={RP.ViewStudentProfile}>Profile</Link>
