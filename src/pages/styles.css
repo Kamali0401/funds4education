@@ -3198,7 +3198,14 @@ padding: 8px;
   color: #777;
   font-size: 0.95rem;
 }
-
+.add-app-input-error {
+  border: 1px solid red;
+  background-color: #ffe6e6;
+  color: #d8000c;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
 /* Footer */
 .applications-footer {
   display: flex;

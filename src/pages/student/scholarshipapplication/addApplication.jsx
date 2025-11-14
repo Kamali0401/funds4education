@@ -12,16 +12,20 @@ import {fetchScholarshipApplicationByIdReq, uploadFormFilesReq} from "../../../a
 import { publicAxios } from "../../../api/config";
 import { ApiKey } from "../../../api/endpoint";
 import { routePath as RP } from "../../../app/components/router/routepath";
-// --- Regex validations ---
-const nameRegex = /^[A-Za-z\s]{0,150}$/;
+// ---------------- Regex Validations ----------------
+const firstNameRegex = /^[A-Za-z\s]{2,150}$/;
+const lastNameRegex = /^(?=.*[A-Za-z])[A-Za-z\s]{1,150}$/;
 const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+\.(com|com\.au|edu)$/;
-const phoneRegex = /^[0-9]{0,10}$/;
-const courseRegex = /^[A-Za-z\s]{0,150}$/;
-const collegeRegex = /^[A-Za-z\s]{0,250}$/;
-const yearRegex = /^[0-9\-]{0,10}$/;
+const phoneRegex = /^[0-9]{10}$/;
+const courseRegex = /^[A-Za-z\s]{2,150}$/;
+const collegeRegex = /^[A-Za-z\s]{2,250}$/;
+const yearRegex = /^[0-9\-]{1,10}$/;
 const gpaRegex = /^\d{0,3}(\.\d{1,2})?$/;
 const scholarshipRegex = /^[A-Za-z0-9\s]{0,250}$/;
-const text250Regex = /^[A-Za-z\s]{0,250}$/;
+const text250Regex = /^[A-Za-z0-9\s,.'"-]{0,250}$/;
+const noHTMLRegex = /^[^<>]*$/; // ✅ Prevents < and >
+
+const sanitizeInput = (value) => value.replace(/[<>]/g, "");
 
 /*const scholarshipOptions = [
   { id: 1, name: "National Merit Scholarship" },
@@ -88,7 +92,7 @@ const navigation= useNavigate();
     awardsAchievements: "",
     notesComments: "",
     status: "",
-      createdBy: "",
+    createdBy: "",
   modifiedBy: "",
   };
   const [formData, setFormData] = useState(initialFormData);
@@ -172,14 +176,17 @@ const [newFileSelected, setNewFileSelected] = useState(false);
     }
     setErrors({ ...errors, [name]: "" });
   };*/
-  const handleChange = (e) => {
+const handleChange = (e) => {
   const { name, value, files } = e.target;
   let regex = null;
 
   switch (name) {
     case "firstName":
+    
+      regex = firstNameRegex;
+      break;
     case "lastName":
-      regex = nameRegex;
+      regex = lastNameRegex;
       break;
     case "phoneNumber":
       regex = phoneRegex;
@@ -221,22 +228,18 @@ const [newFileSelected, setNewFileSelected] = useState(false);
     }*/
 let updatedFormData = { ...formData };
 
-      if (!regex || regex.test(value)) {
-        updatedFormData[name] =
-          name === "scholarshipId" ? parseInt(value) : value;
-      }
-
-      // ✅ When a scholarship is selected, set the corresponding type in category
-      if (name === "scholarshipId") {
-        const selected = scholarshipOptions.find(
-          (s) => s.id === parseInt(value)
-        );
-        if (selected) {
-          updatedFormData.category = selected.type || "";
-        } else {
-          updatedFormData.category = "";
-        }
-      }
+    if (name === "firstName" || name === "lastName") {
+  // allow letters and spaces while typing
+  if (/^[A-Za-z\s]*$/.test(value)) {
+    updatedFormData[name] = value;
+  }
+} else if (name === "scholarshipId") {
+  updatedFormData[name] = parseInt(value);
+  const selected = scholarshipOptions.find(s => s.id === parseInt(value));
+  updatedFormData.category = selected ? selected.type : "";
+} else {
+  updatedFormData[name] = value;
+}
 
       setFormData(updatedFormData);
   }
@@ -294,23 +297,56 @@ const uploadFiles = async (applicationId) => {
 };
 
   const validateForm = () => {
-    const newErrors = {};
-    if (!formData.firstName || !nameRegex.test(formData.firstName))
-      newErrors.firstName = "First Name is required (letters only, max 150).";
-    if (formData.lastName && !nameRegex.test(formData.lastName))
-      newErrors.lastName = "Last Name must be letters only (max 150).";
-    if (!formData.email || !emailRegex.test(formData.email))
-      newErrors.email = "Valid email required (abc@xyz.com).";
-    if (formData.phoneNumber && !/^[0-9]{10}$/.test(formData.phoneNumber))
-      newErrors.phoneNumber = "Phone must be exactly 10 digits.";
-    if (formData.dateOfBirth && !(new Date(formData.dateOfBirth) <= new Date()))
-      newErrors.dateOfBirth = `DOB must be valid and in the past.`;
-    if (!formData.studyLevel) newErrors.studyLevel = "Study Level is required.";
-    if (!formData.scholarshipId) newErrors.scholarshipId = "Scholarship Name required.";
-    if (!formData.category) newErrors.category = "Category required.";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const newErrors = {};
+
+  // --- Name validations ---
+  if (!formData.firstName || !firstNameRegex.test(formData.firstName)) {
+    newErrors.firstName = "First Name is required (letters only, max 150).";
+  }
+ if (formData.lastName && !lastNameRegex.test(formData.lastName.trim())) {
+  newErrors.lastName = "Last Name must contain at least one letter (A-Z only).";
+ }
+
+  // --- Email validation ---
+  if (!formData.email || !emailRegex.test(formData.email)) {
+    newErrors.email = "Valid email required (abc@xyz.com).";
+  }
+
+  // --- Phone validation ---
+  if (formData.phoneNumber && !/^[0-9]{10}$/.test(formData.phoneNumber)) {
+    newErrors.phoneNumber = "Phone must be exactly 10 digits.";
+  }
+
+  // --- DOB validation ---
+  if (formData.dateOfBirth && !(new Date(formData.dateOfBirth) <= new Date())) {
+    newErrors.dateOfBirth = "DOB must be valid and in the past.";
+  }
+
+  // --- Required dropdowns ---
+  if (!formData.studyLevel) newErrors.studyLevel = "Study Level is required.";
+  if (!formData.scholarshipId)
+    newErrors.scholarshipId = "Scholarship Name required.";
+  if (!formData.category) newErrors.category = "Category required.";
+
+  // --- 🔒 HTML tag blocking (must come before return) ---
+  if (!noHTMLRegex.test(formData.firstName))
+    newErrors.firstName = "HTML tags are not allowed.";
+
+  if (formData.lastName && !noHTMLRegex.test(formData.lastName))
+    newErrors.lastName = "HTML tags are not allowed.";
+
+  ["extraCurricularActivities", "awardsAchievements", "notesComments"].forEach(
+    (field) => {
+      if (formData[field] && !noHTMLRegex.test(formData[field])) {
+        newErrors[field] = "HTML tags are not allowed.";
+      }
+    }
+  );
+
+  // ✅ Set errors and return
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
 
   /*const handleSubmit = (e, statusType) => {
     e.preventDefault();
@@ -520,6 +556,8 @@ const handleSubmit = async (e, statusType) => {
           max={today}
           onChange={handleChange}
         />
+                {errors.dateOfBirth && <p className="error-text">{errors.dateOfBirth}</p>}
+
       </div>
 
       <div className="form-group col-6">
@@ -530,30 +568,40 @@ const handleSubmit = async (e, statusType) => {
           onChange={handleChange}
         >
           <option value="">Select Gender</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
+<option value="Male">Male</option>
+<option value="Female">Female</option>
+<option value="Transgender">Transgender</option>
+<option value="Other">Other</option>
+
         </select>
       </div>
     </div>
 
     <h4 className="mt-3">Academic Information</h4>
 
+   <div className="row">
+  <div className="form-group col-6">
+    <label>
+      Study Level <Required />
+    </label>
+    <select
+      name="studyLevel"
+      value={formData.studyLevel}
+      onChange={handleChange}
+      className={errors.studyLevel ? "input-error" : ""}
+    >
+      <option value="">Select Study Level</option>
+      <option value="UG">Undergraduate</option>
+      <option value="PG">Postgraduate</option>
+      <option value="PhD">Ph.D.</option>
+    </select>
+    {errors.studyLevel && (
+      <p className="error-text">{errors.studyLevel}</p>
+    )}
+  </div>
+</div>
     <div className="row">
-      <div className="form-group col-6">
-        <label>Study Level <Required /></label>
-        <select
-          name="studyLevel"
-          value={formData.studyLevel}
-          onChange={handleChange}
-        >
-          <option value="">Select Study Level</option>
-          <option value="UG">Undergraduate</option>
-          <option value="PG">Postgraduate</option>
-          <option value="PhD">Ph.D.</option>
-        </select>
-        {errors.studyLevel && <p className="error-text">{errors.studyLevel}</p>}
-      </div>
+
 
       <div className="form-group col-6">
         <label>College</label>
@@ -599,24 +647,34 @@ const handleSubmit = async (e, statusType) => {
         />
       </div>
 
-      <div className="form-group col-6">
-        <label>Scholarship Name <Required /></label>
-        <select
-          name="scholarshipId"
-          value={formData.scholarshipId}
-          onChange={handleChange}
-        >
-          <option value="">Select Scholarship</option>
-          {scholarshipOptions.map((sch) => (
-            <option key={sch.id} value={sch.id}>{sch.name}</option>
-          ))}
-        </select>
-      </div>
+     <div className="form-group col-6">
+  <label htmlFor="scholarshipId">
+    Scholarship Name <Required />
+  </label>
+  <select
+    id="scholarshipId"
+    name="scholarshipId"
+    value={formData.scholarshipId}
+    onChange={handleChange}
+    className={errors.scholarshipId ? "input-error" : ""}
+  >
+    <option value="">Select Scholarship</option>
+    {scholarshipOptions.map((sch) => (
+      <option key={sch.id} value={sch.id}>
+        {sch.name}
+      </option>
+    ))}
+  </select>
+  {errors.scholarshipId && (
+    <p className="error-text">{errors.scholarshipId}</p>
+  )}
+</div>
     </div>
+
 
     <div className="row">
        <div className="form-group col-6">
-                <label>Category <Required /></label>
+                <label>Category</label>
                 <select
                   name="category"
                   value={formData.category}
@@ -630,10 +688,11 @@ const handleSubmit = async (e, statusType) => {
                     </option>
                   )}
                 </select>
+
               </div>
  
       <div className="form-group col-6">
-        <label>Application Date <Required /></label>
+        <label>Application Date </label>
         <input
           type="date"
           name="applicationDate"
@@ -642,6 +701,7 @@ const handleSubmit = async (e, statusType) => {
           max={today}
           onChange={handleChange}
         />
+        {errors.applicationDate && <p className="error-text">{errors.applicationDate}</p>}
       </div>
     </div>
 
@@ -759,9 +819,17 @@ const handleSubmit = async (e, statusType) => {
     <h4 className="mt-3">Additional Information</h4>
     <div className="row">
       <div className="form-group col-12">
-        <label>Extra-Curricular</label>
-        <textarea name="extraCurricularActivities" value={formData.extraCurricularActivities} onChange={handleChange}></textarea>
-      </div>
+  <label>Extra-Curricular</label>
+  <textarea
+    name="extraCurricularActivities"
+    value={formData.extraCurricularActivities}
+    onChange={handleChange}
+    className={errors.extraCurricularActivities ? "input-error" : ""}
+  ></textarea>
+  {errors.extraCurricularActivities && (
+    <p className="error-text">{errors.extraCurricularActivities}</p>
+  )}
+</div>
       <div className="form-group col-12">
         <label>Awards / Achievements</label>
         <textarea name="awardsAchievements" value={formData.awardsAchievements} onChange={handleChange}></textarea>
